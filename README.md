@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TalkTamila 🎙️✨
 
-## Getting Started
+**TalkTamila** is a modern, feature-rich web platform designed to connect content creators, influencers, and freelancers. It provides a robust suite of tools for community engagement, content consumption (reels, podcasts, news, reviews, videos).
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+##  Key Features
+
+###  Public Platform
+- **Content Hub**: Engage with regional media across various formats:
+  -  **Videos** and  **Reels**
+  -  **Podcasts** and  **News** updates
+  -  **Reviews** and  **Categories**
+- **Discovery**: Dynamic search and category-based navigation.
+- **Mobile First Navigation**: Optimized bottom navigation drawer for mobile views.
+
+###  Admin & Moderation Panel
+- **Dashboard & Analytics**: Track platform engagement, content stats, and active users.
+- **Moderation**: Approve, reject, or flag submitted content.
+- **Freelancer & Influencer Hub**: Manage creators, assign tasks, and monitor submissions.
+- **Approvals & Reports**: Centralized interface to handle verification and flag reports.
+
+###  Freelancer & Influencer Features
+- **Assignments & Tasks**: Collaborative workflows where creators can pick up and submit assignments.
+- **Earnings Tracker**: Keep tabs on work completed and payouts.
+
+---
+
+##  Technology Stack
+
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) with PostCSS
+- **Database & ORM**: [Prisma ORM](https://www.prisma.io/) with PostgreSQL
+- **Icons**: [Lucide React](https://lucide.dev/)
+
+---
+
+##  Project Structure
+
+```text
+talktamila/
+├── app/                  # Next.js App Router (pages & layouts)
+│   ├── (auth)/          # Authentication routes
+│   ├── (public)/        # Public landing, reels, podcasts, search
+│   ├── admin/           # Administration pages (moderation, analytics, settings)
+│   ├── freelancer/      # Freelancer dashboard and workspace
+│   └── influencer/      # Influencer dashboard and workspace
+├── components/          # Reusable UI & layout components
+│   ├── admin/           # Admin-specific components
+│   ├── layout/          # Navigation, Header, Footer
+│   └── ui/              # Base UI elements (Button, etc.)
+├── features/            # Feature-specific business logic
+│   ├── analytics/       # Site traffic and activity tracking
+│   ├── auth/            # Security and sign-in
+│   ├── content/         # Post types (video, text, poll, etc.)
+│   └── moderation/      # Moderation workflows
+├── hooks/               # Custom React hooks (e.g. useContent context)
+├── prisma/              # Database schema and seed scripts
+└── public/              # Static assets (images, icons)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+##  Setup and Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Prerequisites
+- Node.js (v18.x or later recommended)
+- PostgreSQL database instance
 
-## Learn More
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd talktamila
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Configure Environment Variables
+Copy the example environment file and update it with your database connection details:
+```bash
+cp .env.example .env
+```
+Inside your `.env` file, configure your PostgreSQL connection:
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/talktamila?schema=public"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Install Dependencies
+```bash
+npm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Database Setup (Prisma)
+Generate the Prisma client and push the schema to your PostgreSQL database:
+```bash
+npx prisma generate
+npx prisma db push
+```
+*(Optional)* Seed the database if a seed script is configured:
+```bash
+npx prisma db seed
+```
 
-## Deploy on Vercel
+### 5. Start the Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+##  Available Scripts
+
+In the project directory, you can run:
+
+* **`npm run dev`**: Runs the app in development mode.
+* **`npm run build`**: Builds the production bundle.
+* **`npm run start`**: Runs the built production server.
+* **`npm run lint`**: Runs ESLint to check for code quality issues.
