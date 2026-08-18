@@ -89,18 +89,9 @@ DATABASE_URL="postgresql://username:password@localhost:5432/talktamila?schema=pu
 npm install
 ```
 
-### 4. Database Setup (Prisma)
-Generate the Prisma client and push the schema to your PostgreSQL database:
-```bash
-npx prisma generate
-npx prisma db push
-```
-*(Optional)* Seed the database if a seed script is configured:
-```bash
-npx prisma db seed
-```
 
-### 5. Start the Development Server
+
+### 4. Start the Development Server
 ```bash
 npm run dev
 ```
