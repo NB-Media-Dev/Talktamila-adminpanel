@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonVariants } from "@/components/ui/Button";
 import { Briefcase } from "lucide-react";
 
 export default function CampaignMarketplace() {
@@ -45,7 +46,7 @@ export default function CampaignMarketplace() {
                 <h3 className="text-xs font-black text-gray-900">{camp.brand}</h3>
                 <p className="text-[10px] text-gray-500 font-semibold mt-0.5">{camp.details}</p>
               </div>
-              <button className="px-5 py-1 border border-[#FF5A26] text-[#FF5A26] text-[10px] font-black rounded-full hover:bg-[#FF5A26] hover:text-white transition-all cursor-pointer">
+              <button className={`px-5 py-1 border border-[#FF5A26] text-[#FF5A26] text-[10px] font-black rounded-full ${buttonVariants({variant:'hoverButton'})}`}>
                 Apply
               </button>
             </div>

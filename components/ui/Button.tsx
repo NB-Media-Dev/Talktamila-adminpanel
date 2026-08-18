@@ -11,6 +11,9 @@ export const buttonVariants = cva(
 
         destructive:
           "bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] text-white",
+        
+        sucess:
+        "bg-emerald-200 text-emerald-700 border border-emerald-100",
 
         outline:
           "border border-brand bg-transparent text-brand hover:bg-brand hover:text-white",
@@ -24,7 +27,11 @@ export const buttonVariants = cva(
         link:
           "text-brand underline-offset-4 hover:underline",
         bgcolor:
-        "bg-[#FFEFE0] hover:bg-[#FCE3CC]  text-gray-600 "
+        "bg-[#FFEFE0] hover:bg-[#FCE3CC]  text-gray-600 ",
+        hovericon:
+        "hover:text-[#E05D24] transition-colors cursor-pointer",
+        hoverButton:
+        "border border-[#FF6B35] text-[#FF6B35] font-semibold text-sm hover:bg-[linear-gradient(135deg,#E6703A,#FFA663)]  hover:text-white transition-all duration-200 active:scale-98 cursor-pointer"
       },
 
     },

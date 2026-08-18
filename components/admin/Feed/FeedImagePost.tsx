@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
 import movie from "@/public/Images/movie.jpg";
+import { buttonVariants } from "@/components/ui/Button";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -155,7 +156,7 @@ export default function FeedImagePost() {
     
         <button 
           onClick={() => setAnalyticsState && setAnalyticsState(true)}
-          className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0"
+          className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
         >
           <BarChart2 className="w-3.5 h-3.5" />
           Analytics

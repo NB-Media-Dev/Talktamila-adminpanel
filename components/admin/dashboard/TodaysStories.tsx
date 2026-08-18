@@ -35,7 +35,7 @@ export default function TodayStories() {
       <div className="flex items-center justify-between mb-2 py-2">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-red-50 text-red-500">
-            <Zap className="w-5 h-5 fill-red-500 stroke-red-500" />
+            <Zap className="w-5 h-5 fill-orange-400 stroke-orange-200" />
           </div>
           <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
             Today&apos;s Stories

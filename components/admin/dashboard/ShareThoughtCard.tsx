@@ -1,6 +1,7 @@
 "use client";
 
 
+import { buttonVariants } from "@/components/ui/Button";
 import { islandMoments } from "@/public/Fonts/Fonts";
 import { Pencil, Image, Video } from "lucide-react";
 
@@ -93,7 +94,7 @@ export default function ShareThoughtCard() {
             <div className="flex items-center gap-4 sm:gap-5 text-[#8E8E93]">
               <button
                 type="button"
-                className="hover:text-[#E05D24] transition-colors cursor-pointer p-0.5"
+                   className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
                 title="Add Image"
                 aria-label="Add Image"
               >
@@ -102,7 +103,7 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className="hover:text-[#E05D24] transition-colors cursor-pointer p-0.5"
+                className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
                 title="Add Video"
                 aria-label="Add Video"
               >
@@ -111,7 +112,7 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className="hover:text-[#E05D24] transition-colors cursor-pointer p-0.5"
+                  className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
                 title="Create Poll"
                 aria-label="Create Poll"
               >
@@ -131,7 +132,7 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className="hover:text-[#E05D24] transition-colors cursor-pointer p-0.5"
+                className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
                 title="Add Emoji"
                 aria-label="Add Emoji"
               >
@@ -150,8 +151,8 @@ export default function ShareThoughtCard() {
 
             <button
               type="button"
-              className="
-                bg-[linear-gradient(135deg,#F56529,#E04D1B)]
+              className={`
+               ${buttonVariants({variant:"default"})}
                 text-white
                 text-[14px] sm:text-[15px]
                 font-bold
@@ -164,7 +165,7 @@ export default function ShareThoughtCard() {
                 active:scale-95
                 cursor-pointer
                 whitespace-nowrap
-              "
+              `}
             >
               Post
             </button>

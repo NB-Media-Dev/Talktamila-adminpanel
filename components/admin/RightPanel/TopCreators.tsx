@@ -5,6 +5,7 @@ import Image from "next/image";
 import avatar4 from "@/public/Images/avatar4.png";
 import avatar5 from "@/public/Images/avatar5.png";
 import avatar6 from "@/public/Images/avatar6.png";
+import { buttonVariants } from "@/components/ui/Button";
 
 export default function TopCreators() {
   const creators = [
@@ -84,7 +85,7 @@ export default function TopCreators() {
                 </p>
               </div>
             </div>
-            <button className="px-4 py-1.5 border border-[#FF5A26]/30 text-[#FF5A26] text-[10px] font-black rounded-full hover:bg-[#FF5A26] hover:text-white transition-all cursor-pointer">
+            <button className={`px-4 py-1.5 border border-[#FF5A26]/30 text-[#FF5A26] text-[10px] font-black rounded-full ${buttonVariants({variant:'hoverButton'})} transition-all cursor-pointer`}>
               Follow
             </button>
           </div>

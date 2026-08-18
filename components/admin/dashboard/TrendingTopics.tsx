@@ -1,6 +1,7 @@
 "use client";
 
 
+import { buttonVariants } from "@/components/ui/Button";
 import { TrendingUp, ArrowRight } from "lucide-react";
 
 interface Topic {
@@ -50,7 +51,7 @@ export default function TrendingTopics() {
 
    
       <div className="flex justify-center mt-1">
-        <button className="flex items-center justify-center gap-2 px-6 py-2.5 w-full rounded-full border border-[#FF6B35] text-[#FF6B35] font-semibold text-sm hover:bg-[#FF6B35] hover:text-white transition-all duration-200 active:scale-98 cursor-pointer">
+        <button className={`flex items-center justify-center gap-2 px-6 py-2.5 w-full rounded-full ${buttonVariants({variant:'hoverButton'})}`}>
           Explore More
           <ArrowRight className="w-4 h-4" />
         </button>

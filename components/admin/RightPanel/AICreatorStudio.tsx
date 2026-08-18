@@ -2,6 +2,7 @@
 
 import  { useState } from "react";
 import { Sparkles, Calendar, Send, Eye, } from "lucide-react";
+import { buttonVariants } from "@/components/ui/Button";
 
 export default function AICreatorStudio() {
   const formats = [
@@ -58,7 +59,7 @@ export default function AICreatorStudio() {
               key={format}
               onClick={() => setSelectedFormat(format)}
               className={`py-2 px-3 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${isSelected
-                  ? "bg-gradient-to-r from-[#FF8A00] to-[#FF5A26] text-white shadow-[0_4px_12px_rgba(255,90,38,0.2)]"
+                  ? `${buttonVariants({variant:'default'})} text-white shadow-[0_4px_12px_rgba(255,90,38,0.2)]`
                   : "bg-[#FFEFE5] text-gray-900"
                 }`}
             >
@@ -80,7 +81,7 @@ export default function AICreatorStudio() {
                 key={style}
                 onClick={() => setSelectedStyle(style)}
                 className={`py-1 px-1.5 rounded-full text-[8px] sm:text-xs font-semibold text-center whitespace-nowrap transition-all duration-200 cursor-pointer flex-1 ${isSelected
-                    ? "bg-[#FF5A26] text-white"
+                    ? `${buttonVariants({variant:'default'})}`
                     : "bg-[#FFEFE5] text-gray-800"
                   }`}
               >
@@ -104,7 +105,7 @@ export default function AICreatorStudio() {
                 key={ratio}
                 onClick={() => setSelectedRatio(ratio)}
                 className={`py-1 px-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-center whitespace-nowrap transition-all duration-200 cursor-pointer flex-1 ${isSelected
-                    ? "bg-[#FF5A26] text-white"
+                    ? `${buttonVariants({variant:'default'})}`
                     : "bg-[#FFEFE5] text-gray-800"
                   }`}
               >
@@ -122,7 +123,7 @@ export default function AICreatorStudio() {
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="flex-1 bg-gradient-to-r from-[#FF8A00] to-[#FF5A26] hover:brightness-105 active:scale-[0.98] disabled:opacity-75 transition-all text-white text-sm font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,90,38,0.25)] cursor-pointer"
+            className={`flex-1 ${buttonVariants({variant:'default'})} text-sm font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,90,38,0.25)] cursor-pointer`}
           >
             <span>Generate {selectedFormat}</span>
 

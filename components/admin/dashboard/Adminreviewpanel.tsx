@@ -2,6 +2,7 @@
 import { useContext, useState } from "react";
 import { X, MoreHorizontal, Play, Share2, ClipboardCheck, Check, Ban } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
+import { buttonVariants } from "@/components/ui/Button";
 
 
 const initialReviews = [
@@ -140,7 +141,7 @@ export function Adminreviewpanel() {
     
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-orange-100 pb-2 pr-10 sm:pr-12">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+            <div className={`w-10 h-10 ${buttonVariants({variant:'default'})} rounded-2xl flex items-center justify-center text-white shadow-md shadow-orange-500/20`}>
               <ClipboardCheck size={20} />
             </div>
             <div>
@@ -167,7 +168,7 @@ export function Adminreviewpanel() {
               onClick={() => handleFilterChange("pending")}
               className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${
                 activeFilter === "pending"
-                  ? "bg-red-500 text-white shadow-md shadow-red-500/10"
+                  ? `${buttonVariants({variant:'default'})} shadow-md shadow-red-500/10`
                   : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
@@ -177,7 +178,7 @@ export function Adminreviewpanel() {
               onClick={() => handleFilterChange("approved")}
               className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${
                 activeFilter === "approved"
-                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/10"
+                  ? `${buttonVariants({variant:'sucess'})} shadow-md shadow-emerald-500/10`
                   : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
@@ -187,7 +188,7 @@ export function Adminreviewpanel() {
               onClick={() => handleFilterChange("rejected")}
               className={`px-3 py-1 text-xs font-bold rounded-full transition-all cursor-pointer ${
                 activeFilter === "rejected"
-                  ? "bg-rose-500 text-white shadow-md shadow-rose-500/10"
+                  ? `${buttonVariants({variant:'destructive'})} shadow-md shadow-rose-500/10`
                   : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
@@ -326,7 +327,7 @@ export function Adminreviewpanel() {
                     <div className="flex gap-2 mt-1 border-t border-gray-50 pt-2 shadow-inner-xs">
                       <button
                         onClick={() => handleApprove(review.id)}
-                        className="flex-1 py-1 bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-bold rounded-full shadow-xs transition-all cursor-pointer flex items-center justify-center gap-0.5 active:scale-98"
+                        className={`flex-1 py-1 ${buttonVariants({variant:'default'})} text-[10px] font-bold rounded-full flex items-center justify-center gap-0.5 active:scale-98`}
                       >
                         <Check size={10} className="stroke-[2.5]" />
                         Approve

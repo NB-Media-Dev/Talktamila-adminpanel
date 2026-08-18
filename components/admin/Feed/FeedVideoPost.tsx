@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
 import avatar3 from "@/public/Images/avatar3.png";
+import { buttonVariants } from "@/components/ui/Button";
 
 const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -54,7 +55,7 @@ export default function FeedVideoPost() {
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-[14px] text-gray-900 leading-none">News Tamila</span>
             
-              <span className="w-4.5 h-4.5 rounded-full bg-[#E05D24] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
+        
               <span className="text-[#8E8E93] text-[12px] font-normal">@news_tamil</span>
             </div>
             <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
@@ -161,13 +162,14 @@ export default function FeedVideoPost() {
         </div>
 
      
-        <button 
-          onClick={() => setAnalyticsState && setAnalyticsState(true)}
-          className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0"
-        >
-          <BarChart2 className="w-3.5 h-3.5" />
-          Analytics
-        </button>
+          
+              <button 
+                onClick={() => setAnalyticsState && setAnalyticsState(true)}
+                className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
+              >
+                <BarChart2 className="w-3.5 h-3.5" />
+                Analytics
+              </button>
       </div>
     </div>
   );

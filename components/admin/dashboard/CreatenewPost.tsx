@@ -3,6 +3,7 @@
 import { useContext, useState } from "react";
 import { Sparkle, UploadCloud, X, MoreHorizontal } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
+import { buttonVariants } from "@/components/ui/Button";
 
 
 const platformList = [
@@ -121,7 +122,7 @@ export function CreatenewPost() {
                     onClick={() => togglePlatform(platform.id)}
                     className={`py-1.5 px-2 px-3 text-[11px] font-bold rounded-full border text-center transition-all duration-200 shadow-sm cursor-pointer ${
                       isSelected
-                        ? "bg-gradient-to-r from-orange-400 to-orange-500 text-white border-transparent transform scale-[1.02] shadow-orange-500/20"
+                        ? `${buttonVariants({variant:'default'})} border-transparent transform scale-[1.02] shadow-orange-500/20`
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                   >
@@ -235,7 +236,7 @@ export function CreatenewPost() {
         </button>
         <button 
           type="button" 
-          className="px-6 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-[11px] font-bold rounded-full shadow-md transition-colors min-w-[100px] cursor-pointer"
+          className={`${buttonVariants({variant:'default'})} px-6 py-1.5 text-white text-[11px] font-bold rounded-full shadow-md transition-colors min-w-[100px] cursor-pointer`}
         >
           Publish
         </button>
