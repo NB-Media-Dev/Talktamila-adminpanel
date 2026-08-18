@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
 import { 
@@ -23,10 +23,10 @@ export default function FeedTextPost() {
   const setAnalyticsState = context?.setAnalyticsState;
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
-      {/* Post Header */}
+    
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* Avatar */}
+    
           <div className="w-11 h-11 rounded-full overflow-hidden relative border border-[#FFEFE0] bg-gray-50 shrink-0">
             <Image
               src={avatar6}
@@ -36,11 +36,11 @@ export default function FeedTextPost() {
               sizes="44px"
             />
           </div>
-          {/* User Info */}
+       
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-[14px] text-gray-900 leading-none">News Tamila</span>
-              {/* Verified Dot/Badge */}
+             
               <span className="w-4.5 h-4.5 rounded-full bg-[#E05D24] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
               <span className="text-[#8E8E93] text-[12px] font-normal">@news_tamil</span>
             </div>
@@ -53,13 +53,13 @@ export default function FeedTextPost() {
           </div>
         </div>
 
-        {/* Platform Icon */}
+      
         <div className="text-[#E05D24] p-2 bg-orange-50 rounded-full hover:bg-orange-100 transition-colors">
           <MessageSquare className="w-5 h-5 fill-current" />
         </div>
       </div>
 
-      {/* Post Content - Text Card */}
+      
       <div className="bg-[#FFFDFB] rounded-[20px] p-4.5 border border-[#FFEFE0] text-[13.5px] text-gray-800 leading-relaxed font-normal shadow-inner">
         சென்னை கடற்கரை சாலையில் புதிய மெட்ரோ வழித்தடப் பணிகள் வெற்றிகரமாக துவங்கப்பட்டுள்ளது. இதனால் போக்குவரத்து மாற்றங்கள் செய்யப்பட்டுள்ளது. பொதுமக்கள் ஒத்துழைக்குமாறு கேட்டுக்கொள்ளப்படுகிறது!
         <div className="mt-3 flex flex-wrap gap-2">
@@ -70,9 +70,9 @@ export default function FeedTextPost() {
         </div>
       </div>
 
-      {/* Metrics Chips Grid */}
+  
       <div className="grid grid-cols-2 gap-2 mt-1">
-        {/* Views */}
+     
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -81,7 +81,7 @@ export default function FeedTextPost() {
           </div>
         </div>
 
-        {/* Revenue */}
+    
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -90,7 +90,7 @@ export default function FeedTextPost() {
           </div>
         </div>
 
-        {/* AI Score */}
+  
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Sparkles className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -99,7 +99,7 @@ export default function FeedTextPost() {
           </div>
         </div>
 
-        {/* Best Time */}
+  
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Clock className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -109,9 +109,9 @@ export default function FeedTextPost() {
         </div>
       </div>
 
-      {/* Action Footer */}
+   
       <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
-        {/* Engagement Icons */}
+    
         <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
             <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
@@ -131,7 +131,7 @@ export default function FeedTextPost() {
           </button>
         </div>
 
-        {/* Analytics Button */}
+       
         <button 
           onClick={() => setAnalyticsState && setAnalyticsState(true)}
           className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0"

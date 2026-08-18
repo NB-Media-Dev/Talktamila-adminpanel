@@ -35,7 +35,7 @@ export default function SavedDrafts() {
 
   return (
     <div className="w-full bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
-      {/* Header */}
+   
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-[#FFF2EC] text-[#FF5A26]">
@@ -53,7 +53,7 @@ export default function SavedDrafts() {
         </a>
       </div>
 
-      {/* Drafts List */}
+   
       <div className="flex flex-col gap-3">
         {drafts.map((item) => (
           <div
@@ -73,7 +73,7 @@ export default function SavedDrafts() {
         ))}
       </div>
 
-      {/* Embedded Quick Notes Component */}
+  
       <div className="mt-1">
         <QuickNotes />
       </div>

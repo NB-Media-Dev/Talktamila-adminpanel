@@ -21,9 +21,9 @@ interface Story {
 export default function TodayStories() {
 
   const stories: Story[] = [
-    { id: 1, userName: "Amrita", avatar:avatar5, hasActiveStory: true },
-    { id: 2, userName: "Priya", avatar:avatar6, hasActiveStory: true },
-    { id: 3, userName: "Arjun", avatar:avatar4, hasActiveStory: true },
+    { id: 1, userName: "Amrita", avatar:avatar1, hasActiveStory: true },
+    { id: 2, userName: "Priya", avatar:avatar2, hasActiveStory: true },
+    { id: 3, userName: "Arjun", avatar:avatar3, hasActiveStory: true },
     { id: 4, userName: "Karthik",avatar:avatar5, hasActiveStory: true },
     { id: 5, userName: "Vishwa",avatar:avatar6, hasActiveStory: true },
     { id: 6, userName: "swathi",avatar:avatar4, hasActiveStory: true },

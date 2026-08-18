@@ -36,10 +36,10 @@ export default function FeedVideoPost() {
   const setAnalyticsState = context?.setAnalyticsState;
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
-      {/* Post Header */}
+     
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* Avatar */}
+    
           <div className="w-11 h-11 rounded-full overflow-hidden relative border border-[#FFEFE0] bg-gray-50 shrink-0">
             <Image
               src={avatar4}
@@ -49,11 +49,11 @@ export default function FeedVideoPost() {
               sizes="44px"
             />
           </div>
-          {/* User Info */}
+    
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-[14px] text-gray-900 leading-none">News Tamila</span>
-              {/* Verified Dot/Badge */}
+            
               <span className="w-4.5 h-4.5 rounded-full bg-[#E05D24] text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
               <span className="text-[#8E8E93] text-[12px] font-normal">@news_tamil</span>
             </div>
@@ -66,13 +66,13 @@ export default function FeedVideoPost() {
           </div>
         </div>
 
-        {/* Platform Icon */}
+     
         <div className="text-[#FF0000] p-2 bg-red-50 rounded-full hover:bg-red-100 transition-colors">
           <YoutubeIcon className="w-5 h-5" />
         </div>
       </div>
 
-      {/* Caption */}
+   
       <div className="text-[13px] text-gray-800 leading-relaxed font-normal">
         சென்னை கடற்கரை சாலையில் புதிய மெட்ரோ வழித்தடப் பணிகள் துவக்கம்!{" "}
         <span className="text-[#FF6B35] font-semibold cursor-pointer">#Chennai</span>{" "}
@@ -80,7 +80,7 @@ export default function FeedVideoPost() {
         <span className="text-[#FF6B35] font-semibold cursor-pointer">#News</span>
       </div>
 
-      {/* Video Thumbnail with Play Button Overlay */}
+   
       <div className="w-full h-[320px] sm:h-[420px] md:h-[520px] rounded-[24px] overflow-hidden relative border border-[#FFEFE0] group cursor-pointer">
         <Image
           src={avatar3}
@@ -89,9 +89,9 @@ export default function FeedVideoPost() {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 550px"
         />
-        {/* Dark overlay */}
+     
         <div className="absolute inset-0 bg-black/15 group-hover:bg-black/25 transition-colors duration-300" />
-        {/* Play Button Overlay */}
+    
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-16 h-16 rounded-full bg-black/45 backdrop-blur-md border-2 border-white flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:scale-110 group-hover:bg-[#FF6B35]/80 group-hover:border-[#FF6B35] active:scale-95">
             <Play className="w-6 h-6 text-white fill-current translate-x-0.5" />
@@ -99,9 +99,9 @@ export default function FeedVideoPost() {
         </div>
       </div>
 
-      {/* Metrics Chips Grid */}
+      
       <div className="grid grid-cols-2 gap-2 mt-1">
-        {/* Views */}
+        
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -110,7 +110,7 @@ export default function FeedVideoPost() {
           </div>
         </div>
 
-        {/* Revenue */}
+   
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -119,7 +119,7 @@ export default function FeedVideoPost() {
           </div>
         </div>
 
-        {/* AI Score */}
+      
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Sparkles className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -128,7 +128,7 @@ export default function FeedVideoPost() {
           </div>
         </div>
 
-        {/* Best Time */}
+    
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Clock className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -138,9 +138,9 @@ export default function FeedVideoPost() {
         </div>
       </div>
 
-      {/* Action Footer */}
+  
       <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
-        {/* Engagement Icons */}
+       
         <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
             <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
@@ -160,7 +160,7 @@ export default function FeedVideoPost() {
           </button>
         </div>
 
-        {/* Analytics Button */}
+     
         <button 
           onClick={() => setAnalyticsState && setAnalyticsState(true)}
           className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0"

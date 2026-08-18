@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import { Calendar } from "lucide-react";
 
 export default function UpcomingSchedule() {
@@ -24,7 +24,7 @@ export default function UpcomingSchedule() {
 
   return (
     <div className="w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
-      {/* Header */}
+    
       <div className="flex items-center gap-2">
         <Calendar className="w-5 h-5 text-[#FF5A26]" />
         <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
@@ -32,7 +32,7 @@ export default function UpcomingSchedule() {
         </h2>
       </div>
 
-      {/* Events List */}
+     
       <div className="flex flex-col gap-4.5 py-1">
         {events.map((event, idx) => (
           <div key={idx} className="flex gap-4 items-start">

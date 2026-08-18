@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import Image from "next/image";
 import avatar4 from "@/public/Images/avatar4.png";
 import avatar5 from "@/public/Images/avatar5.png";
@@ -17,7 +17,7 @@ export default function TopCreators() {
 
   return (
     <div className="w-full lg:w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
-      {/* Header */}
+ 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#FF6B35] lg:hidden" />
@@ -30,7 +30,7 @@ export default function TopCreators() {
         </button>
       </div>
 
-      {/* Mobile View: Horizontal Carousel */}
+   
       <div className="flex lg:hidden items-center gap-3 overflow-x-auto no-scrollbar pb-1">
         {creators.map((creator, idx) => (
           <div
@@ -61,7 +61,7 @@ export default function TopCreators() {
         ))}
       </div>
 
-      {/* Desktop View: Vertical List */}
+   
       <div className="hidden lg:flex flex-col gap-3.5">
         {creators.map((creator, idx) => (
           <div key={idx} className="flex items-center justify-between gap-3">

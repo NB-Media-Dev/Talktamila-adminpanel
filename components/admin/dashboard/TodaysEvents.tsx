@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import { Calendar } from "lucide-react";
 
 interface EventItem {
@@ -38,7 +38,7 @@ export default function TodaysEvents() {
 
   return (
     <div className="w-full bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0]">
-      {/* Header */}
+  
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-[#FFF2EC] text-[#FF5A26]">
@@ -56,14 +56,14 @@ export default function TodaysEvents() {
         </a>
       </div>
 
-      {/* Events List */}
+
       <div className="flex flex-col gap-4">
         {events.map((event) => (
           <div
             key={event.id}
             className="flex items-center gap-3.5 group cursor-pointer hover:bg-gray-50/50 p-1 -mx-1 rounded-2xl transition-all duration-200"
           >
-            {/* Date Badge */}
+       
             <div className="w-12 h-12 flex flex-col items-center justify-center rounded-full bg-[#FFF2EC] text-[#FF5A26] shrink-0 transition-transform duration-200 group-hover:scale-105">
               <span className="text-base font-extrabold leading-none">
                 {event.day}
@@ -73,7 +73,6 @@ export default function TodaysEvents() {
               </span>
             </div>
 
-            {/* Event Title & Subtitle */}
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-gray-800 group-hover:text-[#FF5A26] transition-colors duration-200">
                 {event.title}

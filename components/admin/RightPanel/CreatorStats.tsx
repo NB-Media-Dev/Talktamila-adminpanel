@@ -56,18 +56,18 @@ export default function CreatorStats() {
           </div>
 
           <div className="mt-3.5">
-            {/* Value */}
+    
             <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight leading-none">
               {stat.value}
             </h3>
 
-            {/* Label */}
+           
             <span className="text-[11px] font-semibold text-gray-400 block mt-1">
               {stat.label}
             </span>
           </div>
 
-          {/* Change Indicator */}
+        
           <span className="text-[11px] font-bold text-[#FF5A26] mt-2 bg-[#FFF2EC] px-2 py-0.5 rounded-full w-fit">
             {stat.change}
           </span>

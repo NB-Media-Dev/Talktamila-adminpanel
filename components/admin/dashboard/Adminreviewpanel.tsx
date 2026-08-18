@@ -2,7 +2,7 @@
 import { useContext, useState } from "react";
 import { X, MoreHorizontal, Play, Share2, ClipboardCheck, Check, Ban } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
-import Image from "next/image";
+
 
 const initialReviews = [
   {
@@ -204,7 +204,7 @@ export function Adminreviewpanel() {
           </div>
         ) : (
           <div>
-            {/* Mobile Pagination Controls (above posts) */}
+       
             <div className="flex md:hidden items-center justify-between my-2.5 pb-2 border-b border-orange-100/60 w-full">
               <span className="text-[10px] text-gray-500 font-bold">
                 Showing {indexOfFirstReview + 1} to {Math.min(indexOfLastReview, filteredReviews.length)} of {filteredReviews.length}
@@ -356,7 +356,7 @@ export function Adminreviewpanel() {
               ))}
             </div>
 
-            {/* Desktop Pagination Controls & Counter Row (below posts) */}
+
             <div className="hidden md:flex items-center justify-between mt-2.5 pt-2 border-t border-orange-100/60 w-full">
               <span className="text-[10px] text-gray-500 font-bold">
                 Showing {indexOfFirstReview + 1} to {Math.min(indexOfLastReview, filteredReviews.length)} of {filteredReviews.length}

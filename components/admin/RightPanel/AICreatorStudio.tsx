@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Sparkles, Calendar, Send, Eye, RefreshCw, CheckCircle2 } from "lucide-react";
+import  { useState } from "react";
+import { Sparkles, Calendar, Send, Eye, } from "lucide-react";
 
 export default function AICreatorStudio() {
   const formats = [

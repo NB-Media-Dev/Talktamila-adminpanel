@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Briefcase } from "lucide-react";
 
 export default function CampaignMarketplace() {
@@ -24,7 +23,7 @@ export default function CampaignMarketplace() {
 
   return (
     <div className="w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
-      {/* Header */}
+    
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Briefcase className="w-5 h-5 text-[#FF5A26]" />
@@ -37,7 +36,7 @@ export default function CampaignMarketplace() {
         </button>
       </div>
 
-      {/* Campaigns list */}
+  
       <div className="flex flex-col gap-3.5">
         {campaigns.map((camp, idx) => (
           <div key={idx} className="bg-[#FFF9F5] border border-[#FFEFE0] rounded-[24px] p-4 flex justify-between items-start">
