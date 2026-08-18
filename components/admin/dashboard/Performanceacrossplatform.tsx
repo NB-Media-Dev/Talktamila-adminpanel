@@ -59,7 +59,7 @@ export function Performanceacrossplatform() {
    
           <button
             onClick={handleClose}
-            className="absolute right-5 top-5 flex h-7 w-7 items-center justify-center rounded-full bg-white/20 hover:bg-white/35 text-white shadow-sm transition-all duration-200 cursor-pointer"
+            className="absolute right-5 top-[calc(1.25rem+env(safe-area-inset-top,0px))] md:top-5 flex h-7 w-7 items-center justify-center rounded-full bg-white/20 hover:bg-white/35 text-white shadow-sm transition-all duration-200 cursor-pointer"
           >
             <X size={14} className="stroke-[3]" />
           </button>
@@ -71,7 +71,7 @@ export function Performanceacrossplatform() {
         </div>
 
    
-        <div className="flex-1 overflow-y-auto p-5 pt-4 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] md:pb-5 flex flex-col gap-4.5 bg-[#FCFAF7]">
+        <div className="flex-1 overflow-y-auto p-5 pt-4 pb-28 md:pb-5 flex flex-col gap-4.5 bg-[#FCFAF7]">
        
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {metrics.map((m, idx) => (

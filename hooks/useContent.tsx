@@ -25,8 +25,8 @@ export const UseContentProvider = ({ children }: UseContentProviderProps) => {
   const [analyticsState, setAnalyticsState] = useState<boolean>(false);
 
   return (
-   
-    <useContenthook.Provider value={{ handlestate,setHandlestate, activeTab, setActiveTab, analyticsState, setAnalyticsState }}>
+
+    <useContenthook.Provider value={{ handlestate, setHandlestate, activeTab, setActiveTab, analyticsState, setAnalyticsState }}>
       {children}
     </useContenthook.Provider>
   );

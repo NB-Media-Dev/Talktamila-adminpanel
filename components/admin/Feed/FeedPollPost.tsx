@@ -189,29 +189,29 @@ export default function FeedPollPost() {
       {/* Action Footer */}
       <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
         {/* Engagement Icons */}
-        <div className="flex items-center gap-3.5 text-[#8E8E93]">
-          <button className="flex items-center gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-            <Heart className="w-[18px] h-[18px] group-hover:fill-red-500 transition-all" />
-            <span className="text-[11px] font-semibold">230</span>
+        <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
+            <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">230</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-            <MessageCircle className="w-[18px] h-[18px] group-hover:fill-blue-500/20 transition-all" />
-            <span className="text-[11px] font-semibold">924</span>
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
+            <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">924</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-            <Send className="w-[17px] h-[17px] transition-all" />
-            <span className="text-[11px] font-semibold">512</span>
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
+            <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">512</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-            <Bookmark className="w-[18px] h-[18px] group-hover:fill-yellow-500 transition-all" />
-            <span className="text-[11px] font-semibold">255</span>
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
+            <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">255</span>
           </button>
         </div>
 
         {/* Analytics Button */}
         <button 
           onClick={() => setAnalyticsState && setAnalyticsState(true)}
-          className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-3.5 py-1.5 text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95"
+          className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0"
         >
           <BarChart2 className="w-3.5 h-3.5" />
           Analytics

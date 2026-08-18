@@ -25,71 +25,73 @@ import { useContenthook } from "@/hooks/useContent";
 
 export default function AdminPage() {
 
-  const[dailog,setDailog]=useState(true)
+  const [dailog, setDailog] = useState(true)
 
-   const context = useContext(useContenthook);
+  const context = useContext(useContenthook);
 
-     if (!context) {
+  if (!context) {
     throw new Error("BottomNavigation must be used within a UseContentProvider");
-     }
+  }
   const { handlestate, setHandlestate, activeTab, analyticsState } = context;
 
   return (
     <div>
-    <div className="w-full max-w-[1440px] 2xl:max-w-[1870px] mx-auto grid grid-cols-1 lg:grid-cols-8 gap-4 px-4 md:px-6 pb-24">
+      <div className="w-full max-w-[1440px] 2xl:max-w-[1870px] mx-auto grid grid-cols-1 lg:grid-cols-8 gap-4 px-4 md:px-6 pb-24">
 
-      <div className="hidden lg:flex lg:col-span-2 flex-col gap-4">
-       <ShareThoughtCard />   
-        <TodayStories />
-        <TrendingTopics />
-        <TrendingHashtags />
-        <AITrendRadar />
-        <BreakingNews />
-        <ContentInspiration />
-        <TodaysEvents />
-        <SavedDrafts />
-      </div>
-
-
-      <div className="col-span-1 lg:col-span-4 flex flex-col gap-4 w-full max-w-[550px] mx-auto">
-        <div className="lg:hidden w-full">
+        <div className="hidden lg:flex lg:col-span-2 flex-col gap-4">
+          <ShareThoughtCard />
           <TodayStories />
+          <TrendingTopics />
+          <TrendingHashtags />
+          <AITrendRadar />
+          <BreakingNews />
+          <ContentInspiration />
+          <TodaysEvents />
+          <SavedDrafts />
         </div>
-        <FeedPost />
-      </div>
 
 
-      <div className="hidden lg:flex lg:col-span-2 flex-col gap-4">
-        <AICreatorStudio />
-        <CreatorStats />
-        <CreatorWallet />
-        <AIContentWorkflow />
-        <CampaignMarketplace />
-        <UpcomingSchedule />
-        <TopCreators />
+        <div className="col-span-1 lg:col-span-4 flex flex-col gap-4 w-full max-w-[550px] mx-auto">
+          <div className="lg:hidden w-full flex flex-col gap-4">
+            <TodayStories />
+            <ShareThoughtCard />
+          </div>
+          <FeedPost />
+        </div>
+
+
+        <div className="hidden lg:flex lg:col-span-2 flex-col gap-4">
+          <AICreatorStudio />
+          <CreatorStats />
+          <CreatorWallet />
+          <AIContentWorkflow />
+          <CampaignMarketplace />
+          <UpcomingSchedule />
+          <TopCreators />
+        </div>
+
       </div>
-    
+      {handlestate && (
+        <div className="p-2">
+          <CreatenewPost />
+        </div>
+
+      )}
+
+      {activeTab === 'wallet' && (
+        <div className="p-2">
+          <Adminreviewpanel />
+        </div>
+      )}
+
+      {analyticsState && (
+        <div className="p-2">
+          <Performanceacrossplatform />
+        </div>
+      )}
+
     </div>
-   {handlestate && (
-            <div className="p-2">
-              <CreatenewPost />
-            </div>
-
-      )}
-      
-   {activeTab === 'wallet' && (
-            <div className="p-2">
-              <Adminreviewpanel />
-            </div>
-      )}
-
-   {analyticsState && (
-            <div className="p-2">
-              <Performanceacrossplatform />
-            </div>
-      )}
-     
-</div>
   );
 }
+
 

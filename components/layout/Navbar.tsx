@@ -18,30 +18,30 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full px-2 sm:px-4 md:px-6 py-2 backdrop-blur-md bg-[#FDEEE2]/90 transition-all duration-200">
-      
-    
+
+
       <div className="block md:hidden w-full bg-white rounded-2xl sm:rounded-3xl px-3.5 sm:px-4 py-2.5 sm:py-3 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-orange-100/60">
-        
+
         <div className="flex items-center justify-between">
-          
+
           <div className="flex items-center gap-0.5 select-none shrink-0">
             <span className="text-base sm:text-lg font-bold text-[#1A1A1A] tracking-tight">Talk</span>
             <span className="text-base sm:text-lg font-bold text-[#FF6B35] tracking-tight flex items-center gap-0.5">
               Tamila
-              <span className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full ${buttonVariants({variant:"default"})} flex items-center justify-center gap-[1px] shrink-0 shadow-xs ml-0.5`}>
+              <span className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full ${buttonVariants({ variant: "default" })} flex items-center justify-center gap-[1px] shrink-0 shadow-xs ml-0.5`}>
                 <span className="w-[2px] h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
                 <span className="w-[2px] h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
               </span>
             </span>
           </div>
 
-        
+
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-           
-            <button 
-              type="button" 
+
+            <button
+              type="button"
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors" 
+              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors"
               aria-label="Toggle Search"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 sm:w-[18px] sm:h-[18px]">
@@ -49,10 +49,10 @@ export default function Navbar() {
               </svg>
             </button>
 
-         
-            <button 
-              type="button" 
-              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors relative" 
+
+            <button
+              type="button"
+              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors relative"
               aria-label="Notifications"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="w-[18px] h-[18px] sm:w-[19px] sm:h-[19px]">
@@ -67,7 +67,7 @@ export default function Navbar() {
           </div>
         </div>
 
-      
+
         {isMobileSearchOpen && (
           <form onSubmit={handleSearchSubmit} className="mt-2.5 pt-2.5 border-t border-gray-100 animate-fadeIn">
             <div className="relative w-full">
@@ -90,20 +90,20 @@ export default function Navbar() {
       </div>
 
       <div className="hidden md:flex w-full max-w-7xl 2xl:max-w-[1770px] mt-0.5 rounded-full px-4 md:px-6 py-2 md:py-2.5 mx-auto items-center justify-between gap-3 md:gap-4 bg-white shadow-md border border-[#FFEFE0]">
-        
-      
+
+
         <div className="flex items-center gap-1 shrink-0 select-none">
           <span className="text-lg md:text-xl font-bold text-black tracking-tight">Talk</span>
           <span className="text-lg md:text-xl font-bold text-brand tracking-tight flex items-center gap-1.5">
             Tamila
-            <span className={`w-4 h-4 md:w-5 md:h-5 rounded-full ${buttonVariants({variant:"default"})} flex items-center justify-center gap-0.5 shrink-0 shadow-xs`}>
+            <span className={`w-4 h-4 md:w-5 md:h-5 rounded-full ${buttonVariants({ variant: "default" })} flex items-center justify-center gap-0.5 shrink-0 shadow-xs`}>
               <span className="w-1 h-1 rounded-full bg-white inline-block"></span>
               <span className="w-1 h-1 rounded-full bg-white inline-block"></span>
             </span>
           </span>
         </div>
 
-        
+
         <form onSubmit={handleSearchSubmit} className="flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto">
           <div className="relative w-full">
             <div className="absolute inset-y-0 left-3.5 md:left-4 flex items-center pointer-events-none text-gray-400">
@@ -121,22 +121,22 @@ export default function Navbar() {
           </div>
         </form>
 
-    
+
         <div className="flex items-center gap-2 md:gap-3 shrink-0">
-          <button type="button" className={`flex items-center gap-1 ${buttonVariants({variant:"default"})} text-white p-2 md:px-3.5 md:py-2 rounded-full text-xs font-semibold shadow-xs  active:scale-95 transition-all cursor-pointer`} title="AI Assistant">
+          <button type="button" className={`flex items-center gap-1 ${buttonVariants({ variant: "default" })} text-white p-2 md:px-3.5 md:py-2 rounded-full text-xs font-semibold shadow-xs  active:scale-95 transition-all cursor-pointer`} title="AI Assistant">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
             </svg>
             <span className="hidden lg:inline">AI</span>
           </button>
 
-          <button type="button" className={`p-2 rounded-full ${buttonVariants({variant:"bgcolor"})} active:scale-95 transition-all cursor-pointer`} title="Messages">
+          <button type="button" className={`p-2 rounded-full ${buttonVariants({ variant: "bgcolor" })} active:scale-95 transition-all cursor-pointer`} title="Messages">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M16.5 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M12 18.75c4.97 0 9-3.47 9-7.75s-4.03-7.75-9-7.75-9 3.47-9 7.75c0 1.63.58 3.14 1.55 4.35l-1.373 3.3a.75.75 0 0 0 .924.996l3.376-1.125a9.191 9.191 0 0 0 4.524 1.181Z" />
             </svg>
           </button>
 
-          <button type="button" className={`p-2 rounded-full ${buttonVariants({variant:"bgcolor"})} active:scale-95 transition-all relative cursor-pointer`}  title="Notifications">
+          <button type="button" className={`p-2 rounded-full ${buttonVariants({ variant: "bgcolor" })} active:scale-95 transition-all relative cursor-pointer`} title="Notifications">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
             </svg>

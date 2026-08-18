@@ -2,6 +2,7 @@
 import { useContext, useState } from "react";
 import { X, MoreHorizontal, Play, Share2, ClipboardCheck, Check, Ban } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
+import Image from "next/image";
 
 const initialReviews = [
   {
@@ -126,12 +127,12 @@ export function Adminreviewpanel() {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 md:pb-24 z-40">
-      <div className="w-full h-full md:h-[480px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl p-4 pt-14 md:pt-4 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
+      <div className="w-full h-full md:h-[480px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-4 md:py-4 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
         
 
         <button
           onClick={handleClose}
-          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer"
+          className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top,0px))] md:top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer"
         >
           <X size={16} />
         </button>
@@ -203,6 +204,34 @@ export function Adminreviewpanel() {
           </div>
         ) : (
           <div>
+            {/* Mobile Pagination Controls (above posts) */}
+            <div className="flex md:hidden items-center justify-between my-2.5 pb-2 border-b border-orange-100/60 w-full">
+              <span className="text-[10px] text-gray-500 font-bold">
+                Showing {indexOfFirstReview + 1} to {Math.min(indexOfLastReview, filteredReviews.length)} of {filteredReviews.length}
+              </span>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all active:scale-95"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-[10px] font-bold text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all active:scale-95"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mt-2">
               {paginatedReviews.map((review) => (
                 <div
@@ -327,8 +356,8 @@ export function Adminreviewpanel() {
               ))}
             </div>
 
-            {/* Pagination Controls & Counter Row */}
-            <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-orange-100/60 w-full">
+            {/* Desktop Pagination Controls & Counter Row (below posts) */}
+            <div className="hidden md:flex items-center justify-between mt-2.5 pt-2 border-t border-orange-100/60 w-full">
               <span className="text-[10px] text-gray-500 font-bold">
                 Showing {indexOfFirstReview + 1} to {Math.min(indexOfLastReview, filteredReviews.length)} of {filteredReviews.length}
               </span>

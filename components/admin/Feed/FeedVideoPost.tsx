@@ -81,13 +81,13 @@ export default function FeedVideoPost() {
       </div>
 
       {/* Video Thumbnail with Play Button Overlay */}
-      <div className="w-full h-[520px] rounded-[24px] overflow-hidden relative border border-[#FFEFE0] group cursor-pointer">
+      <div className="w-full h-[320px] sm:h-[420px] md:h-[520px] rounded-[24px] overflow-hidden relative border border-[#FFEFE0] group cursor-pointer">
         <Image
           src={avatar3}
           alt="Video Thumbnail"
           fill
-          className="transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 640px) 100vw, 340px"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 550px"
         />
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/15 group-hover:bg-black/25 transition-colors duration-300" />
@@ -141,29 +141,29 @@ export default function FeedVideoPost() {
       {/* Action Footer */}
       <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
         {/* Engagement Icons */}
-        <div className="flex items-center gap-3.5 text-[#8E8E93]">
-          <button className="flex items-center gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-            <Heart className="w-[18px] h-[18px] group-hover:fill-red-500 transition-all" />
-            <span className="text-[11px] font-semibold">52.5K</span>
+        <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
+            <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">52.5K</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-            <MessageCircle className="w-[18px] h-[18px] group-hover:fill-blue-500/20 transition-all" />
-            <span className="text-[11px] font-semibold">3.2K</span>
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
+            <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">3.2K</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-            <Send className="w-[17px] h-[17px] transition-all" />
-            <span className="text-[11px] font-semibold">522</span>
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
+            <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">522</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-            <Bookmark className="w-[18px] h-[18px] group-hover:fill-yellow-500 transition-all" />
-            <span className="text-[11px] font-semibold">2.1K</span>
+          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
+            <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
+            <span className="text-[10px] sm:text-[11px] font-semibold">2.1K</span>
           </button>
         </div>
 
         {/* Analytics Button */}
         <button 
           onClick={() => setAnalyticsState && setAnalyticsState(true)}
-          className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-3.5 py-1.5 text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95"
+          className="flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold hover:bg-[#FF6B35] hover:text-white transition-all cursor-pointer shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0"
         >
           <BarChart2 className="w-3.5 h-3.5" />
           Analytics

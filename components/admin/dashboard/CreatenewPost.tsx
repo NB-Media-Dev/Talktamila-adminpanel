@@ -46,13 +46,13 @@ export function CreatenewPost() {
 
   return (
 
- <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-40">
-      <div className="w-full max-w-4xl h-auto max-h-[85vh] rounded-[28px] bg-[#fff0e7] shadow-2xl p-4 lg:p-5 relative font-sans antialiased border border-orange-100 overflow-y-auto">
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 z-40">
+      <div className="w-full h-full md:h-auto md:max-h-[85vh] md:max-w-4xl rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-5 md:py-5 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
         
 
         <button 
-        onClick={()=>{handlepostcard()}}
-          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer"
+          onClick={()=>{handlepostcard()}}
+          className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top,0px))] md:top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer z-10"
         >
           <X size={16} />
         </button>
