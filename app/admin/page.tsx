@@ -17,15 +17,12 @@ import CampaignMarketplace from "@/components/admin/RightPanel/CampaignMarketpla
 import UpcomingSchedule from "@/components/admin/RightPanel/UpcomingSchedule";
 import TopCreators from "@/components/admin/RightPanel/TopCreators";
 import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
-import { CreatenewPost } from "@/components/admin/dashboard/CreatenewPost";
-import { Adminreviewpanel } from "@/components/admin/dashboard/Adminreviewpanel";
-import { Performanceacrossplatform } from "@/components/admin/dashboard/Performanceacrossplatform";
 import { useContenthook } from "@/hooks/useContent";
 
 
 export default function AdminPage() {
 
-  const [dailog, setDailog] = useState(true)
+
 
   const context = useContext(useContenthook);
 
@@ -71,25 +68,6 @@ export default function AdminPage() {
         </div>
 
       </div>
-      {handlestate && (
-        <div className="p-2">
-          <CreatenewPost />
-        </div>
-
-      )}
-
-      {activeTab === 'wallet' && (
-        <div className="p-2">
-          <Adminreviewpanel />
-        </div>
-      )}
-
-      {analyticsState && (
-        <div className="p-2">
-          <Performanceacrossplatform />
-        </div>
-      )}
-
     </div>
   );
 }

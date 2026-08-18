@@ -1,10 +1,12 @@
 "use client";
 
 import  { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { Sparkles, Calendar, Send, Eye, } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 
 export default function AICreatorStudio() {
+  const router = useRouter();
   const formats = [
     "Poster",
     "Reel",
@@ -141,6 +143,7 @@ export default function AICreatorStudio() {
 
         <div className="grid grid-cols-2 gap-2">
           <button
+            onClick={() => router.push('/admin/content')}
             className="py-2.5 px-4 bg-[#FFEFE5] active:scale-[0.98] text-gray-700 text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <Calendar className="w-3.5 h-3.5 text-[#FF5A26]" />

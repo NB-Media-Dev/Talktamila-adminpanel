@@ -2,6 +2,7 @@
 
 
 import { Calendar } from "lucide-react";
+import Link from "next/link";
 
 interface EventItem {
   id: number;
@@ -48,12 +49,13 @@ export default function TodaysEvents() {
             Today's Events
           </h2>
         </div>
-        <a
-          href="#"
+        
+        <Link
+          href="/admin/content"
           className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
         >
           Calendar
-        </a>
+        </Link>
       </div>
 
 
