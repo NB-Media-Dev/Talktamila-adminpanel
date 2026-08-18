@@ -74,24 +74,16 @@ git clone <repository-url>
 cd talktamila
 ```
 
-### 2. Configure Environment Variables
-Copy the example environment file and update it with your database connection details:
-```bash
-cp .env.example .env
-```
-Inside your `.env` file, configure your PostgreSQL connection:
-```env
-DATABASE_URL="postgresql://username:password@localhost:5432/talktamila?schema=public"
-```
 
-### 3. Install Dependencies
+
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
 
 
-### 4. Start the Development Server
+### 3. Start the Development Server
 ```bash
 npm run dev
 ```
