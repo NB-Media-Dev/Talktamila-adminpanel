@@ -1,4 +1,4 @@
-# TalkTamila 🎙️✨
+# TalkTamila
 
 **TalkTamila** is a modern, feature-rich web platform designed to connect content creators, influencers, and freelancers. It provides a robust suite of tools for community engagement, content consumption (reels, podcasts, news, reviews, videos).
 
