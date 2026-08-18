@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import { Radar } from "lucide-react";
 
 interface TrendItem {
@@ -42,7 +42,7 @@ export default function AITrendRadar() {
               </span>
             </div>
 
-            {/* Progress Bar */}
+       
             <div className="w-full h-2 bg-[#FFF6F0] rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#FFA07A] to-[#FF5A26] rounded-full transition-all duration-500 ease-out group-hover:brightness-105"
@@ -50,7 +50,6 @@ export default function AITrendRadar() {
               />
             </div>
 
-            {/* Status Subtext */}
             <span className="text-xs text-gray-400 mt-1 font-medium pl-0.5">
               {item.status}
             </span>

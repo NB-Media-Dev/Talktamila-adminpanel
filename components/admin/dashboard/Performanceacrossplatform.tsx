@@ -54,9 +54,9 @@ export function Performanceacrossplatform() {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 md:pb-24 z-40">
       <div className="w-full h-full md:h-[560px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-white shadow-2xl relative font-sans antialiased border-0 md:border border-orange-100 flex flex-col overflow-hidden">
         
-        {/* Header Block */}
+     
         <div className="bg-gradient-to-r from-orange-400 to-orange-500 text-white p-5 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] md:pt-5 relative shrink-0">
-          {/* Close Button */}
+   
           <button
             onClick={handleClose}
             className="absolute right-5 top-5 flex h-7 w-7 items-center justify-center rounded-full bg-white/20 hover:bg-white/35 text-white shadow-sm transition-all duration-200 cursor-pointer"
@@ -70,9 +70,9 @@ export function Performanceacrossplatform() {
           </p>
         </div>
 
-        {/* Scrollable Content Body */}
+   
         <div className="flex-1 overflow-y-auto p-5 pt-4 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] md:pb-5 flex flex-col gap-4.5 bg-[#FCFAF7]">
-          {/* Metrics Grid */}
+       
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {metrics.map((m, idx) => (
               <div
@@ -89,7 +89,6 @@ export function Performanceacrossplatform() {
             ))}
           </div>
 
-          {/* Platform Comparison */}
           <div>
             <h3 className="text-[9px] text-gray-400 font-extrabold tracking-wider uppercase mb-2">
               Platform Comparison
@@ -101,7 +100,7 @@ export function Performanceacrossplatform() {
                     {p.name}
                   </span>
                   
-                  {/* Progress Bar Container */}
+          
                   <div className="flex-1 h-2 bg-[#FFF6ED] rounded-full overflow-hidden border border-[#FFEFE0] shrink-0">
                     <div
                       style={{ width: `${p.percentage}%` }}
@@ -120,9 +119,9 @@ export function Performanceacrossplatform() {
             </div>
           </div>
 
-          {/* Audience Age & Mix */}
+      
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 border-t border-orange-100/50 pt-4">
-            {/* Audience Age */}
+
             <div>
               <h3 className="text-[9px] text-gray-400 font-extrabold tracking-wider uppercase mb-2.5">
                 Audience Age
@@ -134,7 +133,7 @@ export function Performanceacrossplatform() {
                       {a.range}
                     </span>
                     
-                    {/* Inner Progress Bar */}
+           
                     <div className="flex-1 h-1.5 bg-[#FFF6ED] rounded-full overflow-hidden border border-[#FFEFE0]">
                       <div
                         style={{ width: `${a.percentage}%` }}
@@ -150,8 +149,7 @@ export function Performanceacrossplatform() {
               </div>
             </div>
 
-            {/* Audience Mix */}
-            <div>
+               <div>
               <h3 className="text-[9px] text-gray-400 font-extrabold tracking-wider uppercase mb-2.5">
                 Audience Mix
               </h3>

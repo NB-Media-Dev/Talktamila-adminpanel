@@ -106,7 +106,7 @@ export function Adminreviewpanel() {
     );
   };
 
-  // Count states
+ 
   const pendingCount = reviews.filter((r) => r.status === "pending").length;
   const approvedCount = reviews.filter((r) => r.status === "approved").length;
   const rejectedCount = reviews.filter((r) => r.status === "rejected").length;
@@ -117,7 +117,7 @@ export function Adminreviewpanel() {
     return r.status === activeFilter;
   });
 
-  // Pagination config
+  
   const POSTS_PER_PAGE = 2;
   const indexOfLastReview = currentPage * POSTS_PER_PAGE;
   const indexOfFirstReview = indexOfLastReview - POSTS_PER_PAGE;
@@ -128,7 +128,7 @@ export function Adminreviewpanel() {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 md:pb-24 z-40">
       <div className="w-full h-full md:h-[480px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl p-4 pt-14 md:pt-4 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
         
-        {/* Close Button */}
+
         <button
           onClick={handleClose}
           className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer"
@@ -136,7 +136,7 @@ export function Adminreviewpanel() {
           <X size={16} />
         </button>
 
-        {/* Header Block */}
+    
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-orange-100 pb-2 pr-10 sm:pr-12">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-md shadow-orange-500/20">
@@ -150,7 +150,7 @@ export function Adminreviewpanel() {
             </div>
           </div>
 
-          {/* Filter Tabs */}
+       
           <div className="flex flex-wrap gap-1.5">
             <button
               onClick={() => handleFilterChange("all")}
@@ -195,8 +195,7 @@ export function Adminreviewpanel() {
           </div>
         </div>
 
-        {/* Reviews Grid */}
-        {filteredReviews.length === 0 ? (
+            {filteredReviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-dashed border-orange-200 mt-4">
             <Ban className="text-gray-300 mb-1.5" size={32} />
             <p className="text-xs font-bold text-gray-600">No submissions found</p>
@@ -210,7 +209,7 @@ export function Adminreviewpanel() {
                   key={review.id}
                   className="bg-white rounded-2xl p-2.5 lg:p-3 border border-gray-100 shadow-xs flex flex-col gap-1.5 transition-all duration-200 hover:shadow-md"
                 >
-                  {/* Card Header */}
+          
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <img
@@ -243,7 +242,7 @@ export function Adminreviewpanel() {
                     </div>
                   </div>
 
-                  {/* Card Description */}
+     
                   <div>
                     <p className="text-[11px] font-semibold text-gray-800 leading-snug">
                       {review.title}
@@ -253,7 +252,7 @@ export function Adminreviewpanel() {
                     </p>
                   </div>
 
-                  {/* Media Preview Box */}
+          
                   <div className="relative h-28 w-full bg-slate-900 rounded-xl overflow-hidden group shadow-inner">
                     <img
                       src={review.mediaImage}
@@ -270,7 +269,7 @@ export function Adminreviewpanel() {
                     </div>
                   </div>
 
-                  {/* Media Details */}
+          
                   <div className="flex flex-col gap-0.5">
                     <h5 className="text-[10px] font-bold text-gray-900 truncate">
                       {review.mediaTitle}
@@ -293,7 +292,7 @@ export function Adminreviewpanel() {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
+                
                   {review.status === "pending" && (
                     <div className="flex gap-2 mt-1 border-t border-gray-50 pt-2 shadow-inner-xs">
                       <button
