@@ -37,7 +37,6 @@ export default function CampaignMarketplace() {
         </button>
       </div>
 
-  
       <div className="flex flex-col gap-3.5">
         {campaigns.map((camp, idx) => (
           <div key={idx} className="bg-[#FFF9F5] border border-[#FFEFE0] rounded-[24px] p-4 flex justify-between items-start">

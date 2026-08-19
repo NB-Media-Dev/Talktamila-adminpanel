@@ -1,6 +1,5 @@
 "use client";
 
-
 import Image from "next/image";
 import avatar4 from "@/public/Images/avatar4.png";
 import avatar5 from "@/public/Images/avatar5.png";
@@ -31,7 +30,6 @@ export default function TopCreators() {
         </button>
       </div>
 
-   
       <div className="flex lg:hidden items-center gap-3 overflow-x-auto no-scrollbar pb-1">
         {creators.map((creator, idx) => (
           <div
@@ -62,7 +60,6 @@ export default function TopCreators() {
         ))}
       </div>
 
-   
       <div className="hidden lg:flex flex-col gap-3.5">
         {creators.map((creator, idx) => (
           <div key={idx} className="flex items-center justify-between gap-3">
@@ -94,5 +91,3 @@ export default function TopCreators() {
     </div>
   );
 }
-
-

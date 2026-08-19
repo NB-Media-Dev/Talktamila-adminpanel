@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Banknote } from "lucide-react";
 
 export default function EstimatedRevenue() {

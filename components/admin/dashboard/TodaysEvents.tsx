@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 
@@ -49,7 +48,7 @@ export default function TodaysEvents() {
             Upcomings Events
           </h2>
         </div>
-        
+       
         <Link
           href="/admin/content"
           className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
@@ -57,7 +56,6 @@ export default function TodaysEvents() {
           Calendar
         </Link>
       </div>
-
 
       <div className="flex flex-col gap-4">
         {events.map((event) => (
@@ -89,5 +87,3 @@ export default function TodaysEvents() {
     </div>
   );
 }
-
-

@@ -54,7 +54,6 @@ export function Performanceacrossplatform() {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 md:pb-24 z-40">
       <div className="w-full h-full md:h-[560px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-white shadow-2xl relative font-sans antialiased border-0 md:border border-orange-100 flex flex-col overflow-hidden">
         
-     
         <div className="bg-gradient-to-r from-orange-400 to-orange-500 text-white p-5 pb-1 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] md:pt-5 relative shrink-0">
    
           <button
@@ -70,7 +69,6 @@ export function Performanceacrossplatform() {
           </p>
         </div>
 
-   
         <div className="flex-1  p-5 pt-4 pb-28 md:pb-5 flex flex-col gap-4.5 bg-[#FCFAF7]">
        
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -100,7 +98,6 @@ export function Performanceacrossplatform() {
                     {p.name}
                   </span>
                   
-          
                   <div className="flex-1 h-2 bg-[#FFF6ED] rounded-full  border border-[#FFEFE0] shrink-0">
                     <div
                       style={{ width: `${p.percentage}%` }}
@@ -119,7 +116,6 @@ export function Performanceacrossplatform() {
             </div>
           </div>
 
-    
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 border-t border-orange-100/50 pt-4">
 
             <div>
@@ -133,7 +129,6 @@ export function Performanceacrossplatform() {
                       {a.range}
                     </span>
                     
-           
                     <div className="flex-1 h-1.5 bg-[#FFF6ED] rounded-full overflow-hidden border border-[#FFEFE0]">
                       <div
                         style={{ width: `${a.percentage}%` }}
@@ -172,4 +167,3 @@ export function Performanceacrossplatform() {
     </div>
   );
 }
-

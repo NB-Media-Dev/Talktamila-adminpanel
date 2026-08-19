@@ -53,7 +53,6 @@ export default function SavedDrafts() {
         </a>
       </div>
 
-   
       <div className="flex flex-col gap-3">
         {drafts.map((item) => (
           <div
@@ -73,13 +72,9 @@ export default function SavedDrafts() {
         ))}
       </div>
 
-  
       <div className="mt-1">
         <QuickNotes />
       </div>
     </div>
   );
 }
-
-
-//createnewpost talk

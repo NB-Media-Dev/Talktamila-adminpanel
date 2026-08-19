@@ -8,6 +8,8 @@ import { useContenthook } from '@/hooks/useContent';
 import { CreatenewPost } from "@/components/admin/dashboard/CreatenewPost";
 import { Adminreviewpanel } from "@/components/admin/dashboard/Adminreviewpanel";
 import { Performanceacrossplatform } from "@/components/admin/dashboard/Performanceacrossplatform";
+import { QuickStudio } from "@/components/admin/dashboard/quickstudi";
+import { Radar } from 'lucide-react';
 
 export default function BottomNavigation() {
 
@@ -26,13 +28,15 @@ export default function BottomNavigation() {
   const { handlestate, setHandlestate, activeTab, setActiveTab, analyticsState, setAnalyticsState } = context;
 
   useEffect(() => {
-    if (activeTab === 'wallet' || activeTab === 'ai') return;
+    if (activeTab === 'wallet' || activeTab === 'quickstudio') return;
     if (pathname === '/admin') {
       setActiveTab('home');
     } else if (pathname === '/admin/content') {
       setActiveTab('content');
+    } else if (pathname === '/admin/trendradar') {
+      setActiveTab('ai');
     }
-  }, [pathname, activeTab, setActiveTab]);
+  }, [pathname, setActiveTab]);
 
   const handlepostcard = () => {
     const newState = !handlestate;
@@ -46,7 +50,6 @@ export default function BottomNavigation() {
       setAnalyticsState(false);
     }
   }
-
   return (
     <>
       <div className="fixed bottom-2 left-3 right-3 sm:bottom-3 sm:left-4 sm:right-4 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] md:w-auto md:min-w-[340px] md:max-w-sm select-none transform-gpu pb-[env(safe-area-inset-bottom,0px)] mx-auto">
@@ -69,7 +72,6 @@ export default function BottomNavigation() {
               <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
           </button>
-
 
           <button
             onClick={() => {
@@ -102,7 +104,6 @@ export default function BottomNavigation() {
             </button>
           </div>
 
-
           <button
             onClick={() => { setActiveTab('wallet'); setHandlestate(false); setAnalyticsState(false); }}
             type="button"
@@ -115,17 +116,19 @@ export default function BottomNavigation() {
             </svg>
           </button>
 
-
           <button
-            onClick={() => { setActiveTab('ai'); setHandlestate(false); setAnalyticsState(false); }}
+            onClick={() => {
+              setActiveTab('ai');
+              setHandlestate(false);
+              setAnalyticsState(false);
+              router.push('/admin/trendradar');
+            }}
             type="button"
             aria-label="AI Spark"
             className={`w-9 h-9 sm:w-10 sm:h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 ${activeTab === 'ai' ? `${buttonVariants({ variant: "default" })}` : `${buttonVariants({ variant: "secondary" })}`
               }`}
           >
-            <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
-            </svg>
+            <Radar/>
           </button>
 
         </nav>
@@ -145,6 +148,13 @@ export default function BottomNavigation() {
         document.body
       )}
 
+      {mounted && activeTab === 'quickstudio' && createPortal(
+        <div className="p-2">
+          <QuickStudio />
+        </div>,
+        document.body
+      )}
+
       {mounted && analyticsState && createPortal(
         <div className="p-2">
           <Performanceacrossplatform />
@@ -154,6 +164,4 @@ export default function BottomNavigation() {
     </>
   );
 }
-
-
-
+

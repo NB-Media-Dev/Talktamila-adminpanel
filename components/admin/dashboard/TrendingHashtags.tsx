@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Hash } from "lucide-react";
 
 interface Hashtag {
@@ -29,7 +28,6 @@ export default function TrendingHashtags() {
         </h2>
       </div>
 
-   
       <div className="flex flex-col gap-2.5">
         {hashtags.map((item) => (
           <div key={item.id} className="flex">
@@ -47,6 +45,4 @@ export default function TrendingHashtags() {
     </div>
   );
 }
-
-
-    
+

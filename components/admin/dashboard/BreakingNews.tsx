@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Zap } from "lucide-react";
 
 interface NewsItem {
@@ -48,7 +47,6 @@ export default function BreakingNews() {
           </a>
         </div>
 
-   
       <div className="flex flex-col gap-3.5">
         {newsList.map((item) => (
           <div
@@ -60,7 +58,6 @@ export default function BreakingNews() {
               {item.time}
             </div>
 
-         
             <p className="text-sm text-gray-800 font-medium leading-snug group-hover:text-[#FF6B35] transition-colors duration-200">
               {item.title}
             </p>
@@ -70,4 +67,3 @@ export default function BreakingNews() {
     </div>
   );
 }
-

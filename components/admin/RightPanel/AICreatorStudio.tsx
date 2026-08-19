@@ -29,12 +29,9 @@ export default function AICreatorStudio() {
 
   const [isGenerating, setIsGenerating] = useState(false);
 
-
   const handleGenerate = () => {
     setIsGenerating(true);
   };
-
-
 
   return (
     <div className="w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] relative overflow-hidden flex flex-col gap-5">
@@ -52,7 +49,6 @@ export default function AICreatorStudio() {
         </span>
       </div>
 
-      {/* Formats Grid */}
       <div className="grid grid-cols-2 gap-2">
         {formats.map((format) => {
           const isSelected = selectedFormat === format;
@@ -94,7 +90,6 @@ export default function AICreatorStudio() {
         </div>
       </div>
 
-
       <div className="flex flex-col gap-2">
         <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">
           Aspect Ratio
@@ -118,7 +113,6 @@ export default function AICreatorStudio() {
         </div>
       </div>
 
-
       <div className="flex flex-col gap-2 mt-1">
         <div className="flex items-center gap-2">
 
@@ -130,7 +124,6 @@ export default function AICreatorStudio() {
             <span>Generate {selectedFormat}</span>
 
           </button>
-
 
           <button
 
@@ -161,4 +154,4 @@ export default function AICreatorStudio() {
     </div>
   );
 }
-
+

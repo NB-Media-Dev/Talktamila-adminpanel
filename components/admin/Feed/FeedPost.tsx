@@ -1,6 +1,5 @@
 "use client";
 
-
 import FeedImagePost from "./FeedImagePost";
 import FeedVideoPost from "./FeedVideoPost";
 import FeedTextPost from "./FeedTextPost";
@@ -32,5 +31,3 @@ export default function FeedPost() {
     </div>
   );
 }
-
-//

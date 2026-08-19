@@ -1,13 +1,13 @@
-
-
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import { buttonVariants } from "../ui/Button";
 import Image from "next/image";
+import { useContenthook } from "@/hooks/useContent";
 
 export default function Navbar() {
+  const context = useContext(useContenthook);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState<boolean>(false);
 
@@ -18,7 +18,6 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full px-2 sm:px-4 md:px-6 py-2 backdrop-blur-md bg-[#FDEEE2]/90 transition-all duration-200">
-
 
       <div className="block md:hidden w-full bg-white rounded-2xl sm:rounded-3xl px-3.5 sm:px-4 py-2.5 sm:py-3 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-orange-100/60">
 
@@ -35,7 +34,6 @@ export default function Navbar() {
             </span>
           </div>
 
-
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
 
             <button
@@ -49,6 +47,22 @@ export default function Navbar() {
               </svg>
             </button>
 
+            <button
+              type="button"
+              onClick={() => {
+                if (context) {
+                  context.setActiveTab('quickstudio');
+                  context.setHandlestate(false);
+                  context.setAnalyticsState(false);
+                }
+              }}
+              className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full ${buttonVariants({ variant: "default" })} text-white shadow-xs active:scale-95 transition-all cursor-pointer`}
+              title="AI Assistant"
+            >
+             <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
+            </svg>
+            </button>
 
             <button
               type="button"
@@ -66,7 +80,6 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-
 
         {isMobileSearchOpen && (
           <form onSubmit={handleSearchSubmit} className="mt-2.5 pt-2.5 border-t border-gray-100 animate-fadeIn">
@@ -91,7 +104,6 @@ export default function Navbar() {
 
       <div className="hidden md:flex w-full max-w-7xl 2xl:max-w-[1770px] mt-0.5 rounded-full px-4 md:px-6 py-2 md:py-2.5 mx-auto items-center justify-between gap-3 md:gap-4 bg-white shadow-md border border-[#FFEFE0]">
 
-
         <div className="flex items-center gap-1 shrink-0 select-none">
           <span className="text-lg md:text-xl font-bold text-black tracking-tight">Talk</span>
           <span className="text-lg md:text-xl font-bold text-brand tracking-tight flex items-center gap-1.5">
@@ -102,7 +114,6 @@ export default function Navbar() {
             </span>
           </span>
         </div>
-
 
         <form onSubmit={handleSearchSubmit} className="flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto">
           <div className="relative w-full">
@@ -121,11 +132,21 @@ export default function Navbar() {
           </div>
         </form>
 
-
         <div className="flex items-center gap-2 md:gap-3 shrink-0">
-          <button type="button" className={`flex items-center gap-1 ${buttonVariants({ variant: "default" })} text-white p-2 md:px-3.5 md:py-2 rounded-full text-xs font-semibold shadow-xs  active:scale-95 transition-all cursor-pointer`} title="AI Assistant">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+          <button
+            type="button"
+            onClick={() => {
+              if (context) {
+                context.setActiveTab('quickstudio');
+                context.setHandlestate(false);
+                context.setAnalyticsState(false);
+              }
+            }}
+            className={`flex items-center gap-1 ${buttonVariants({ variant: "default" })} text-white p-2 md:px-3.5 md:py-2 rounded-full text-xs font-semibold shadow-xs active:scale-95 transition-all cursor-pointer`}
+            title="AI Assistant"
+          >
+           <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
             </svg>
             <span className="hidden lg:inline">AI</span>
           </button>

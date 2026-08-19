@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Radar } from "lucide-react";
 import Link from "next/link";
 
@@ -51,7 +50,6 @@ export default function AITrendRadar() {
               </span>
             </div>
 
-       
             <div className="w-full h-2 bg-[#FFF6F0] rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#FFA07A] to-[#FF5A26] rounded-full transition-all duration-500 ease-out group-hover:brightness-105"

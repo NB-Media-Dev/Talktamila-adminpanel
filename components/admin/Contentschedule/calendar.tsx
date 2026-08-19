@@ -23,7 +23,6 @@ interface DayEvent {
   items?: ScheduledItem[];
 }
 
-
 const getMockEvents = (): Record<string, DayEvent> => {
   const now = new Date();
   const year = now.getFullYear();
@@ -88,7 +87,6 @@ export default function Calendar() {
 
   const [newTitle, setNewTitle] = useState("");
 
-
   const weekdays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -142,14 +140,12 @@ export default function Calendar() {
   const daysInMonth = getDaysInMonth(year, month);
   const startDay = getStartDayOfMonth(year, month);
 
-  
   const prevMonth = month === 0 ? 11 : month - 1;
   const prevYear = month === 0 ? year - 1 : year;
   const daysInPrevMonth = getDaysInMonth(prevYear, prevMonth);
 
   const calendarDays: { date: Date; isCurrentMonth: boolean }[] = [];
 
-  
   for (let i = startDay - 1; i >= 0; i--) {
     calendarDays.push({
       date: new Date(prevYear, prevMonth, daysInPrevMonth - i),
@@ -157,14 +153,12 @@ export default function Calendar() {
     });
   }
 
-
   for (let i = 1; i <= daysInMonth; i++) {
     calendarDays.push({
       date: new Date(year, month, i),
       isCurrentMonth: true
     });
   }
-
 
   const totalCells = calendarDays.length <= 35 ? 35 : 42;
   const nextMonth = month === 11 ? 0 : month + 1;
@@ -184,15 +178,10 @@ export default function Calendar() {
     return `${y}-${m}-${d}`;
   };
 
-
-
-
-
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="w-full bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0]">
         
-   
         <div className="flex items-center justify-between mb-6">
           <div className="flex flex-col">
             <h2 className="text-2xl font-extrabold text-gray-900 leading-none">
@@ -227,7 +216,6 @@ export default function Calendar() {
           </div>
         </div>
 
-   
         <div className="grid grid-cols-7 border-b border-gray-100 pb-10 mb-7">
           {weekdays.map((day, idx) => (
             <div 
@@ -239,14 +227,12 @@ export default function Calendar() {
           ))}
         </div>
 
-      
         <div className="grid grid-cols-7 gap-1.5 sm:gap-3 md:gap-2">
           {calendarDays.map((cell, idx) => {
             const dateKey = formatDateKey(cell.date);
             const isSelected = formatDateKey(selectedDate) === dateKey;
             const eventInfo = events[dateKey];
             
-           
             const hasProgressBar = eventInfo?.type === 'progress';
             const hasDots = eventInfo?.type === 'dots' && eventInfo?.dots;
             const hasThickBottomBar = eventInfo?.type === 'bottom-bar';
@@ -285,7 +271,6 @@ export default function Calendar() {
                     {cell.date.getDate()}
                   </span>
                   
-                
                   {cell.isCurrentMonth && !isSelected && (
                     <span className="opacity-0 hover:opacity-100 transition-opacity absolute top-2 right-2 p-1 text-[#F27D42]">
                       <Plus className="w-3.5 h-3.5" />
@@ -293,10 +278,8 @@ export default function Calendar() {
                   )}
                 </div>
 
-               
                 <div className="w-full flex flex-col items-center mt-auto pb-0.5">
                   
-                
                   {cell.isCurrentMonth && hasProgressBar && eventInfo.progress && (
                     <div className="w-full px-0.5 sm:px-1 mt-0.5 xs:mt-1">
                       <div className="h-1 w-full bg-[#FFF2EC] rounded-full overflow-hidden">
@@ -308,7 +291,6 @@ export default function Calendar() {
                     </div>
                   )}
 
-              
                   {cell.isCurrentMonth && hasDots && (
                     <div className="flex gap-0.5 xs:gap-1 justify-center items-center mt-0.5 xs:mt-1.5">
                       {eventInfo.dots?.map((color, dIdx) => (

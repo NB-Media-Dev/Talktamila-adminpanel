@@ -16,10 +16,8 @@ export default function Liveupdate() {
         </p>
       </div>
 
-   
       <div className="w-full bg-white rounded-[32px] p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.06)] relative overflow-hidden group">
         
-
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4">
        
@@ -27,13 +25,11 @@ export default function Liveupdate() {
               <Train className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2]" />
             </div>
             
-   
             <h2 className="text-xl sm:text-2xl font-bold text-[#FF5A26] tracking-tight">
               Chennai Metro Phase II
             </h2>
           </div>
 
-    
           <span className="self-start sm:self-auto bg-[#E65C2B] text-white text-[10px] sm:text-xs font-bold py-1.5 px-4 rounded-full tracking-wider uppercase shadow-xs">
             Live Update
           </span>
@@ -43,7 +39,6 @@ export default function Liveupdate() {
           Major infrastructure milestones achieved in the Corridor 4 expansion. New tunneling phases starting near Thousand Lights area.
         </p>
 
-     
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-8">
       
           <div className="bg-[#FCFAF7]/95 border border-[#FFEFE0]/80 rounded-[24px] p-5 flex flex-col justify-center items-start shadow-2xs hover:bg-[#FFF6ED]/50 transition-colors duration-200">
@@ -55,7 +50,6 @@ export default function Liveupdate() {
             </span>
           </div>
 
- 
           <div className="bg-[#FCFAF7]/95 border border-[#FFEFE0]/80 rounded-[24px] p-5 flex flex-col justify-center items-start shadow-2xs hover:bg-[#FFF6ED]/50 transition-colors duration-200">
             <span className="text-[10px] sm:text-xs font-bold text-gray-400 tracking-wider uppercase mb-1.5">
               Sentiment
@@ -65,7 +59,6 @@ export default function Liveupdate() {
             </span>
           </div>
 
- 
           <div className="bg-[#FCFAF7]/95 border border-[#FFEFE0]/80 rounded-[24px] p-5 flex flex-col justify-center items-start shadow-2xs hover:bg-[#FFF6ED]/50 transition-colors duration-200">
             <span className="text-[10px] sm:text-xs font-bold text-gray-400 tracking-wider uppercase mb-1.5">
               Mentions
@@ -76,7 +69,6 @@ export default function Liveupdate() {
           </div>
         </div>
 
-  
         <div>
           <button className="inline-flex items-center gap-2 bg-[#FF5A26] hover:bg-[#E04D1B] text-white font-bold py-3.5 px-6 sm:px-8 rounded-full text-sm sm:text-base transition-all duration-300 shadow-md hover:shadow-lg active:scale-98 cursor-pointer select-none group/btn">
             <span>Join Conversation</span>

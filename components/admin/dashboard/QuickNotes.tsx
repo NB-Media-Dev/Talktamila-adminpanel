@@ -16,7 +16,6 @@ export default function QuickNotes() {
         </h3>
       </div>
 
-
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}

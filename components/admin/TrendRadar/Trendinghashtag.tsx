@@ -47,7 +47,6 @@ export default function Trendinghashtag() {
         </button>
       </div>
 
-
       <div className="flex flex-col gap-5">
         {hashtags.map((item) => (
           <div
@@ -64,7 +63,6 @@ export default function Trendinghashtag() {
               </span>
             </div>
 
-         
             <div className="flex items-center gap-1 text-[#FF5A26] font-bold text-sm sm:text-base select-none">
               <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               <span>{item.growth}</span>
@@ -73,7 +71,6 @@ export default function Trendinghashtag() {
         ))}
       </div>
 
-    
       <div className="w-full pt-2">
         <button className="w-full border border-[#FF6B35]/40 hover:border-[#FF5A26] text-[#FF6B35] hover:text-[#FF5A26] font-bold text-sm sm:text-base py-3 px-6 rounded-full transition-all duration-200 bg-transparent hover:bg-[#FFF6ED]/30 active:scale-[0.99] cursor-pointer">
           Explore More Topics

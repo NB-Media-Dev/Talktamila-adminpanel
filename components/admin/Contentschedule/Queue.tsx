@@ -259,7 +259,6 @@ export default function Queue() {
                     </div>
                   </div>
 
-              
                   <div className="flex items-center gap-3 w-full mt-auto">
                     {isScheduled ? (
                       <>

@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Lightbulb } from "lucide-react";
 
 interface InspirationItem {
@@ -44,7 +43,6 @@ export default function ContentInspiration() {
         </h2>
       </div>
 
-   
       <div className="flex flex-col gap-3">
         {inspirations.map((item) => (
           <div

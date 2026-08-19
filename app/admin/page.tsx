@@ -19,10 +19,7 @@ import TopCreators from "@/components/admin/RightPanel/TopCreators";
 import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
 import { useContenthook } from "@/hooks/useContent";
 
-
 export default function AdminPage() {
-
-
 
   const context = useContext(useContenthook);
 
@@ -47,7 +44,6 @@ export default function AdminPage() {
           <SavedDrafts />
         </div>
 
-
         <div className="col-span-1 lg:col-span-4 flex flex-col gap-4 w-full max-w-[550px] mx-auto">
           <div className="lg:hidden w-full flex flex-col gap-4">
             <TodayStories />
@@ -55,7 +51,6 @@ export default function AdminPage() {
           </div>
           <FeedPost />
         </div>
-
 
         <div className="hidden lg:flex lg:col-span-2 flex-col gap-4">
           <AICreatorStudio />
@@ -71,5 +66,3 @@ export default function AdminPage() {
     </div>
   );
 }
-
-

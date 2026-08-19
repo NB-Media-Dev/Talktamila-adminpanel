@@ -7,7 +7,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[linear-gradient(135deg,#E6703A,#FFA663)] text-white hover:bg-brand-hover ",
+          "bg-[linear-gradient(135deg,#E6703A,#FFA663)] text-white hover:brightness-110 transition-all duration-200",
 
         destructive:
           "bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] text-white",
@@ -19,7 +19,7 @@ export const buttonVariants = cva(
           "border border-brand bg-transparent text-brand hover:bg-brand hover:text-white",
 
         secondary:
-          "bg-secondary text-[#000000]/70 hover:bg-white/90",
+          "bg-secondary text-[#000000]/70 hover:bg-secondary-hover transition-all duration-200",
 
         ghost:
           "text-foreground/70 hover:bg-muted hover:text-foreground",

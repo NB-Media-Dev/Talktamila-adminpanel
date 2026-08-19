@@ -1,6 +1,5 @@
 "use client";
 
-
 import Image from "next/image";
 import avatar4 from "@/public/Images/avatar4.png";
 import avatar5 from "@/public/Images/avatar5.png";

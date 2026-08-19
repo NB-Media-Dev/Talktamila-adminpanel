@@ -1,6 +1,5 @@
 "use client";
 
-
 import { buttonVariants } from "@/components/ui/Button";
 import { islandMoments } from "@/public/Fonts/Fonts";
 import { Pencil, Image, Video } from "lucide-react";
@@ -11,7 +10,6 @@ export default function ShareThoughtCard() {
       <div className="relative w-full">
 
         <div className="relative w-full h-[230px] flex flex-col justify-between">
-
 
           <svg
             viewBox="0 0 340 230"
@@ -40,7 +38,6 @@ export default function ShareThoughtCard() {
             />
           </svg>
 
-
           <div
             className="absolute top-0 -right-[0px] sm:top-0 sm:right-0 w-24 h-20 sm:w-20 rounded-full pointer-events-none z-10"
             style={{
@@ -50,7 +47,6 @@ export default function ShareThoughtCard() {
             }}
 
           />
-
 
           <button
             type="button"
@@ -70,7 +66,6 @@ export default function ShareThoughtCard() {
               strokeWidth={2.4}
             />
           </button>
-
 
           <div className="relative z-10 pt-5 px-6 pb-1">
             <span className="text-[13px] sm:text-[14px] font-sans text-[#8E8E93] block mb-0.5 tracking-normal font-medium">

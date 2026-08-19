@@ -64,7 +64,6 @@ export default function RegionalHightlights() {
   return (
     <div className="w-full flex flex-col gap-5">
       
-     
       <div className="flex items-center justify-between w-full select-none">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
           Regional Highlights
@@ -88,7 +87,6 @@ export default function RegionalHightlights() {
         </div>
       </div>
 
-   
       <div
         ref={scrollRef}
         className="w-full flex gap-5 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth pb-3 px-0.5 -mx-0.5"
@@ -113,7 +111,6 @@ export default function RegionalHightlights() {
               </span>
             </div>
 
-           
             <div className="p-5 sm:p-6 flex flex-col gap-1.5 flex-grow">
               <h3 className="text-sm sm:text-base font-bold text-gray-800 leading-snug tracking-tight group-hover:text-[#FF5A26] transition-colors duration-200">
                 {item.title}

@@ -29,7 +29,6 @@ export default function BreakingNew() {
   return (
     <div className="w-full bg-[#F4F7FA] rounded-[32px] p-6 sm:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.01)] border border-[#FFEFE0] flex flex-col gap-5 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)]">
       
-  
       <div className="flex items-center gap-2 select-none">
         <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#B22222] fill-[#B22222]" />
         <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
@@ -37,7 +36,6 @@ export default function BreakingNew() {
         </h2>
       </div>
 
-   
       <div className="flex flex-col gap-5">
         {alerts.map((item) => (
           <div

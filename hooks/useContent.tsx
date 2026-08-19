@@ -11,9 +11,7 @@ interface UseContentContextType {
   setAnalyticsState: Dispatch<SetStateAction<boolean>>;
 }
 
-
 export const useContenthook = createContext<UseContentContextType | undefined>(undefined);
-
 
 interface UseContentProviderProps {
   children: ReactNode;

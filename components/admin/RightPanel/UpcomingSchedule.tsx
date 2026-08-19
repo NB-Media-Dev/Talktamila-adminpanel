@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Calendar } from "lucide-react";
 
 export default function UpcomingSchedule() {
@@ -32,7 +31,6 @@ export default function UpcomingSchedule() {
         </h2>
       </div>
 
-     
       <div className="flex flex-col gap-4.5 py-1">
         {events.map((event, idx) => (
           <div key={idx} className="flex gap-4 items-start">

@@ -68,12 +68,10 @@ export default function FeedImagePost() {
           </div>
         </div>
 
-    
         <div className="text-[#E1306C] p-2 bg-pink-50 rounded-full hover:bg-pink-100 transition-colors">
           <InstagramIcon className="w-5 h-5" />
         </div>
       </div>
-
 
       <div className="text-[0.8125rem] text-gray-800 leading-relaxed font-normal">
         சென்னை கடற்கரை சாலையில் புதிய மெட்ரோ வழித்தடப் பணிகள் துவக்கம்!{" "}
@@ -93,7 +91,6 @@ export default function FeedImagePost() {
         />
       </div>
 
-    
       <div className="grid grid-cols-2 gap-2 mt-1">
       
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
@@ -104,7 +101,6 @@ export default function FeedImagePost() {
           </div>
         </div>
 
-    
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -113,7 +109,6 @@ export default function FeedImagePost() {
           </div>
         </div>
 
-      
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Sparkles className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
@@ -131,7 +126,6 @@ export default function FeedImagePost() {
         </div>
       </div>
 
-    
       <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
        
         <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
@@ -153,7 +147,6 @@ export default function FeedImagePost() {
           </button>
         </div>
 
-    
         <button 
           onClick={() => setAnalyticsState && setAnalyticsState(true)}
           className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
@@ -165,4 +158,3 @@ export default function FeedImagePost() {
     </div>
   );
 }
-

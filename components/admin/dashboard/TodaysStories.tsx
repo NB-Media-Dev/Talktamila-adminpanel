@@ -1,6 +1,5 @@
 "use client";
 
-
 import Image, { type StaticImageData } from "next/image";
 import { Zap } from "lucide-react";
 import avatar1 from "@/public/Images/avatar1.png"
@@ -9,7 +8,6 @@ import avatar3 from "@/public/Images/avatar3.png"
 import avatar4 from "@/public/Images/avatar4.png"
 import avatar5 from "@/public/Images/avatar5.png"
 import avatar6 from "@/public/Images/avatar6.png"
-
 
 interface Story {
   id: number;
@@ -46,7 +44,6 @@ export default function TodayStories() {
         </button>
       </div>
 
-   
       <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-1  mb-3">
         {stories.map((story) => (
           <div key={story.id} className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer">
@@ -65,7 +62,6 @@ export default function TodayStories() {
                 </div>
               </div>
               
-           
               <span className="absolute bottom-0 right-0 w-[18px] h-[18px] bg-[#FF3B30] text-white rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black shadow-sm group-hover:scale-110 transition-transform">
                 +
               </span>

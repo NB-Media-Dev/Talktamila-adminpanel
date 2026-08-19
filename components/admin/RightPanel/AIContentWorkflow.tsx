@@ -1,7 +1,5 @@
 "use client";
 
-
-
 export default function AIContentWorkflow() {
   const steps = [
     { name: "Idea", active: true },

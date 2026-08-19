@@ -61,13 +61,11 @@ export default function CreatorStats() {
               {stat.value}
             </h3>
 
-           
             <span className="text-[0.6875rem] font-semibold text-gray-400 block mt-1">
               {stat.label}
             </span>
           </div>
 
-        
           <span className="text-[0.6875rem] font-bold text-[#FF5A26] mt-2 bg-[#FFF2EC] px-2 py-0.5 rounded-full w-fit">
             {stat.change}
           </span>

@@ -1,14 +1,11 @@
 "use client";
 
-
 import { Wallet} from "lucide-react";
 
 export default function CreatorWallet() {
 
-
   return (
     <div className="w-[350px] bg-gradient-to-br from-[#FFAE64] to-[#FF5B3E] rounded-[32px] p-6 shadow-[0_12px_30px_rgba(255,91,62,0.25)] relative overflow-hidden flex flex-col justify-between min-h-[260px] text-white">
-
 
       <div className="z-10">
         <div className="flex items-center gap-2 mb-3">
@@ -21,7 +18,6 @@ export default function CreatorWallet() {
         <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-none mb-4.5">
           ₹1,84,320
         </h2>
-
 
         <div className="flex flex-col gap-2.5 text-xs font-semibold text-white/90 max-w-[220px]">
           <div className="flex justify-between items-center">
@@ -65,7 +61,6 @@ export default function CreatorWallet() {
           />
           <circle cx="40" cy="60" r="8" fill="url(#coin_inner)" />
 
-
           <circle
             cx="140"
             cy="35"
@@ -75,7 +70,6 @@ export default function CreatorWallet() {
             style={{ animationDuration: "4s" }}
           />
           <circle cx="140" cy="35" r="11" fill="url(#coin_inner)" />
-
 
           <rect
             x="70"
@@ -103,7 +97,6 @@ export default function CreatorWallet() {
 
           <ellipse cx="110" cy="165" rx="65" ry="15" fill="black" fillOpacity="0.15" />
 
-
           <rect
             x="60"
             y="95"
@@ -115,13 +108,11 @@ export default function CreatorWallet() {
             strokeWidth="2"
           />
 
-
           <path
             d="M 60 115 C 60 100, 160 100, 160 115 L 160 155 C 160 162, 60 162, 60 155 Z"
             fill="#FFF6ED"
             opacity="0.15"
           />
-
 
           <rect
             x="55"
@@ -135,7 +126,6 @@ export default function CreatorWallet() {
             filter="drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.15))"
           />
 
-
           <path
             d="M 120 120 L 165 120 C 170 120, 170 135, 165 135 L 120 135 Z"
             fill="#D9572B"
@@ -144,7 +134,6 @@ export default function CreatorWallet() {
           />
 
           <circle cx="155" cy="127.5" r="5" fill="#FFD700" stroke="#DAA520" strokeWidth="1" />
-
 
           <defs>
             <linearGradient id="wallet_light_gradient" x1="55" y1="105" x2="160" y2="165" gradientUnits="userSpaceOnUse">
@@ -166,8 +155,6 @@ export default function CreatorWallet() {
           </defs>
         </svg>
       </div>
-
-
 
     </div>
   );
