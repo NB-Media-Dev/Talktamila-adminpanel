@@ -46,7 +46,7 @@ export default function TodaysEvents() {
             <Calendar className="w-5 h-5" />
           </div>
           <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
-            Today's Events
+            Upcomings Events
           </h2>
         </div>
         
@@ -89,3 +89,5 @@ export default function TodaysEvents() {
     </div>
   );
 }
+
+

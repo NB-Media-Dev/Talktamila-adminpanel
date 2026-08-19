@@ -31,22 +31,22 @@ export default function BreakingNews() {
   return (
     <div className="w-full bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0]">
       
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-[#FFF2F0] text-[#FF4B2B]">
-            <Zap className="w-5 h-5 fill-[#FF4B2B]" />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-[#FFF2F0] text-[#FF4B2B]">
+              <Zap className="w-5 h-5 fill-[#FF4B2B]" />
+            </div>
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
+              Breaking News
+            </h2>
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
-            Breaking News
-          </h2>
+          <a
+            href="#"
+            className="text-xs sm:text-sm text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
+          >
+            All news
+          </a>
         </div>
-        <a
-          href="#"
-          className="text-xs sm:text-sm text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
-        >
-          All news
-        </a>
-      </div>
 
    
       <div className="flex flex-col gap-3.5">

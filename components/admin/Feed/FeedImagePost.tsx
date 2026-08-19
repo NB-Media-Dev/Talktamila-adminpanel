@@ -56,14 +56,14 @@ export default function FeedImagePost() {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-[14px] text-gray-900 leading-none">News Tamila</span>
-              <span className="text-[#8E8E93] text-[12px] font-normal">@news_tamil</span>
+              <span className="font-bold text-sm text-gray-900 leading-none">News Tamila</span>
+              <span className="text-[#8E8E93] text-xs font-normal">@news_tamil</span>
             </div>
             <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
               <MapPin className="w-3.5 h-3.5" />
-              <span className="text-[11px]">Chennai, India</span>
-              <span className="text-[11px]">•</span>
-              <span className="text-[11px]">12m</span>
+              <span className="text-[0.6875rem]">Chennai, India</span>
+              <span className="text-[0.6875rem]">•</span>
+              <span className="text-[0.6875rem]">12m</span>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function FeedImagePost() {
       </div>
 
 
-      <div className="text-[13px] text-gray-800 leading-relaxed font-normal">
+      <div className="text-[0.8125rem] text-gray-800 leading-relaxed font-normal">
         சென்னை கடற்கரை சாலையில் புதிய மெட்ரோ வழித்தடப் பணிகள் துவக்கம்!{" "}
         <span className="text-[#FF6B35] font-semibold cursor-pointer">#Chennai</span>{" "}
         <span className="text-[#FF6B35] font-semibold cursor-pointer">#MetroUpdate</span>{" "}
@@ -99,8 +99,8 @@ export default function FeedImagePost() {
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">1.2M</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.2M</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
           </div>
         </div>
 
@@ -108,25 +108,25 @@ export default function FeedImagePost() {
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">₹18,240</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹18,240</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
           </div>
         </div>
 
-     
+      
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Sparkles className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">96/100</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">SEO Score</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">96/100</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">SEO Score</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Clock className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">7:32 PM</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">7:32 PM</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
           </div>
         </div>
       </div>
@@ -137,26 +137,26 @@ export default function FeedImagePost() {
         <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
             <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">12.4K</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">12.4K</span>
           </button>
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
             <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">3.20K</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">3.20K</span>
           </button>
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
             <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">5,810</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">5,810</span>
           </button>
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
             <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">12.4K</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">12.4K</span>
           </button>
         </div>
 
     
         <button 
           onClick={() => setAnalyticsState && setAnalyticsState(true)}
-          className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
+          className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
         >
           <BarChart2 className="w-3.5 h-3.5" />
           Analytics

@@ -70,21 +70,21 @@ export default function FeedPollPost() {
          
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-[14px] text-gray-900 leading-none">Tech Tamizhan</span>
-              <span className="text-[#8E8E93] text-[12px] font-normal">@tech_tamizhan</span>
+              <span className="font-bold text-sm text-gray-900 leading-none">Tech Tamizhan</span>
+              <span className="text-[#8E8E93] text-xs font-normal">@tech_tamizhan</span>
             </div>
             <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
               <MapPin className="w-3.5 h-3.5" />
-              <span className="text-[11px]">Coimbatore, India</span>
-              <span className="text-[11px]">•</span>
-              <span className="text-[11px]">2h</span>
+              <span className="text-[0.6875rem]">Coimbatore, India</span>
+              <span className="text-[0.6875rem]">•</span>
+              <span className="text-[0.6875rem]">2h</span>
             </div>
           </div>
         </div>
 
       
        <div className="flex items-center gap-2">
-          <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[9px] font-bold tracking-wider uppercase">
+          <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[0.5625rem] font-bold tracking-wider uppercase">
             Poll
           </span>
           <button className="text-gray-400 hover:text-gray-600 transition-colors p-1 cursor-pointer">
@@ -94,7 +94,7 @@ export default function FeedPollPost() {
       </div>
 
     
-      <div className="text-[13px] text-gray-800 leading-relaxed font-normal">
+      <div className="text-[0.8125rem] text-gray-800 leading-relaxed font-normal">
         தமிழில் AI கருவிகள் - நீங்கள் எதை அதிகம் பயன்படுத்துகிறீர்கள்?{" "}
         <span className="text-[#FF6B35] font-semibold cursor-pointer">#AITools</span>{" "}
         <span className="text-[#FF6B35] font-semibold cursor-pointer">#Tamil</span>
@@ -128,21 +128,21 @@ export default function FeedPollPost() {
               />
 
           
-              <span className={`relative z-10 text-[12.5px] font-medium transition-colors ${
+              <span className={`relative z-10 text-[0.78125rem] font-medium transition-colors ${
                 isSelected ? "text-[#E05D24] font-bold" : "text-gray-800 group-hover:text-[#E05D24]"
               }`}>
                 {opt.text}
               </span>
 
              
-              <span className="relative z-10 text-[12.5px] font-bold text-gray-900">
+              <span className="relative z-10 text-[0.78125rem] font-bold text-gray-900">
                 {percentage}%
               </span>
             </button>
           );
         })}
         {hasVoted && (
-          <span className="text-[10px] text-[#8E8E93] text-right px-1 mt-0.5 animate-fade-in font-medium">
+          <span className="text-[0.625rem] text-[#8E8E93] text-right px-1 mt-0.5 animate-fade-in font-medium">
             Total votes: {totalVotes.toLocaleString()} • Clicked to vote
           </span>
         )}
@@ -154,16 +154,16 @@ export default function FeedPollPost() {
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">315K</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">315K</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
           </div>
         </div>
 
          <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">₹3,140</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹3,140</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
           </div>
         </div>
 
@@ -171,8 +171,8 @@ export default function FeedPollPost() {
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Sparkles className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">81/100</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">81/100</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
           </div>
         </div>
 
@@ -180,8 +180,8 @@ export default function FeedPollPost() {
         <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
           <Clock className="w-4 h-4 text-[#FF6B35]" />
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold text-gray-900 leading-none">1:00 PM</span>
-            <span className="text-[8px] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Next Time</span>
+            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1:00 PM</span>
+            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Next Time</span>
           </div>
         </div>
       </div>
@@ -192,19 +192,19 @@ export default function FeedPollPost() {
         <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
             <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">230</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">230</span>
           </button>
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
             <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">924</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">924</span>
           </button>
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
             <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">512</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">512</span>
           </button>
           <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
             <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
-            <span className="text-[10px] sm:text-[11px] font-semibold">255</span>
+            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">255</span>
           </button>
         </div>
 
@@ -212,7 +212,7 @@ export default function FeedPollPost() {
             
                 <button 
                   onClick={() => setAnalyticsState && setAnalyticsState(true)}
-                  className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[10px] sm:text-[11px] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
+                  className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
                 >
                   <BarChart2 className="w-3.5 h-3.5" />
                   Analytics

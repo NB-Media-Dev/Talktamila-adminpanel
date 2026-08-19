@@ -44,7 +44,7 @@ export default function CreatorStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-[350px]">
+    <div className="grid grid-cols-2 gap-4 w-full max-w-[350px]">
       {stats.map((stat) => (
         <div
           key={stat.id}
@@ -62,13 +62,13 @@ export default function CreatorStats() {
             </h3>
 
            
-            <span className="text-[11px] font-semibold text-gray-400 block mt-1">
+            <span className="text-[0.6875rem] font-semibold text-gray-400 block mt-1">
               {stat.label}
             </span>
           </div>
 
         
-          <span className="text-[11px] font-bold text-[#FF5A26] mt-2 bg-[#FFF2EC] px-2 py-0.5 rounded-full w-fit">
+          <span className="text-[0.6875rem] font-bold text-[#FF5A26] mt-2 bg-[#FFF2EC] px-2 py-0.5 rounded-full w-fit">
             {stat.change}
           </span>
         </div>

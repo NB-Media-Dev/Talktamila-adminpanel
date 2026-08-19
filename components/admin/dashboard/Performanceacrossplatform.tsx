@@ -55,7 +55,7 @@ export function Performanceacrossplatform() {
       <div className="w-full h-full md:h-[560px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-white shadow-2xl relative font-sans antialiased border-0 md:border border-orange-100 flex flex-col overflow-hidden">
         
      
-        <div className="bg-gradient-to-r from-orange-400 to-orange-500 text-white p-5 pb-6 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] md:pt-5 relative shrink-0">
+        <div className="bg-gradient-to-r from-orange-400 to-orange-500 text-white p-5 pb-1 pt-[calc(1.25rem+env(safe-area-inset-top,0px))] md:pt-5 relative shrink-0">
    
           <button
             onClick={handleClose}
@@ -64,14 +64,14 @@ export function Performanceacrossplatform() {
             <X size={14} className="stroke-[3]" />
           </button>
           
-          <h1 className="text-lg font-bold tracking-tight">Performance across platforms</h1>
+          <h1 className="text-lg tracking-tight">Performance across platforms</h1>
           <p className="text-xs text-orange-50 font-medium mt-1">
             மதுரை இரவு உணவுத் தெரு – 5 இடங்கள், ஒரே ரீல்!
           </p>
         </div>
 
    
-        <div className="flex-1 overflow-y-auto p-5 pt-4 pb-28 md:pb-5 flex flex-col gap-4.5 bg-[#FCFAF7]">
+        <div className="flex-1  p-5 pt-4 pb-28 md:pb-5 flex flex-col gap-4.5 bg-[#FCFAF7]">
        
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {metrics.map((m, idx) => (
@@ -101,7 +101,7 @@ export function Performanceacrossplatform() {
                   </span>
                   
           
-                  <div className="flex-1 h-2 bg-[#FFF6ED] rounded-full overflow-hidden border border-[#FFEFE0] shrink-0">
+                  <div className="flex-1 h-2 bg-[#FFF6ED] rounded-full  border border-[#FFEFE0] shrink-0">
                     <div
                       style={{ width: `${p.percentage}%` }}
                       className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-full h-full"
@@ -119,7 +119,7 @@ export function Performanceacrossplatform() {
             </div>
           </div>
 
-      
+    
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 border-t border-orange-100/50 pt-4">
 
             <div>

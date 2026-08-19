@@ -228,7 +228,7 @@ export default function Calendar() {
         </div>
 
    
-        <div className="grid grid-cols-7 border-b border-gray-100 pb-2 mb-2">
+        <div className="grid grid-cols-7 border-b border-gray-100 pb-10 mb-7">
           {weekdays.map((day, idx) => (
             <div 
               key={idx} 
