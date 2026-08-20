@@ -42,8 +42,8 @@ export default function CampaignMarketplace() {
           <div key={idx} className="bg-[#FFF9F5] border border-[#FFEFE0] rounded-[24px] p-4 flex justify-between items-start">
             <div className="flex flex-col gap-2.5">
               <div>
-                <h3 className="text-xs font-black text-gray-900">{camp.brand}</h3>
-                <p className="text-[10px] text-gray-500 font-semibold mt-0.5">{camp.details}</p>
+                <h3 className="text-xs text-gray-900">{camp.brand}</h3>
+                <p className="text-[10px] text-gray-500 mt-0.5">{camp.details}</p>
               </div>
               <button className={`px-5 py-1 border border-[#FF5A26] text-[#FF5A26] text-[10px] font-black rounded-full ${buttonVariants({variant:'hoverButton'})}`}>
                 Apply

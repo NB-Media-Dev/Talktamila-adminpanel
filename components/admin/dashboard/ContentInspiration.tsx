@@ -47,7 +47,7 @@ export default function ContentInspiration() {
         {inspirations.map((item) => (
           <div
             key={item.id}
-            className={`px-5 py-4 ${item.bgClass} ${item.hoverBgClass} text-gray-800 text-sm font-semibold rounded-[24px] cursor-pointer transition-all duration-300 hover:shadow-sm hover:-translate-y-0.5`}
+            className={`px-5 py-4 ${item.bgClass} ${item.hoverBgClass} text-gray-800 text-sm  rounded-[24px] cursor-pointer transition-all duration-300 hover:shadow-sm hover:-translate-y-0.5`}
           >
             {item.text}
           </div>

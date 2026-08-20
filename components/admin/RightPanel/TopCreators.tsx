@@ -74,10 +74,10 @@ export default function TopCreators() {
                 />
               </div>
               <div>
-                <h3 className="text-xs font-black text-gray-900">
+                <h3 className="text-xs  text-gray-900">
                   {creator.name}
                 </h3>
-                <p className="text-[10px] text-gray-400 font-semibold mt-0.5">
+                <p className="text-[10px] text-gray-400 mt-0.5">
                   {creator.followers}
                 </p>
               </div>

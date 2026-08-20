@@ -60,10 +60,10 @@ export default function SavedDrafts() {
             className="w-full bg-[#FFF9F2] hover:bg-[#FDF0E2] transition-all duration-200 rounded-[20px] px-4.5 py-3.5 flex items-center justify-between cursor-pointer group hover:shadow-sm"
           >
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-gray-800 group-hover:text-[#FF6B35] transition-colors duration-200">
+              <span className="text-sm  text-gray-800 group-hover:text-[#FF6B35] transition-colors duration-200">
                 {item.title}
               </span>
-              <span className="text-xs text-gray-400 mt-0.5 font-semibold">
+              <span className="text-xs text-gray-400 mt-0.5 ">
                 {item.type} • {item.time}
               </span>
             </div>

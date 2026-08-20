@@ -38,7 +38,7 @@ export default function UpcomingSchedule() {
               {event.time}
             </span>
             <div className="flex-grow">
-              <h3 className="text-xs font-black text-gray-900">
+              <h3 className="text-xs  text-gray-900">
                 {event.title}
               </h3>
               <p className="text-[10px] text-gray-500 font-semibold mt-0.5">

@@ -74,7 +74,7 @@ export default function TodaysEvents() {
             </div>
 
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-gray-800 group-hover:text-[#FF5A26] transition-colors duration-200">
+              <span className="text-sm text-gray-800 group-hover:text-[#FF5A26] transition-colors duration-200">
                 {event.title}
               </span>
               <span className="text-xs text-gray-400 mt-0.5 font-medium">
