@@ -79,6 +79,8 @@ cd talktamila
 ### 2. Install Dependencies
 ```bash
 npm install
+
+npm install next react react-dom
 ```
 
 
