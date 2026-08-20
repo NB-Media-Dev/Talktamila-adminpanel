@@ -17,52 +17,71 @@ import CampaignMarketplace from "@/components/admin/RightPanel/CampaignMarketpla
 import UpcomingSchedule from "@/components/admin/RightPanel/UpcomingSchedule";
 import TopCreators from "@/components/admin/RightPanel/TopCreators";
 import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
-import { useContenthook } from "@/hooks/useContent";
+
 
 export default function AdminPage() {
 
-  const context = useContext(useContenthook);
-
-  if (!context) {
-    throw new Error("BottomNavigation must be used within a UseContentProvider");
-  }
-  const { handlestate, setHandlestate, activeTab, analyticsState } = context;
-
   return (
     <div>
-      <div className="w-full max-w-[1440px] 2xl:max-w-[1870px] mx-auto grid grid-cols-1 lg:grid-cols-8 gap-4 px-4 md:px-6 pb-24">
-
-        <div className="hidden lg:flex lg:col-span-2 flex-col gap-4">
-          <ShareThoughtCard />
+      <div className="w-full max-w-[1440px] 2xl:max-w-[1870px] mx-auto px-4 md:px-6 pb-24">
+        
+    
+        <div className="block xl:hidden mb-4">
           <TodayStories />
-          <TrendingTopics />
-          <TrendingHashtags />
-          <AITrendRadar />
-          <BreakingNews />
-          <ContentInspiration />
-          <TodaysEvents />
-          <SavedDrafts />
         </div>
 
-        <div className="col-span-1 lg:col-span-4 flex flex-col gap-4 w-full max-w-[550px] mx-auto">
-          <div className="lg:hidden w-full flex flex-col gap-4">
-            <TodayStories />
+        <div className="grid grid-cols-1 md:grid-cols-12 xl:grid-cols-8 gap-4">
+
+        
+          <div className="hidden md:flex md:col-span-5 xl:col-span-2 flex-col gap-4">
             <ShareThoughtCard />
+
+      
+            <div className="xl:hidden flex flex-col gap-4">
+              <BreakingNews />
+              <AITrendRadar />
+              <TopCreators />
+              <TrendingTopics />
+              <TrendingHashtags />
+              <ContentInspiration />
+              <TodaysEvents />
+              <SavedDrafts />
+            </div>
+
+         
+            <div className="hidden xl:flex flex-col gap-4">
+              <TodayStories />
+              <TrendingTopics />
+              <TrendingHashtags />
+              <AITrendRadar />
+              <BreakingNews />
+              <ContentInspiration />
+              <TodaysEvents />
+              <SavedDrafts />
+            </div>
           </div>
-          <FeedPost />
-        </div>
 
-        <div className="hidden lg:flex lg:col-span-2 flex-col gap-4">
-          <AICreatorStudio />
-          <CreatorStats />
-          <CreatorWallet />
-          <AIContentWorkflow />
-          <CampaignMarketplace />
-          <UpcomingSchedule />
-          <TopCreators />
-        </div>
+        
+          <div className="col-span-1 md:col-span-7 xl:col-span-4 flex flex-col gap-4 w-full max-w-[550px] mx-auto">
+            <div className="md:hidden w-full flex flex-col gap-4">
+              <ShareThoughtCard />
+            </div>
+            <FeedPost />
+          </div>
 
+          <div className="hidden xl:flex xl:col-span-2 flex-col gap-4">
+            <AICreatorStudio />
+            <CreatorStats />
+            <CreatorWallet />
+            <AIContentWorkflow />
+            <CampaignMarketplace />
+            <UpcomingSchedule />
+            <TopCreators />
+          </div>
+
+        </div>
       </div>
     </div>
   );
 }
+

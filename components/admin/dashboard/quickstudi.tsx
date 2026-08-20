@@ -47,7 +47,6 @@ export function QuickStudio() {
     "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=400&q=80" 
   );
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [actionStatus, setActionStatus] = useState<'idle' | 'scheduling' | 'publishing' | 'scheduled' | 'published'>('idle');
 
   if (!context) {
     throw new Error("QuickStudio must be used within a UseContentProvider");
@@ -120,67 +119,14 @@ export function QuickStudio() {
     }, 1500);
   };
 
-  const handleSchedule = () => {
-    setActionStatus('scheduling');
-    setTimeout(() => {
-      setActionStatus('scheduled');
-      setTimeout(() => {
-        setActionStatus('idle');
-        handleClose();
-      }, 1800);
-    }, 1200);
-  };
 
-  const handlePublish = () => {
-    setActionStatus('publishing');
-    setTimeout(() => {
-      setActionStatus('published');
-      setTimeout(() => {
-        setActionStatus('idle');
-        handleClose();
-      }, 1800);
-    }, 1200);
-  };
 
   return (
     <div className="fixed inset-0 bg-black/55 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 z-40 animate-fade-in select-none">
       
       <div className="w-full h-full md:h-auto md:max-h-[85vh] md:max-w-[760px] rounded-none md:rounded-3xl bg-[#FAF3EC] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-5 md:py-5 relative font-sans antialiased border-0 md:border border-orange-100/40 overflow-y-auto md:overflow-hidden flex flex-col gap-3">
         
-        {actionStatus !== 'idle' && (
-          <div className="absolute inset-0 bg-[#FAF3EC]/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 z-50 p-6 text-center animate-fade-in">
-            {(actionStatus === 'scheduling' || actionStatus === 'publishing') && (
-              <>
-                <div className="w-10 h-10 border-4 border-[#FF6B35] border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-xs font-bold text-gray-800">
-                  {actionStatus === 'scheduling' ? "Scheduling across platforms..." : "Publishing to active channels..."}
-                </p>
-              </>
-            )}
-            {actionStatus === 'scheduled' && (
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg animate-bounce">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                </div>
-                <h3 className="text-sm font-extrabold text-gray-900">Success!</h3>
-                <p className="text-[10px] text-gray-600 font-semibold">Your {selectedFormat} has been scheduled successfully.</p>
-              </div>
-            )}
-            {actionStatus === 'published' && (
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg animate-bounce">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                </div>
-                <h3 className="text-sm font-extrabold text-gray-900">Published!</h3>
-                <p className="text-[10px] text-gray-600 font-semibold">Your content is now live on all selected platforms.</p>
-              </div>
-            )}
-          </div>
-        )}
+       
 
         <div className="flex items-center justify-between border-b border-orange-100/60 pb-2">
           <div className="flex items-center gap-2">
@@ -454,16 +400,12 @@ export function QuickStudio() {
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-end">
             <button
               type="button"
-              onClick={handleSchedule}
-              disabled={isGenerating}
               className="px-4.5 py-1.5 bg-white border border-orange-200 text-[#FF6B35] text-[10px] md:text-[11px] font-bold rounded-full hover:bg-orange-50/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm min-w-[90px] cursor-pointer"
             >
               Schedule
             </button>
             <button
               type="button"
-              onClick={handlePublish}
-              disabled={isGenerating}
               className="px-6 py-1.5 bg-[#FF6B35] hover:bg-[#F27D42] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-white text-[10px] md:text-[11px] font-bold rounded-full shadow-md transition-all min-w-[100px] cursor-pointer"
             >
               Publish

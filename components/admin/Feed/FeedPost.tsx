@@ -13,17 +13,17 @@ export default function FeedPost() {
     <div className="w-full max-w-[550px] gap-6 mx-auto flex flex-col select-none">
 
       <FeedImagePost />
-      <div className="lg:hidden w-full">
+      <div className="md:hidden w-full">
         <BreakingNews />
       </div>
       
       <FeedVideoPost />
-      <div className="lg:hidden w-full">
+      <div className="md:hidden w-full">
         <TopCreators />
       </div>
       
       <FeedTextPost />
-      <div className="lg:hidden w-full">
+      <div className="md:hidden w-full">
         <TodaysEvents />
       </div>
       
