@@ -242,14 +242,14 @@ export default function Queue() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 py-1">
+                  <div className="flex items-center gap-3 sm:gap-4 py-1 min-w-0">
                     <img
                       src={item.thumbnail}
                       alt={item.title}
-                      className="w-20 h-20 rounded-[20px] object-cover shrink-0 border border-gray-100/60 shadow-sm"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-[16px] sm:rounded-[20px] object-cover shrink-0 border border-gray-100/60 shadow-sm"
                     />
-                    <div className="flex flex-col gap-1">
-                      <h3 className="font-bold text-gray-900 text-base sm:text-[1.0625rem] leading-tight tracking-tight text-ellipsis overflow-hidden line-clamp-2">
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <h3 className="font-bold text-gray-900 text-sm sm:text-[1.0625rem] leading-tight tracking-tight text-ellipsis overflow-hidden line-clamp-2">
                         {item.title}
                       </h3>
                       <div className="flex items-center gap-1 text-gray-500 text-[0.6875rem] sm:text-xs mt-0.5 font-semibold">

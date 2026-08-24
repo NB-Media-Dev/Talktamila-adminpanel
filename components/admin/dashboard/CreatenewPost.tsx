@@ -114,8 +114,8 @@ export function CreatenewPost() {
                     key={platform.id}
                     onClick={() => togglePlatform(platform.id)}
                     className={`py-1.5 px-2 px-3 text-[11px] font-bold rounded-full border text-center transition-all duration-200 shadow-sm cursor-pointer ${isSelected
-                        ? `${buttonVariants({ variant: 'default' })} border-transparent transform scale-[1.02] shadow-orange-500/20`
-                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
+                      ? `${buttonVariants({ variant: 'default' })} border-transparent transform scale-[1.02] shadow-orange-500/20`
+                      : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
                       }`}
                   >
                     {platform.name}
@@ -129,9 +129,9 @@ export function CreatenewPost() {
             <h3 className="text-xs font-extrabold text-gray-800 tracking-wide uppercase select-none">Live Preview</h3>
 
             <div className="bg-[#F0F2F5] rounded-2xl p-2 border border-gray-200/40 flex-grow flex flex-col gap-1.5 w-full max-w-[270px] mx-auto overflow-hidden">
-              
+
               <div className="flex items-center gap-1.5 px-0.5 select-none">
-                
+
                 <div className="w-4 h-4 rounded-full bg-[#1877F2] flex items-center justify-center text-white font-extrabold text-[9px] shrink-0 leading-none pb-[1px] shadow-xs">
                   f
                 </div>
@@ -139,7 +139,7 @@ export function CreatenewPost() {
               </div>
 
               <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-2 flex flex-col gap-1.5">
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center font-extrabold text-xs shadow-sm shrink-0 select-none">
@@ -170,7 +170,7 @@ export function CreatenewPost() {
                     alt="Video Ad Preview"
                     className="w-full h-full object-cover opacity-95"
                   />
-                  
+
                   <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 text-center z-10 select-none">
                     <p className="text-white text-[9px] font-semibold leading-normal bg-black/40 py-1 px-2 rounded-md backdrop-blur-xs max-w-[90%] mx-auto shadow-sm">
                       it can be really easy to over indulge
@@ -201,14 +201,14 @@ export function CreatenewPost() {
                 </div>
 
                 <div className="flex justify-between items-center px-0.5 pt-0.5 select-none">
-                  
+
                   <div className="flex items-center gap-1 text-[9px] text-[#65676b] font-medium">
                     <div className="flex items-center shrink-0">
-                      
+
                       <div className="w-3.5 h-3.5 rounded-full bg-[#1877F2] flex items-center justify-center border border-white z-10 text-[8px] text-white">
                         👍
                       </div>
-                      
+
                       <div className="w-3.5 h-3.5 rounded-full bg-[#F02849] flex items-center justify-center border border-white -ml-1.5 z-0 text-[8px] text-white">
                         ❤️
                       </div>
@@ -266,4 +266,4 @@ export function CreatenewPost() {
     </div>
   );
 }
-
+

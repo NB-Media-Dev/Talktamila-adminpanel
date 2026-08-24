@@ -5,7 +5,7 @@ import { Rocket } from "lucide-react";
 
 export default function ActiveCampaigns() {
   return (
-    <div className="mt-4 w-full bg-[#F27D42] rounded-2xl sm:rounded-[32px] p-4 sm:p-5 text-white shadow-[0_8px_30px_rgba(242,125,66,0.15)] flex flex-col justify-between select-none hover:scale-[1.01] hover:shadow-[0_12px_40px_rgba(242,125,66,0.22)] transition-all duration-300">
+    <div className="w-full bg-[#F27D42] rounded-2xl sm:rounded-[32px] p-4 sm:p-5 text-white shadow-[0_8px_30px_rgba(242,125,66,0.15)] flex flex-col justify-between select-none hover:scale-[1.01] hover:shadow-[0_12px_40px_rgba(242,125,66,0.22)] transition-all duration-300">
       <div>
         <div className="flex justify-between items-start">
           <div className="flex flex-col">

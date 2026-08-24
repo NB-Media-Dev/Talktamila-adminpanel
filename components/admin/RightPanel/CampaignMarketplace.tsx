@@ -24,7 +24,7 @@ export default function CampaignMarketplace() {
 
   return (
     <div className="w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
-    
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Briefcase className="w-5 h-5 text-[#FF5A26]" />
@@ -45,7 +45,7 @@ export default function CampaignMarketplace() {
                 <h3 className="text-xs text-gray-900">{camp.brand}</h3>
                 <p className="text-[10px] text-gray-500 mt-0.5">{camp.details}</p>
               </div>
-              <button className={`px-5 py-1 border border-[#FF5A26] text-[#FF5A26] text-[10px] font-black rounded-full ${buttonVariants({variant:'hoverButton'})}`}>
+              <button className={`px-5 py-1 border border-[#FF5A26] text-[#FF5A26] text-[10px] font-black rounded-full ${buttonVariants({ variant: 'hoverButton' })}`}>
                 Apply
               </button>
             </div>

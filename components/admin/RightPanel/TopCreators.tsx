@@ -17,7 +17,7 @@ export default function TopCreators() {
 
   return (
     <div className="w-full lg:w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
- 
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#FF6B35] lg:hidden" />
@@ -82,7 +82,7 @@ export default function TopCreators() {
                 </p>
               </div>
             </div>
-            <button className={`px-4 py-1.5 border border-[#FF5A26]/30 text-[#FF5A26] text-[10px] font-black rounded-full ${buttonVariants({variant:'hoverButton'})} transition-all cursor-pointer`}>
+            <button className={`px-4 py-1.5 border border-[#FF5A26]/30 text-[#FF5A26] text-[10px] font-black rounded-full ${buttonVariants({ variant: 'hoverButton' })} transition-all cursor-pointer`}>
               Follow
             </button>
           </div>

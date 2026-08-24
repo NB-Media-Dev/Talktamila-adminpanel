@@ -44,7 +44,7 @@ export default function CreatorStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-xs max-w-4xl">
+    <div className="grid grid-cols-2 gap-4 w-[350px]">
       {stats.map((stat) => (
         <div
           key={stat.id}
@@ -56,7 +56,7 @@ export default function CreatorStats() {
           </div>
 
           <div className="mt-3.5">
-    
+
             <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight leading-none">
               {stat.value}
             </h3>

@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useRouter, usePathname } from 'next/navigation';
 import { buttonVariants } from '../ui/Button';
 import { useContenthook } from '@/hooks/useContent';
+import { useAuthRole } from '@/hooks/useAuthRole';
 import { CreatenewPost } from "@/components/admin/dashboard/CreatenewPost";
 import { Adminreviewpanel } from "@/components/admin/dashboard/Adminreviewpanel";
 import { Performanceacrossplatform } from "@/components/admin/dashboard/Performanceacrossplatform";
@@ -16,12 +17,8 @@ export default function BottomNavigation() {
   const context = useContext(useContenthook);
   const router = useRouter();
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  const { isMounted: mounted, isInfluencer } = useAuthRole();
+    
   if (!context) {
     throw new Error("BottomNavigation must be used within a UseContentProvider");
   }
@@ -29,11 +26,11 @@ export default function BottomNavigation() {
 
   useEffect(() => {
     if (activeTab === 'wallet' || activeTab === 'quickstudio') return;
-    if (pathname === '/admin') {
+    if (pathname === '/admin' || pathname === '/influencer') {
       setActiveTab('home');
-    } else if (pathname === '/admin/content') {
+    } else if (pathname === '/admin/content' || pathname === '/influencer/content') {
       setActiveTab('content');
-    } else if (pathname === '/admin/trendradar') {
+    } else if (pathname === '/admin/trendradar' || pathname === '/influencer/trendradar') {
       setActiveTab('ai');
     }
   }, [pathname, setActiveTab]);
@@ -42,7 +39,7 @@ export default function BottomNavigation() {
     const newState = !handlestate;
     setHandlestate(newState);
     if (newState) {
-      if (pathname === '/admin/content') {
+      if (pathname === '/admin/content' || pathname === '/influencer/content') {
         setActiveTab('content');
       } else {
         setActiveTab('home');
@@ -52,7 +49,7 @@ export default function BottomNavigation() {
   }
   return (
     <>
-      <div className="fixed bottom-2 left-3 right-3 sm:bottom-3 sm:left-4 sm:right-4 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] md:w-auto md:min-w-[340px] md:max-w-sm select-none transform-gpu pb-[env(safe-area-inset-bottom,0px)] mx-auto">
+      <div className="fixed bottom-2 left-3 right-3 sm:bottom-3 sm:left-4 sm:right-4 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] md:w-auto md:min-w-[440px] md:max-w-sm select-none transform-gpu pb-[env(safe-area-inset-bottom,0px)] mx-auto">
 
         <nav className="w-full border-brand/60 backdrop-blur-lg rounded-2xl md:rounded-full px-4 sm:px-6 md:px-4 py-2.5 md:py-1.5 flex items-center justify-around md:justify-between shadow-[0_8px_30px_rgba(0,0,0,0.1)] md:shadow-[0_8px_30px_rgb(242,125,66,0.12)] border border-[#FFEFE0]">
 
@@ -61,7 +58,7 @@ export default function BottomNavigation() {
               setActiveTab('home');
               setHandlestate(false);
               setAnalyticsState(false);
-              router.push('/admin');
+              router.push(isInfluencer ? '/influencer' : '/admin');
             }}
             type="button"
             aria-label="Home"
@@ -78,7 +75,7 @@ export default function BottomNavigation() {
               setActiveTab('content');
               setHandlestate(false);
               setAnalyticsState(false);
-              router.push('/admin/content');
+              router.push(isInfluencer ? '/influencer/content' : '/admin/content');
             }}
             type="button"
             aria-label="Content Schedule"
@@ -105,13 +102,18 @@ export default function BottomNavigation() {
           </div>
 
           <button
-            onClick={() => { setActiveTab('wallet'); setHandlestate(false); setAnalyticsState(false); }}
+            onClick={() => {
+              if (isInfluencer) return;
+              setActiveTab('wallet');
+              setHandlestate(false);
+              setAnalyticsState(false);
+            }}
             type="button"
             aria-label="Wallet"
             className={`w-9 h-9 sm:w-10 sm:h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 ${activeTab === 'wallet' ? `${buttonVariants({ variant: "default" })}` : `${buttonVariants({ variant: "secondary" })}`
               }`}
           >
-            <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
             </svg>
           </button>
@@ -121,7 +123,7 @@ export default function BottomNavigation() {
               setActiveTab('ai');
               setHandlestate(false);
               setAnalyticsState(false);
-              router.push('/admin/trendradar');
+              router.push(isInfluencer ? '/influencer/trendradar' : '/admin/trendradar');
             }}
             type="button"
             aria-label="AI Spark"
@@ -141,7 +143,7 @@ export default function BottomNavigation() {
         document.body
       )}
 
-      {mounted && activeTab === 'wallet' && createPortal(
+      {mounted && !isInfluencer && activeTab === 'wallet' && createPortal(
         <div className="p-2">
           <Adminreviewpanel />
         </div>,
@@ -164,4 +166,4 @@ export default function BottomNavigation() {
     </>
   );
 }
-
+

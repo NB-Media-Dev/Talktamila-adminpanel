@@ -1,11 +1,13 @@
 "use client";
 
-import  { useState } from "react";
+import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { Sparkles, Calendar, Send, Eye, } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
 export default function AICreatorStudio() {
+  const { isInfluencer } = useAuthRole();
   const router = useRouter();
   const formats = [
     "Poster",
@@ -29,11 +31,27 @@ export default function AICreatorStudio() {
 
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const targetHref = isInfluencer ? "/influencer/content" : "/admin/content";
+
+
+
   const handleGenerate = () => {
     setIsGenerating(true);
   };
 
   return (
+    <div >
+
+   <div>
+  <div>
+    {isInfluencer && (
+      <button onClick={()=>router.push("/influencer/analytics")} className={`ms-10 mb-3 w-full px-4 py-2 ${buttonVariants({variant:'default'})} rounded-lg`}>
+        Insights
+      </button>
+    )}
+  </div>
+</div>
+
     <div className="w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] relative overflow-hidden flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -57,8 +75,8 @@ export default function AICreatorStudio() {
               key={format}
               onClick={() => setSelectedFormat(format)}
               className={`py-2 px-3 rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer ${isSelected
-                  ? `${buttonVariants({variant:'default'})} text-white shadow-[0_4px_12px_rgba(255,90,38,0.2)]`
-                  : "bg-[#FFEFE5] text-gray-900"
+                ? `${buttonVariants({ variant: 'default' })} text-white shadow-[0_4px_12px_rgba(255,90,38,0.2)]`
+                : "bg-[#FFEFE5] text-gray-900"
                 }`}
             >
               {format}
@@ -79,8 +97,8 @@ export default function AICreatorStudio() {
                 key={style}
                 onClick={() => setSelectedStyle(style)}
                 className={`py-1 px-1.5 rounded-full text-[8px] sm:text-xs font-semibold text-center whitespace-nowrap transition-all duration-200 cursor-pointer flex-1 ${isSelected
-                    ? `${buttonVariants({variant:'default'})}`
-                    : "bg-[#FFEFE5] text-gray-800"
+                  ? `${buttonVariants({ variant: 'default' })}`
+                  : "bg-[#FFEFE5] text-gray-800"
                   }`}
               >
                 {style}
@@ -102,8 +120,8 @@ export default function AICreatorStudio() {
                 key={ratio}
                 onClick={() => setSelectedRatio(ratio)}
                 className={`py-1 px-1.5 rounded-full text-[10px] sm:text-xs font-semibold text-center whitespace-nowrap transition-all duration-200 cursor-pointer flex-1 ${isSelected
-                    ? `${buttonVariants({variant:'default'})}`
-                    : "bg-[#FFEFE5] text-gray-800"
+                  ? `${buttonVariants({ variant: 'default' })}`
+                  : "bg-[#FFEFE5] text-gray-800"
                   }`}
               >
                 {ratio}
@@ -119,7 +137,7 @@ export default function AICreatorStudio() {
           <button
             onClick={handleGenerate}
             disabled={isGenerating}
-            className={`flex-1 ${buttonVariants({variant:'default'})} text-sm font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,90,38,0.25)] cursor-pointer`}
+            className={`flex-1 ${buttonVariants({ variant: 'default' })} text-sm font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(255,90,38,0.25)] cursor-pointer`}
           >
             <span>Generate {selectedFormat}</span>
 
@@ -136,7 +154,7 @@ export default function AICreatorStudio() {
 
         <div className="grid grid-cols-2 gap-2">
           <button
-            onClick={() => router.push('/admin/content')}
+            onClick={() => router.push(targetHref)}
             className="py-2.5 px-4 bg-[#FFEFE5] active:scale-[0.98] text-gray-700 text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <Calendar className="w-3.5 h-3.5 text-[#FF5A26]" />
@@ -152,6 +170,7 @@ export default function AICreatorStudio() {
       </div>
 
     </div>
+    </div>
   );
 }
-
+

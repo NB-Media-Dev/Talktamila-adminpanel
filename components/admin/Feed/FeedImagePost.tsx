@@ -1,23 +1,27 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import { 
-  Heart, 
-  MessageCircle, 
-  Send, 
-  Bookmark, 
-  TrendingUp, 
-  IndianRupee, 
-  Sparkles, 
-  Clock, 
+import { usePathname } from "next/navigation";
+import {
+  Heart,
+  MessageCircle,
+  Send,
+  Bookmark,
+  TrendingUp,
+  IndianRupee,
+  Sparkles,
+  Clock,
   MapPin,
-  BarChart2
+  BarChart2,
+  Upload,
+  X
 } from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
 import movie from "@/public/Images/movie.jpg";
 import { buttonVariants } from "@/components/ui/Button";
+import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -35,16 +39,63 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export default function FeedImagePost() {
+interface FeedImagePostProps {
+  isInfluencer?: boolean;
+}
+
+export default function FeedImagePost({ isInfluencer: propIsInfluencer }: FeedImagePostProps = {}) {
   const context = useContext(useContenthook);
   const setAnalyticsState = context?.setAnalyticsState;
+  const pathname = usePathname();
+  const isInfluencer = propIsInfluencer ?? pathname?.startsWith("/influencer");
+
+  const defaultImageSrc = typeof movie === "string" ? movie : (movie as any)?.src || movie;
+  const [imageSrc, setImageSrc] = useState<string>(defaultImageSrc);
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  const [orientationLabel, setOrientationLabel] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setImageSrc(url);
+    }
+  };
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const img = e.currentTarget;
+    const { naturalWidth, naturalHeight } = img;
+    if (naturalWidth && naturalHeight) {
+      const ratio = naturalWidth / naturalHeight;
+      setAspectRatio(ratio);
+      if (ratio > 1.25) {
+        setOrientationLabel(`Wide (${naturalWidth}×${naturalHeight})`);
+      } else if (ratio < 0.85) {
+        setOrientationLabel(`Portrait (${naturalWidth}×${naturalHeight})`);
+      } else {
+        setOrientationLabel(`Square (${naturalWidth}×${naturalHeight})`);
+      }
+    }
+  };
+
+ 
+
+  const handleResetImage = () => {
+    setImageSrc(defaultImageSrc);
+    setAspectRatio(null);
+    setOrientationLabel("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
-   
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          
+
           <div className="w-11 h-11 rounded-full overflow-hidden relative border border-[#FFEFE0] bg-gray-50 shrink-0">
             <Image
               src={avatar4}
@@ -80,81 +131,136 @@ export default function FeedImagePost() {
         <span className="text-[#FF6B35] font-semibold cursor-pointer">#News</span>
       </div>
 
-      <div className="w-full h-[320px] sm:h-[420px] md:h-[520px] rounded-[24px] overflow-hidden relative border border-[#FFEFE0]">
-        <Image
-          src={movie}
-          alt="Post Image"
-          fill
-          className="object-cover animate-fade-in"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 550px"
-          priority
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 mt-1">
-      
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.2M</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹18,240</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <Sparkles className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">96/100</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">SEO Score</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <Clock className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">7:32 PM</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
-       
-        <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-            <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">12.4K</span>
-          </button>
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-            <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">3.20K</span>
-          </button>
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-            <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">5,810</span>
-          </button>
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-            <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">12.4K</span>
-          </button>
-        </div>
-
-        <button 
-          onClick={() => setAnalyticsState && setAnalyticsState(true)}
-          className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
+      <div className="w-full relative flex flex-col gap-2">
+        <div 
+          className="w-full rounded-[24px] overflow-hidden relative border border-[#FFEFE0] bg-gray-900/5 transition-all duration-300 flex items-center justify-center group min-h-[200px] max-h-[550px]"
+          style={{
+            aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
+          }}
         >
-          <BarChart2 className="w-3.5 h-3.5" />
-          Analytics
-        </button>
+          <img
+            src={imageSrc}
+            alt="Post Image"
+            onLoad={handleImageLoad}
+            className="w-full h-full object-contain animate-fade-in rounded-[24px] max-h-[550px]"
+          />
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            accept="image/*"
+            className="hidden"
+          />
+
+          <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+            {orientationLabel && (
+              <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/20 shadow-sm select-none">
+                {orientationLabel}
+              </span>
+            )}
+  
+            {imageSrc !== defaultImageSrc && (
+              <button
+                onClick={handleResetImage}
+                type="button"
+                className="flex items-center justify-center w-7 h-7 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white rounded-full border border-white/20 shadow-md transition-all active:scale-95 cursor-pointer"
+                title="Reset Image"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
+
+      {isInfluencer ? (
+        <InfluencerPostAnalytics
+          igReach="12.4K"
+          fbReach="8.7K"
+          ytReach="5.3K"
+          threadsReach="2.1K"
+          earnedAmount="₹12,450"
+          views="24.5K"
+          likes="2.3K"
+          comments="156"
+          shares="489"
+          saves="1.2K"
+          aiPerformanceScore="92"
+          aiPerformanceLabel="Excellent"
+          bestTime="Today, 8:00 PM"
+          expectedReach="125K – 180K"
+          trendingProb="High"
+          seoScore="88"
+          qualityScore="93"
+        />
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-2 mt-1">
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.2M</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹18,240</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <Sparkles className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">96/100</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">SEO Score</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <Clock className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">7:32 PM</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
+            <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
+                <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">12.4K</span>
+              </button>
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
+                <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">3.20K</span>
+              </button>
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
+                <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">5,810</span>
+              </button>
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
+                <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">12.4K</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setAnalyticsState && setAnalyticsState(true)}
+              className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({ variant: 'hoverButton' })} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
+            >
+              <BarChart2 className="w-3.5 h-3.5" />
+              Analytics
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
+

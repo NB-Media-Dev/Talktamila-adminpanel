@@ -89,7 +89,7 @@ export default function ShareThoughtCard() {
             <div className="flex items-center gap-4 sm:gap-5 text-[#8E8E93]">
               <button
                 type="button"
-                   className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
+                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Add Image"
                 aria-label="Add Image"
               >
@@ -98,7 +98,7 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
+                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Add Video"
                 aria-label="Add Video"
               >
@@ -107,7 +107,7 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                  className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
+                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Create Poll"
                 aria-label="Create Poll"
               >
@@ -127,7 +127,7 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({variant:'hovericon'})} p-0.5`}
+                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Add Emoji"
                 aria-label="Add Emoji"
               >
@@ -147,7 +147,7 @@ export default function ShareThoughtCard() {
             <button
               type="button"
               className={`
-               ${buttonVariants({variant:"default"})}
+               ${buttonVariants({ variant: "default" })}
                 text-white
                 text-[14px] sm:text-[15px]
                 font-bold

@@ -1,5 +1,5 @@
 "use client"
-import  { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import TodayStories from "@/components/admin/dashboard/TodaysStories";
 import FeedPost from "@/components/admin/Feed/FeedPost";
 import TrendingTopics from "@/components/admin/dashboard/TrendingTopics";
@@ -22,21 +22,21 @@ import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
 export default function AdminPage() {
 
   return (
-    <div>
-      <div className="w-full max-w-[1440px] 2xl:max-w-[1870px] mx-auto px-4 md:px-6 pb-24">
-        
-    
+    <div className="w-full max-w-full ">
+      <div className="w-full max-w-[1440px] 2xl:max-w-[1870px] mx-auto px-2.5 sm:px-4 md:px-6 pb-24">
+
+
         <div className="block xl:hidden mb-4">
           <TodayStories />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 xl:grid-cols-8 gap-4">
 
-        
+
           <div className="hidden md:flex md:col-span-5 xl:col-span-2 flex-col gap-4">
             <ShareThoughtCard />
 
-      
+
             <div className="xl:hidden flex flex-col gap-4">
               <BreakingNews />
               <AITrendRadar />
@@ -48,7 +48,7 @@ export default function AdminPage() {
               <SavedDrafts />
             </div>
 
-         
+
             <div className="hidden xl:flex flex-col gap-4">
               <TodayStories />
               <TrendingTopics />
@@ -61,8 +61,8 @@ export default function AdminPage() {
             </div>
           </div>
 
-        
-          <div className="col-span-1 md:col-span-7 xl:col-span-4 flex flex-col gap-4 w-full max-w-[550px] mx-auto">
+
+          <div className="col-span-1 md:col-span-7 xl:col-span-4 flex flex-col gap-4 w-full max-w-[680px] mx-auto">
             <div className="md:hidden w-full flex flex-col gap-4">
               <ShareThoughtCard />
             </div>

@@ -1,1 +1,7 @@
-export default function Page() { return null; }
+export default function Page() {
+    return(
+        <div>
+            <h1>freelancer</h1>
+        </div>
+    )
+ }  

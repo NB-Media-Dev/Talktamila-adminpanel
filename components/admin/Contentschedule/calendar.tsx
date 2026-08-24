@@ -15,7 +15,6 @@ interface ScheduledItem {
   time: string;
   status: 'Published' | 'Scheduled' | 'Draft';
 }
-
 interface DayEvent {
   type: 'progress' | 'dots' | 'bottom-bar' | 'small-offset';
   progress?: number;
@@ -180,43 +179,43 @@ export default function Calendar() {
 
   return (
     <div className="w-full flex flex-col gap-2">
-      <div className="w-full bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0]">
+      <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-6 md:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0]">
         
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-6">
           <div className="flex flex-col">
-            <h2 className="text-2xl font-extrabold text-gray-900 leading-none">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 leading-none">
               {months[month]} {year}
             </h2>
-            <span className="text-xs font-bold tracking-widest text-[#F27D42] mt-1.5 uppercase opacity-80">
+            <span className="text-[10px] sm:text-xs font-bold tracking-widest text-[#F27D42] mt-1.5 uppercase opacity-80">
               TIMELINE OVERVIEW
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button 
               onClick={handlePrevMonth}
-              className="p-2 border border-gray-100 rounded-full hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
+              className="p-1.5 sm:p-2 border border-gray-100 rounded-full hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
               title="Previous Month"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button 
               onClick={handleToday}
-              className="px-5 py-1.5 border border-gray-200 hover:border-[#F27D42] hover:bg-[#FFF2EC] text-gray-700 hover:text-[#F27D42] rounded-full text-sm font-bold transition-all duration-200"
+              className="px-3.5 sm:px-5 py-1 sm:py-1.5 border border-gray-200 hover:border-[#F27D42] hover:bg-[#FFF2EC] text-gray-700 hover:text-[#F27D42] rounded-full text-xs sm:text-sm font-bold transition-all duration-200"
             >
               Today
             </button>
             <button 
               onClick={handleNextMonth}
-              className="p-2 border border-gray-100 rounded-full hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
+              className="p-1.5 sm:p-2 border border-gray-100 rounded-full hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors"
               title="Next Month"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-7 border-b border-gray-100 pb-10 mb-7">
+        <div className="grid grid-cols-7 border-b border-gray-100 pb-3 sm:pb-6 mb-3 sm:mb-6">
           {weekdays.map((day, idx) => (
             <div 
               key={idx} 
@@ -227,7 +226,7 @@ export default function Calendar() {
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1.5 sm:gap-3 md:gap-2">
+        <div className="grid grid-cols-7 gap-1 sm:gap-3 md:gap-2">
           {calendarDays.map((cell, idx) => {
             const dateKey = formatDateKey(cell.date);
             const isSelected = formatDateKey(selectedDate) === dateKey;
@@ -238,7 +237,7 @@ export default function Calendar() {
             const hasThickBottomBar = eventInfo?.type === 'bottom-bar';
             const isSmallOffset = eventInfo?.type === 'small-offset';
 
-            let cellClass = "aspect-square sm:aspect-auto sm:h-20  md:h-20 flex flex-col justify-between p-1.5 xs:p-2 sm:p-3 rounded-xl sm:rounded-2xl md:rounded-[20px] transition-all duration-200 border relative cursor-pointer ";
+            let cellClass = "aspect-square sm:aspect-auto sm:h-20 md:h-20 flex flex-col justify-between p-1 xs:p-2 sm:p-3 rounded-lg sm:rounded-2xl md:rounded-[20px] transition-all duration-200 border relative cursor-pointer ";
             
             if (!cell.isCurrentMonth) {
               cellClass += "border-transparent bg-transparent text-gray-300 pointer-events-none ";

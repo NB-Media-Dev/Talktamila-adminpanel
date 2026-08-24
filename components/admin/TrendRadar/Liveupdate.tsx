@@ -16,16 +16,16 @@ export default function Liveupdate() {
         </p>
       </div>
 
-      <div className="w-full bg-white rounded-[32px] p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.06)] relative overflow-hidden group">
+      <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.06)] relative overflow-hidden group">
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
        
-            <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-2xl bg-[#FFF2EC] text-[#FF5A26] border border-[#FFEFE0] shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105">
-              <Train className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2]" />
+            <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-2xl bg-[#FFF2EC] text-[#FF5A26] border border-[#FFEFE0] shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105">
+              <Train className="w-5 h-5 sm:w-7 sm:h-7 stroke-[2]" />
             </div>
             
-            <h2 className="text-xl sm:text-2xl font-bold text-[#FF5A26] tracking-tight">
+            <h2 className="text-lg sm:text-2xl font-bold text-[#FF5A26] tracking-tight min-w-0 truncate sm:whitespace-normal">
               Chennai Metro Phase II
             </h2>
           </div>

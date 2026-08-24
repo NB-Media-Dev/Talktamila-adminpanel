@@ -1,12 +1,104 @@
 "use client";
 
-import { Wallet} from "lucide-react";
+import { Wallet, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
 export default function CreatorWallet() {
+  const { isInfluencer } = useAuthRole();
+
+  if (isInfluencer) {
+    return (
+      <div className="w-[350px] bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col justify-between select-none">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
+            Revenue Wallet
+          </h2>
+          <Link
+            href="/influencer/wallet"
+            className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors"
+          >
+            View Details
+          </Link>
+        </div>
+
+
+        <div className="flex items-center justify-around mb-4">
+          <div >
+            <span className="text-xs text-gray-400 font-medium block mb-1">
+              Total Balance
+            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xl sm:text-2xl  text-gray-900 tracking-tight">
+                ₹2,45,680.50
+              </span>
+              <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                <TrendingUp className="w-3 h-3" />
+                +12.4%
+              </span>
+            </div>
+          </div>
+
+          <button className="bg-[#FF6B35] hover:bg-[#FF5A26] active:scale-95 text-white font-bold  text-xs sm:text-sm px-4 sm:px-5 py-1.5 rounded-full transition-all shadow-sm cursor-pointer whitespace-nowrap">
+            Withdraw
+          </button>
+        </div>
+
+        {/* 3 Stat Cards */}
+        <div className="grid grid-cols-3 gap-2">
+          {/* Card 1 */}
+          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2.5 flex flex-col justify-between">
+            <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-tight">
+              Today's Earnings
+            </span>
+            <div className="mt-1">
+              <div className="text-xs sm:text-sm font-bold text-gray-900">
+                ₹12,450
+              </div>
+              <span className="text-[10px] font-bold text-emerald-500 mt-0.5 block">
+                +8.6%
+              </span>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2.5 flex flex-col justify-between">
+            <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-tight">
+              This Month
+            </span>
+            <div className="mt-1">
+              <div className="text-xs sm:text-sm font-bold text-gray-900">
+                ₹1,25,430
+              </div>
+              <span className="text-[10px] font-bold text-emerald-500 mt-0.5 block">
+                +18.2%
+              </span>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2.5 flex flex-col justify-between">
+            <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-tight">
+              Pending Payout
+            </span>
+            <div className="mt-1">
+              <div className="text-xs sm:text-sm font-bold text-gray-900">
+                ₹48,750
+              </div>
+              <span className="text-[10px] font-bold text-[#FF6B35] mt-0.5 block">
+                Processing
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="w-[350px] bg-gradient-to-br from-[#FFAE64] to-[#FF5B3E] rounded-[32px] p-6 shadow-[0_12px_30px_rgba(255,91,62,0.25)] relative overflow-hidden flex flex-col justify-between min-h-[260px] text-white">
-
       <div className="z-10">
         <div className="flex items-center gap-2 mb-3">
           <Wallet className="w-5 h-5 text-white/95" />
@@ -50,7 +142,6 @@ export default function CreatorWallet() {
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full transform translate-x-2 translate-y-2"
         >
-
           <circle
             cx="40"
             cy="60"
@@ -155,7 +246,6 @@ export default function CreatorWallet() {
           </defs>
         </svg>
       </div>
-
     </div>
   );
 }

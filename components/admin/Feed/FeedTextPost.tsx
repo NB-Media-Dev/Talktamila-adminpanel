@@ -3,31 +3,40 @@
 import { useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import { 
-  Heart, 
-  MessageCircle, 
-  Send, 
-  Bookmark, 
-  TrendingUp, 
-  IndianRupee, 
-  Sparkles, 
-  Clock, 
+import { usePathname } from "next/navigation";
+import {
+  Heart,
+  MessageCircle,
+  Send,
+  Bookmark,
+  TrendingUp,
+  IndianRupee,
+  Sparkles,
+  Clock,
   MapPin,
   MessageSquare,
   BarChart2
 } from "lucide-react";
 import avatar6 from "@/public/Images/avatar6.png";
 import { buttonVariants } from "@/components/ui/Button";
+import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 
-export default function FeedTextPost() {
+interface FeedTextPostProps {
+  isInfluencer?: boolean;
+}
+
+export default function FeedTextPost({ isInfluencer: propIsInfluencer }: FeedTextPostProps = {}) {
   const context = useContext(useContenthook);
   const setAnalyticsState = context?.setAnalyticsState;
+  const pathname = usePathname();
+  const isInfluencer = propIsInfluencer ?? pathname?.startsWith("/influencer");
+
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
-    
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-    
+
           <div className="w-11 h-11 rounded-full overflow-hidden relative border border-[#FFEFE0] bg-gray-50 shrink-0">
             <Image
               src={avatar6}
@@ -37,11 +46,11 @@ export default function FeedTextPost() {
               sizes="44px"
             />
           </div>
-       
+
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-sm text-gray-900 leading-none">News Tamila</span>
-         
+
               <span className="text-[#8E8E93] text-xs font-normal">@news_tamil</span>
             </div>
             <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
@@ -68,70 +77,93 @@ export default function FeedTextPost() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mt-1">
-     
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.1M</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
+      {isInfluencer ? (
+        <InfluencerPostAnalytics
+          igReach="15.1K"
+          fbReach="9.4K"
+          ytReach="3.8K"
+          threadsReach="6.2K"
+          earnedAmount="₹15,420"
+          views="42.0K"
+          likes="2.8K"
+          comments="450"
+          shares="1.2K"
+          saves="1.8K"
+          aiPerformanceScore="88"
+          aiPerformanceLabel="Good"
+          bestTime="Today, 8:00 PM"
+          expectedReach="100K – 150K"
+          trendingProb="High"
+          seoScore="86"
+          qualityScore="90"
+        />
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-2 mt-1">
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.1M</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹15,420</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <Sparkles className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">88/100</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
+              <Clock className="w-4 h-4 text-[#FF6B35]" />
+              <div className="flex flex-col">
+                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1:30 PM</span>
+                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹15,420</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
+          <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
+            <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
+                <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">42K</span>
+              </button>
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
+                <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">2.8K</span>
+              </button>
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
+                <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">450</span>
+              </button>
+              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
+                <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
+                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">1.8K</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setAnalyticsState && setAnalyticsState(true)}
+              className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({ variant: 'hoverButton' })} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
+            >
+              <BarChart2 className="w-3.5 h-3.5" />
+              Analytics
+            </button>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <Sparkles className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">88/100</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-          <Clock className="w-4 h-4 text-[#FF6B35]" />
-          <div className="flex flex-col">
-            <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1:30 PM</span>
-            <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
-    
-        <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-            <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">42K</span>
-          </button>
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-            <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">2.8K</span>
-          </button>
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-            <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">450</span>
-          </button>
-          <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-            <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
-            <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">1.8K</span>
-          </button>
-        </div>
-
-               <button 
-                 onClick={() => setAnalyticsState && setAnalyticsState(true)}
-                 className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({variant:'hoverButton'})} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
-               >
-                 <BarChart2 className="w-3.5 h-3.5" />
-                 Analytics
-               </button>
-      </div>
+        </>
+      )}
     </div>
   );
 }
+
