@@ -121,30 +121,30 @@ export default function InfluencerPostAnalytics({
 
 
       <div className="flex items-center justify-between text-gray-600 text-xs sm:text-sm pt-2.5 border-t border-gray-100/80">
-        <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-3 sm:gap-2.5 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <Eye className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-            <span className="font-text-gray-900">{views}</span>
+            <span className="font-bold text-gray-900">{views}</span>
             <span className="text-gray-400 text-xs font-medium">Views</span>
           </div>
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <Heart className="w-3.5 h-3.5 text-gray-400 hover:text-red-500 cursor-pointer shrink-0 transition-colors" />
-            <span className=" text-gray-900">{likes}</span>
+            <span className="font-bold text-gray-900">{likes}</span>
             <span className="text-gray-400 text-xs font-medium">Likes</span>
           </div>
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <MessageCircle className="w-3.5 h-3.5 text-gray-400 hover:text-blue-500 cursor-pointer shrink-0 transition-colors" />
-            <span className=" text-gray-900">{comments}</span>
+            <span className="font-bold text-gray-900">{comments}</span>
             <span className="text-gray-400 text-xs font-medium">Comments</span>
           </div>
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <Send className="w-3.5 h-3.5 text-gray-400 hover:text-green-500 cursor-pointer shrink-0 transition-colors" />
-            <span className=" text-gray-900">{shares}</span>
+            <span className="font-bold text-gray-900">{shares}</span>
             <span className="text-gray-400 text-xs font-medium">Shares</span>
           </div>
           <div className="flex items-center gap-1.5 whitespace-nowrap">
             <Bookmark className="w-3.5 h-3.5 text-gray-400 hover:text-yellow-500 cursor-pointer shrink-0 transition-colors" />
-            <span className=" text-gray-900">{saves}</span>
+            <span className="font-bold text-gray-900">{saves}</span>
             <span className="text-gray-400 text-xs font-medium">Saves</span>
           </div>
         </div>
@@ -161,36 +161,35 @@ export default function InfluencerPostAnalytics({
         <div className="flex flex-col gap-0.5 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-gray-400 min-w-0">
             <span className="truncate">AI Performance</span>
-            <Info className="w-3 h-3 text-gray-400 shrink-0" />
+            <Info className="w-3 h-3 text-gray-400 shrink-0"/>
           </div>
           <div className="flex items-baseline gap-1 mt-0.5 min-w-0">
             <span className="text-lg sm:text-xl font-black text-[#059669] shrink-0">
               {aiPerformanceScore}
             </span>
-            <span className="text-[9px] sm:text-[10px] text-[#059669] bg-[#EAF8F1] px-1.5 py-0.5 rounded truncate">
+            <span className="text-[9px] sm:text-[10px] font-bold text-[#059669] bg-[#EAF8F1] px-1.5 py-0.5 rounded truncate">
               {aiPerformanceLabel}
             </span>
           </div>
-        </div>
-
+        </div>  
         <div className="flex flex-col gap-0.5 border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="text-[10px] sm:text-[11px] font-semibold text-gray-400 truncate">Best Time</div>
-          <div className="text-[11px] sm:text-xs text-gray-900 mt-1 truncate" title={bestTime}>
+          <div className="text-[11px] sm:text-xs font-bold text-gray-900 mt-1 truncate" title={bestTime}>
             {bestTime}
           </div>
         </div>
 
-        <div className="flex flex-col gap-0.5 border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
+        <div className="flex flex-col gap-0.5 border-l sm:border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-gray-400 min-w-0">
             <span className="truncate">Expected Reach</span>
-            <Info className="w-3 h-3 text-gray-400 shrink-0" />
+            <Info className="w-3 h-3 text-gray-400 shrink-0"  />
           </div>
-          <div className="text-[11px] sm:text-xs text-gray-900 mt-1 truncate" title={expectedReach}>
+          <div className="text-[11px] sm:text-xs font-bold text-gray-900 mt-1 truncate" title={expectedReach}>
             {expectedReach}
           </div>
         </div>
 
-        <div className="flex flex-col gap-0.5 border-l sm:border-l-0 lg:border-l border-gray-200/50 pl-2 sm:pl-0 lg:pl-2.5 min-w-0 overflow-hidden">
+        <div className="flex flex-col gap-0.5 border-l-0 sm:border-l border-gray-200/50 pl-0 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-gray-400 min-w-0">
             <span className="truncate min-w-0" title="Trending Probability">
               <span className="hidden sm:inline lg:hidden">Trending Prob.</span>
@@ -198,7 +197,7 @@ export default function InfluencerPostAnalytics({
             </span>
             <Info className="w-3 h-3 text-gray-400 shrink-0" />
           </div>
-          <div className="flex items-center gap-1 text-[11px] sm:text-xs text-[#059669] mt-1 min-w-0">
+          <div className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-[#059669] mt-1 min-w-0">
             <span className="truncate">{trendingProb}</span>
             <TrendingUp className="w-3 h-3 shrink-0" />
           </div>
@@ -206,14 +205,14 @@ export default function InfluencerPostAnalytics({
 
         <div className="flex flex-col gap-0.5 border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="text-[10px] sm:text-[11px] font-semibold text-gray-400 truncate">SEO Score</div>
-          <div className="text-[11px] sm:text-xs text-gray-900 mt-1 truncate">
+          <div className="text-[11px] sm:text-xs font-bold text-gray-900 mt-1 truncate">
             {seoScore}<span className="text-gray-400 font-normal text-[10px]">/100</span>
           </div>
         </div>
 
         <div className="flex flex-col gap-0.5 border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="text-[10px] sm:text-[11px] font-semibold text-gray-400 truncate">Quality Score</div>
-          <div className="text-[11px] sm:text-xs text-gray-900 mt-1 truncate">
+          <div className="text-[11px] sm:text-xs font-bold text-gray-900 mt-1 truncate">
             {qualityScore}<span className="text-gray-400 font-normal text-[10px]">/100</span>
           </div>
         </div>

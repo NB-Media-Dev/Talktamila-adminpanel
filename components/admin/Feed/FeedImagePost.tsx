@@ -154,11 +154,11 @@ export default function FeedImagePost({ isInfluencer: propIsInfluencer }: FeedIm
           />
 
           <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
-            {orientationLabel && (
+            {/* {orientationLabel && (
               <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/20 shadow-sm select-none">
                 {orientationLabel}
               </span>
-            )}
+            )} */}
   
             {imageSrc !== defaultImageSrc && (
               <button

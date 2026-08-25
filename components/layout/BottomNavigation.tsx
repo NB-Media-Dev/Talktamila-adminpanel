@@ -103,7 +103,9 @@ export default function BottomNavigation() {
 
           <button
             onClick={() => {
-              if (isInfluencer) return;
+              if (isInfluencer) {
+                router.push('/influencer/analytics')
+              };
               setActiveTab('wallet');
               setHandlestate(false);
               setAnalyticsState(false);

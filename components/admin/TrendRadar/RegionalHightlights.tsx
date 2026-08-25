@@ -62,67 +62,101 @@ export default function RegionalHightlights() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-5">
-      
-      <div className="flex items-center justify-between w-full select-none">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
-          Regional Highlights
-        </h2>
-      
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleScroll("left")}
-            className="flex items-center justify-center p-2 rounded-full bg-[#FFF6ED] hover:bg-[#FCE3CC] text-gray-700 active:scale-90 transition-all cursor-pointer"
-            aria-label="Scroll Left"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
-          </button>
-          <button
-            onClick={() => handleScroll("right")}
-            className="flex items-center justify-center p-2 rounded-full bg-[#FFF6ED] hover:bg-[#FCE3CC] text-gray-700 active:scale-90 transition-all cursor-pointer"
-            aria-label="Scroll Right"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
-          </button>
+    <>
+      {/* Mobile & Tablet View: 2x2 Grid Container */}
+      <div className="block lg:hidden w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 sm:p-5 border border-gray-100 shadow-xs select-none">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          {highlights.map((item) => (
+            <div
+              key={item.id}
+              className="w-full bg-[#FFECE2] border border-[#FFE3D5] rounded-2xl sm:rounded-3xl p-3 sm:p-4 flex flex-col justify-between hover:shadow-md transition-all duration-300 group cursor-pointer"
+            >
+              <div className="relative h-24 sm:h-36 w-full rounded-xl overflow-hidden shrink-0 mb-2 sm:mb-3">
+                <img
+                  src={item.image}
+                  alt={`${item.location} highlight`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <span className="absolute bottom-2 left-2.5 font-bold text-white text-xs sm:text-base drop-shadow-sm">
+                  {item.location}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-1 min-w-0">
+                <h3 className="text-xs sm:text-base font-extrabold text-gray-900 leading-snug tracking-tight line-clamp-1 group-hover:text-[#FF5A26] transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-[11px] sm:text-xs text-gray-600 font-medium leading-relaxed line-clamp-2">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div
-        ref={scrollRef}
-        className="w-full flex gap-5 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth pb-3 px-0.5 -mx-0.5"
-      >
-        {highlights.map((item) => (
-          <div
-            key={item.id}
-            className="min-w-[270px] sm:min-w-[280px] md:min-w-[250px] flex-1 bg-white rounded-[32px] overflow-hidden border border-[#FFEFE0] shadow-[0_8px_30px_rgba(0,0,0,0.015)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.04)] hover:scale-[1.005] flex flex-col group cursor-pointer"
-          >
-          
-            <div className="relative h-[160px] w-full overflow-hidden shrink-0">
-              <img
-                src={item.image}
-                alt={`${item.location} highlight`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-             
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-            
-              <span className="absolute bottom-4 left-5 font-bold text-white text-base sm:text-lg tracking-wide drop-shadow-sm select-none">
-                {item.location}
-              </span>
-            </div>
-
-            <div className="p-5 sm:p-6 flex flex-col gap-1.5 flex-grow">
-              <h3 className="text-sm sm:text-base font-bold text-gray-800 leading-snug tracking-tight group-hover:text-[#FF5A26] transition-colors duration-200">
-                {item.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-medium">
-                {item.description}
-              </p>
-            </div>
+      {/* Desktop View: Original Horizontal Carousel (UNTOUCHED) */}
+      <div className="hidden lg:flex flex-col gap-5 w-full">
+        <div className="flex items-center justify-between w-full select-none">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
+            Regional Highlights
+          </h2>
+        
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleScroll("left")}
+              className="flex items-center justify-center p-2 rounded-full bg-[#FFF6ED] hover:bg-[#FCE3CC] text-gray-700 active:scale-90 transition-all cursor-pointer"
+              aria-label="Scroll Left"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+            </button>
+            <button
+              onClick={() => handleScroll("right")}
+              className="flex items-center justify-center p-2 rounded-full bg-[#FFF6ED] hover:bg-[#FCE3CC] text-gray-700 active:scale-90 transition-all cursor-pointer"
+              aria-label="Scroll Right"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
 
-    </div>
+        <div
+          ref={scrollRef}
+          className="w-full flex gap-5 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth pb-3 px-0.5 -mx-0.5"
+        >
+          {highlights.map((item) => (
+            <div
+              key={item.id}
+              className="min-w-[270px] sm:min-w-[280px] md:min-w-[250px] flex-1 bg-white rounded-[32px] overflow-hidden border border-[#FFEFE0] shadow-[0_8px_30px_rgba(0,0,0,0.015)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.04)] hover:scale-[1.005] flex flex-col group cursor-pointer"
+            >
+            
+              <div className="relative h-[160px] w-full overflow-hidden shrink-0">
+                <img
+                  src={item.image}
+                  alt={`${item.location} highlight`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              
+                <span className="absolute bottom-4 left-5 font-bold text-white text-base sm:text-lg tracking-wide drop-shadow-sm select-none">
+                  {item.location}
+                </span>
+              </div>
+
+              <div className="p-5 sm:p-6 flex flex-col gap-1.5 flex-grow">
+                <h3 className="text-sm sm:text-base font-bold text-gray-800 leading-snug tracking-tight group-hover:text-[#FF5A26] transition-colors duration-200">
+                  {item.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-medium">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }

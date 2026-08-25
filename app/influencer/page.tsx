@@ -12,11 +12,13 @@ import SavedDrafts from "@/components/admin/dashboard/SavedDrafts";
 import AICreatorStudio from "@/components/admin/RightPanel/AICreatorStudio";
 import CreatorStats from "@/components/admin/RightPanel/CreatorStats";
 import CreatorWallet from "@/components/admin/RightPanel/CreatorWallet";
+
 import AIContentWorkflow from "@/components/admin/RightPanel/AIContentWorkflow";
 import CampaignMarketplace from "@/components/admin/RightPanel/CampaignMarketplace";
 import UpcomingSchedule from "@/components/admin/RightPanel/UpcomingSchedule";
 import TopCreators from "@/components/admin/RightPanel/TopCreators";
 import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
+import CreatorReputationScore from "@/components/influencer/Creatorreputationscore";
 
 
 export default function influencerPage() {
@@ -73,10 +75,9 @@ export default function influencerPage() {
             <AICreatorStudio />
 
             <CreatorWallet />
+            <CreatorReputationScore />
 
             <UpcomingSchedule />
-
-
           </div>
 
         </div>
@@ -84,4 +85,6 @@ export default function influencerPage() {
     </div>
   );
 }
+
+
 

@@ -6,28 +6,61 @@ import ActiveCollaboration from "@/components/admin/Contentschedule/rightsidecon
 
 export default function Page() {
   return (
-    <div className="w-full max-w-[1440px] mx-auto px-4 md:px-6 py-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <div className="lg:col-span-9 w-full flex flex-col gap-8">
-        <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-            Content Schedule
-          </h1>
-          <p className="text-gray-600 mt-2 text-sm max-w-2xl leading-relaxed">
-            Automate and manage your AI-driven content pipeline across all platforms from one place.
-          </p>
+    <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 py-4 sm:py-6 pb-24 select-none">
+      
+      {/* Header */}
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+          Content Schedule
+        </h1>
+        <p className="text-gray-500 mt-1.5 text-xs sm:text-sm max-w-2xl leading-relaxed font-medium">
+          Automate and manage your AI-driven content pipeline across all platforms from one place.
+        </p>
+      </div>
+
+      {/* Mobile & Tablet Layout (< lg) */}
+      <div className="block lg:hidden flex flex-col gap-5 w-full">
+        {/* Top 2 Orange Cards Side-by-Side */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+          <ActiveCampaigns />
+          <EstimatedRevenue />
+        </div>
+
+        {/* Calendar */}
+        <Calendar />
+
+        {/* Publish Button */}
+        <button
+          type="button"
+          className="bg-[#F27D42] hover:bg-[#E35420] active:scale-95 text-white font-extrabold text-sm sm:text-base py-3 sm:py-3.5 px-10 rounded-full shadow-md transition-all cursor-pointer w-full max-w-xs mx-auto block text-center my-2"
+        >
+          Publish
+        </button>
+
+        {/* Active Collaboration */}
+        <ActiveCollaboration />
+
+        {/* Queue */}
+        <Queue />
+      </div>
+
+      {/* Desktop Layout (>= lg) */}
+      <div className="hidden lg:grid grid-cols-12 gap-6 items-start w-full">
+        <div className="col-span-9 flex flex-col gap-6 w-full">
           <Calendar />
         </div>
 
+        <div className="col-span-3 flex flex-col gap-6 w-full mt-2">
+          <ActiveCampaigns />
+          <EstimatedRevenue />
+          <ActiveCollaboration />
+        </div>
+
+        <div className="col-span-12 w-full mt-2">
+          <Queue />
+        </div>
       </div>
-      <div className=" lg:col-span-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-6 md:gap-6 lg:gap-8 w-full lg:mt-[78px]">
-        
-        <ActiveCampaigns />
-        <EstimatedRevenue />
-        <ActiveCollaboration />
-      </div>
-      <div className="lg:col-span-12 w-full">
-        <Queue />
-      </div> 
+
     </div>
   );
 }

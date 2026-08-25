@@ -10,25 +10,36 @@ import RegionalHightlights from "@/components/admin/TrendRadar/RegionalHightligh
 
 export default function TrendRadarPage() {
   return (
-    <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto py-4 sm:py-6 md:py-8 px-2 sm:px-4 flex flex-col gap-8 sm:gap-10 animate-fadeIn">
+    <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto py-3 sm:py-6 px-2.5 sm:px-4 select-none">
       
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-        
-        <div className="lg:col-span-7 flex flex-col gap-6 sm:gap-8">
-          <Liveupdate />
-          <Reachout />
-        </div>
-
-        <div className="lg:col-span-5 flex flex-col gap-5 sm:gap-6 mt-0 lg:mt-[78px]">
-          <Trendinghashtag />
-          <GlobalTamilReach />
-          <BreakingNew />
-        </div>
-
+      {/* Mobile & Tablet Layout (< lg) */}
+      <div className="block lg:hidden flex flex-col gap-4 sm:gap-5 w-full">
+        <Liveupdate />
+        <Reachout />
+        <RegionalHightlights />
+        <Trendinghashtag />
+        <GlobalTamilReach />
+        <BreakingNew />
       </div>
 
-      <div className="w-full pt-4 sm:pt-6 border-t border-[#FFEFE0]/60">
-        <RegionalHightlights />
+      {/* Desktop Layout (>= lg) */}
+      <div className="hidden lg:flex flex-col gap-8 w-full">
+        <div className="grid grid-cols-12 gap-8 items-start w-full">
+          <div className="col-span-7 flex flex-col gap-8 w-full">
+            <Liveupdate />
+            <Reachout />
+          </div>
+
+          <div className="col-span-5 flex flex-col gap-6 mt-[78px] w-full">
+            <Trendinghashtag />
+            <GlobalTamilReach />
+            <BreakingNew />
+          </div>
+        </div>
+
+        <div className="w-full pt-6 border-t border-[#FFEFE0]/60">
+          <RegionalHightlights />
+        </div>
       </div>
 
     </div>
