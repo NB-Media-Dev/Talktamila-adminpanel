@@ -16,32 +16,32 @@ export default function Navbar() {
     console.log("Searching for:", searchQuery);
   };
   return (
-    <header className="sticky top-0 z-40 w-full px-2 sm:px-4 md:px-6 py-2 backdrop-blur-md bg-[#FDEEE2]/90 transition-all duration-200">
+    <header className="sticky top-0 z-40 w-full px-1.5 xs:px-2 sm:px-4 md:px-6 py-2 backdrop-blur-md bg-[#FDEEE2]/90 transition-all duration-200">
 
-      <div className="block md:hidden w-full bg-white rounded-2xl sm:rounded-3xl px-3.5 sm:px-4 py-2.5 sm:py-3 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-orange-100/60">
+      <div className="block md:hidden w-full bg-white rounded-2xl sm:rounded-3xl px-2.5 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-orange-100/60">
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-1">
 
           <div className="flex items-center gap-0.5 select-none shrink-0">
-            <span className="text-base sm:text-lg font-bold text-[#1A1A1A] tracking-tight">Talk</span>
-            <span className="text-base sm:text-lg font-bold text-[#FF6B35] tracking-tight flex items-center gap-0.5">
+            <span className="text-sm xs:text-base sm:text-lg font-bold text-[#1A1A1A] tracking-tight">Talk</span>
+            <span className="text-sm xs:text-base sm:text-lg font-bold text-[#FF6B35] tracking-tight flex items-center gap-0.5">
               Tamila
-              <span className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full ${buttonVariants({ variant: "default" })} flex items-center justify-center gap-[1px] shrink-0 shadow-xs ml-0.5`}>
-                <span className="w-[2px] h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
-                <span className="w-[2px] h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
+              <span className={`w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 rounded-full ${buttonVariants({ variant: "default" })} flex items-center justify-center gap-[1px] shrink-0 shadow-xs ml-0.5`}>
+                <span className="w-[1.5px] h-[1.5px] xs:w-[2px] xs:h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
+                <span className="w-[1.5px] h-[1.5px] xs:w-[2px] xs:h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
               </span>
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 shrink-0">
 
             <button
               type="button"
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors"
+              className="p-1.5 min-w-[32px] min-h-[32px] xs:p-2 xs:min-w-[36px] xs:min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors"
               aria-label="Toggle Search"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 sm:w-[18px] sm:h-[18px]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-[18px] sm:h-[18px]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.603 10.603Z" />
               </svg>
             </button>
@@ -55,26 +55,26 @@ export default function Navbar() {
                   context.setAnalyticsState(false);
                 }
               }}
-              className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full ${buttonVariants({ variant: "default" })} text-white shadow-xs active:scale-95 transition-all cursor-pointer`}
+              className={`p-1.5 min-w-[32px] min-h-[32px] xs:p-2 xs:min-w-[36px] xs:min-h-[36px] flex items-center justify-center rounded-full ${buttonVariants({ variant: "default" })} text-white shadow-xs active:scale-95 transition-all cursor-pointer`}
               title="AI Assistant"
             >
-             <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
+             <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
             </svg>
             </button>
 
             <button
               type="button"
-              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors relative"
+              className="p-1.5 min-w-[32px] min-h-[32px] xs:p-2 xs:min-w-[36px] xs:min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors relative"
               aria-label="Notifications"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="w-[18px] h-[18px] sm:w-[19px] sm:h-[19px]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="w-4 h-4 xs:w-[18px] xs:h-[18px] sm:w-[19px] sm:h-[19px]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
               </svg>
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#FF6B35] rounded-full"></span>
+              <span className="absolute top-1 right-1 xs:top-1.5 xs:right-1.5 w-1.5 h-1.5 bg-[#FF6B35] rounded-full"></span>
             </button>
 
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1A3B5C] border border-[#102A45] cursor-pointer shrink-0 relative overflow-hidden shadow-inner">
+            <div className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-[#1A3B5C] border border-[#102A45] cursor-pointer shrink-0 relative overflow-hidden shadow-inner">
               <Image src="/Images/avatar4.png" alt="User Profile" fill sizes="32px" className="object-cover" priority />
             </div>
           </div>

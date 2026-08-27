@@ -6,7 +6,7 @@ import { Pencil, Image, Video } from "lucide-react";
 
 export default function ShareThoughtCard() {
   return (
-    <div className={`w-full max-w-[340px] sm:max-w-[350px] mx-auto select-none p-1 ${islandMoments.variable}`}>
+    <div className={`@container w-full max-w-full mx-auto select-none p-1 ${islandMoments.variable}`}>
       <div className="relative w-full">
 
         <div className="relative w-full h-[230px] flex flex-col justify-between">

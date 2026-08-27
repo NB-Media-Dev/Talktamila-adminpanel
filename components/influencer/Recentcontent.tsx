@@ -188,7 +188,7 @@ export default function RecentContent() {
         ))}
       </div>
 
-      {/* Mobile View: Cards layout for small screens */}
+     
       <div className="block sm:hidden flex flex-col gap-3">
         {filteredContent.length > 0 ? (
           filteredContent.map((item) => (
@@ -237,7 +237,7 @@ export default function RecentContent() {
                 </div>
               </div>
 
-              {/* Stats footer row */}
+              
               <div className="flex items-center justify-between pt-2 border-t border-gray-200/60 text-[11px] text-gray-500">
                 <div>
                   <span className="text-gray-400">Views:</span> <span className="font-bold text-gray-800">{item.views}</span>
@@ -261,18 +261,18 @@ export default function RecentContent() {
         )}
       </div>
 
-      {/* Tablet & Desktop View: Sleek Table Container */}
+     
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full min-w-[650px] text-left border-collapse">
           <thead>
             <tr className="text-[11px] text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100">
               <th className="pb-3 pl-2">Content</th>
-              <th className="pb-3 text-center">Type</th>
-              <th className="pb-3 text-center">Platform</th>
-              <th className="pb-3 text-center">Views</th>
-              <th className="pb-3 text-center">Engagement</th>
+              <th className="pb-3 pl-2">Type</th>
+              <th className="pb-3 pl-2">Platform</th>
+              <th className="pb-3 pl-2">Views</th>
+              <th className="pb-3 pl-2">Engagement</th>
               <th className="pb-3 pl-2">Date</th>
-              <th className="pb-3 text-center">Status</th>
+              <th className="pb-3 pl-2">Status</th>
               <th className="pb-3 pr-2"></th>
             </tr>
           </thead>

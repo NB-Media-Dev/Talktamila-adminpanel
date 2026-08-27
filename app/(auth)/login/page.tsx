@@ -23,13 +23,13 @@ export default function LoginPage() {
     }
 
     if (email === users.admin.email && password === users.admin.pass) {
-      localStorage.setItem("user",JSON.stringify(users.admin))
+      localStorage.setItem("adminuser",JSON.stringify(users.admin))
       router.push(users.admin.url)
     } else if (email === users.freelancer.email && password === users.freelancer.pass) {
-      localStorage.setItem("user",JSON.stringify(users.freelancer))
+      localStorage.setItem("freelancer",JSON.stringify(users.freelancer))
       router.push(users.freelancer.url)
     } else if (email === users.influencer.email && password === users.influencer.pass) {
-      localStorage.setItem("user",JSON.stringify(users.influencer))
+      localStorage.setItem("infuencer",JSON.stringify(users.influencer))
       router.push(users.influencer.url)
     } else {
       setError(true)

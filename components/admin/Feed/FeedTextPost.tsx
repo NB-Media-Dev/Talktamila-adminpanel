@@ -3,7 +3,6 @@
 import { useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import {
   Heart,
   MessageCircle,
@@ -20,16 +19,12 @@ import {
 import avatar6 from "@/public/Images/avatar6.png";
 import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
-interface FeedTextPostProps {
-  isInfluencer?: boolean;
-}
-
-export default function FeedTextPost({ isInfluencer: propIsInfluencer }: FeedTextPostProps = {}) {
+export default function FeedTextPost() {
   const context = useContext(useContenthook);
   const setAnalyticsState = context?.setAnalyticsState;
-  const pathname = usePathname();
-  const isInfluencer = propIsInfluencer ?? pathname?.startsWith("/influencer");
+  const { isInfluencer, isFreelancer } = useAuthRole();
 
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
@@ -77,7 +72,7 @@ export default function FeedTextPost({ isInfluencer: propIsInfluencer }: FeedTex
         </div>
       </div>
 
-      {isInfluencer ? (
+      {isInfluencer || isFreelancer ? (
         <InfluencerPostAnalytics
           igReach="15.1K"
           fbReach="9.4K"

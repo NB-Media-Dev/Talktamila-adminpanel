@@ -15,7 +15,7 @@ export default function AIContentWorkflow() {
   ];
 
   return (
-    <div className="w-[350px] bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
+    <div className="@container w-full max-w-full bg-white rounded-[32px] p-4 @xs:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
       <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight pl-1">
         AI Content Workflow
       </h2>

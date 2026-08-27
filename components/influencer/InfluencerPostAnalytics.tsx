@@ -179,7 +179,7 @@ export default function InfluencerPostAnalytics({
           </div>
         </div>
 
-        <div className="flex flex-col gap-0.5 border-l sm:border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
+        <div className="flex flex-col gap-0.5 border-l-0 sm:border-l border-gray-200/50 pl-0 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-gray-400 min-w-0">
             <span className="truncate">Expected Reach</span>
             <Info className="w-3 h-3 text-gray-400 shrink-0"  />
@@ -189,7 +189,7 @@ export default function InfluencerPostAnalytics({
           </div>
         </div>
 
-        <div className="flex flex-col gap-0.5 border-l-0 sm:border-l border-gray-200/50 pl-0 sm:pl-2.5 min-w-0 overflow-hidden">
+        <div className="flex flex-col gap-0.5 border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-gray-400 min-w-0">
             <span className="truncate min-w-0" title="Trending Probability">
               <span className="hidden sm:inline lg:hidden">Trending Prob.</span>
@@ -203,7 +203,7 @@ export default function InfluencerPostAnalytics({
           </div>
         </div>
 
-        <div className="flex flex-col gap-0.5 border-l border-gray-200/50 pl-2 sm:pl-2.5 min-w-0 overflow-hidden">
+        <div className="flex flex-col gap-0.5 border-l-0 sm:border-l border-gray-200/50 pl-0 sm:pl-2.5 min-w-0 overflow-hidden">
           <div className="text-[10px] sm:text-[11px] font-semibold text-gray-400 truncate">SEO Score</div>
           <div className="text-[11px] sm:text-xs font-bold text-gray-900 mt-1 truncate">
             {seoScore}<span className="text-gray-400 font-normal text-[10px]">/100</span>

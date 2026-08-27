@@ -8,30 +8,25 @@ import TopCreators from "../RightPanel/TopCreators";
 import BreakingNews from "../dashboard/BreakingNews";
 import TodaysEvents from "../dashboard/TodaysEvents";
 
-interface FeedPostProps {
-  isInfluencer?: boolean;
-}
-
-export default function FeedPost({ isInfluencer }: FeedPostProps = {}) {
+export default function FeedPost() {
   return (
     <div className="w-full max-w-[680px] gap-6 mx-auto flex flex-col select-none">
-
-      <FeedImagePost isInfluencer={isInfluencer} />
+      <FeedImagePost />
       <div className="md:hidden w-full">
         <BreakingNews />
       </div>
 
-      <FeedVideoPost isInfluencer={isInfluencer} />
+      <FeedVideoPost />
       <div className="md:hidden w-full">
         <TopCreators />
       </div>
 
-      <FeedTextPost isInfluencer={isInfluencer} />
+      <FeedTextPost />
       <div className="md:hidden w-full">
-        <TodaysEvents isInfluencer={isInfluencer} />
+        <TodaysEvents />
       </div>
 
-      <FeedPollPost isInfluencer={isInfluencer} />
+      <FeedPollPost />
     </div>
   );
 }

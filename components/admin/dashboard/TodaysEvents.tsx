@@ -2,7 +2,7 @@
 
 import { Calendar } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
 interface EventItem {
   id: number;
@@ -20,14 +20,8 @@ interface ScheduleItem {
   isActive?: boolean;
 }
 
-interface TodaysEventsProps {
-  isInfluencer?: boolean;
-}
-
-export default function TodaysEvents({ isInfluencer: propIsInfluencer }: TodaysEventsProps = {}) {
-  const pathname = usePathname();
-  
-  const isInfluencer = propIsInfluencer ?? pathname?.startsWith("/influencer");
+export default function TodaysEvents() {
+  const { isInfluencer, isFreelancer } = useAuthRole();
 
   const events: EventItem[] = [
     {
@@ -79,6 +73,61 @@ export default function TodaysEvents({ isInfluencer: propIsInfluencer }: TodaysE
           </h2>
           <Link
             href="/influencer/assignments"
+            className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
+          >
+            View Calendar
+          </Link>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          {influencerSchedule.map((item) =>
+            item.isActive ? (
+              <div
+                key={item.id}
+                className="bg-[#FFF2EC] rounded-[22px] px-4 py-3 flex items-center justify-between transition-all duration-200 hover:shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xs sm:text-sm font-bold text-[#FF5A26] shrink-0">
+                    {item.time}
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-900">
+                    {item.title}
+                  </span>
+                </div>
+                {item.isLive && (
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] shrink-0 ml-2" />
+                )}
+              </div>
+            ) : (
+              <div
+                key={item.id}
+                className="px-4 py-2.5 flex items-center justify-between transition-all duration-200"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xs sm:text-sm font-semibold text-gray-400 shrink-0">
+                    {item.time}
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-[#4A5568]">
+                    {item.title}
+                  </span>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    );
+  }
+
+   if (isFreelancer) {
+    return (
+      <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
+            Today&apos;s Schedule
+          </h2>
+          <Link
+            href="/freelancer/assignments"
             className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
           >
             View Calendar

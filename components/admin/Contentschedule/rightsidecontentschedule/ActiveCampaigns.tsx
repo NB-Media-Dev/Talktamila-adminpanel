@@ -9,7 +9,7 @@ export default function ActiveCampaigns() {
       <div>
         <div className="flex justify-between items-start gap-1">
           <div className="flex flex-col min-w-0">
-            <span className="text-[9px] sm:text-[10px] font-extrabold tracking-[0.15em] text-white/80 uppercase truncate">
+            <span className="text-[9px] sm:text-[10px] font-extrabold tracking-[0.15em] text-white/80 uppercase">
               CURRENT MOMENTUM
             </span>
             <h2 className="text-xs sm:text-lg font-bold text-white leading-snug mt-1">
@@ -22,15 +22,15 @@ export default function ActiveCampaigns() {
         </div>
 
         <div className="flex items-baseline mt-3 sm:mt-5 mb-4 sm:mb-6">
-          <span className="text-3xl sm:text-5xl font-black text-white leading-none">12</span>
-          <span className="text-[10px] sm:text-xs text-white/90 uppercase tracking-widest ml-1.5 font-bold">BRANDS</span>
+          <span className="text-2xl sm:text-5xl font-black text-white leading-none">12</span>
+          <span className="text-[10px] sm:text-xs text-white/90 uppercase tracking-widest ml-1.5 font-bold whitespace-nowrap">BRANDS</span>
         </div>
       </div>
 
       <div className="w-full">
-        <div className="flex justify-between items-center text-[9px] sm:text-[10px] font-bold text-white/90 mb-1.5 tracking-wider uppercase">
-          <span className="truncate">Monthly Target</span>
-          <span className="shrink-0">75% Achieved</span>
+        <div className="flex justify-between items-center gap-2 text-[9px] sm:text-[10px] font-bold text-white/90 mb-1.5 tracking-wider uppercase">
+          <span className="whitespace-nowrap">Monthly Target</span>
+          <span className="shrink-0 whitespace-nowrap">75% Achieved</span>
         </div>
         <div className="h-1.5 sm:h-2 w-full bg-white/20 rounded-full overflow-hidden">
           <div 

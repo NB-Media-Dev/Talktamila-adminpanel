@@ -21,7 +21,7 @@ export default function Page() {
       {/* Mobile & Tablet Layout (< lg) */}
       <div className="block lg:hidden flex flex-col gap-5 w-full">
         {/* Top 2 Orange Cards Side-by-Side */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 w-full">
           <ActiveCampaigns />
           <EstimatedRevenue />
         </div>
@@ -46,11 +46,11 @@ export default function Page() {
 
       {/* Desktop Layout (>= lg) */}
       <div className="hidden lg:grid grid-cols-12 gap-6 items-start w-full">
-        <div className="col-span-9 flex flex-col gap-6 w-full">
+        <div className="col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col gap-6 w-full">
           <Calendar />
         </div>
 
-        <div className="col-span-3 flex flex-col gap-6 w-full mt-2">
+        <div className="col-span-12 lg:col-span-4 xl:col-span-3 flex flex-col gap-6 w-full mt-2">
           <ActiveCampaigns />
           <EstimatedRevenue />
           <ActiveCollaboration />

@@ -9,7 +9,7 @@ export function useAuthRole() {
 
   useEffect(() => {
     setIsMounted(true);
-    
+
     try {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
@@ -24,7 +24,7 @@ export function useAuthRole() {
 
 
   const isInfluencer = userRole.startsWith('influencer') || pathname.startsWith('/influencer');
-  const isFreelancer = userRole.startsWith('freelancer') || pathname.startsWith('/freelancer');
+  const isFreelancer = userRole.startsWith('freelancer') || userRole.startsWith('freekancer') || userRole.startsWith('free') || pathname.startsWith('/freelancer');
   const isAdmin = userRole.startsWith('admin') || pathname.startsWith('/admin');
 
   return {

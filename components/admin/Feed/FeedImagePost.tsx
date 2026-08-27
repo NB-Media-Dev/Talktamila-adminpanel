@@ -3,7 +3,6 @@
 import React, { useContext, useState, useRef } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import {
   Heart,
   MessageCircle,
@@ -15,13 +14,13 @@ import {
   Clock,
   MapPin,
   BarChart2,
-  Upload,
   X
 } from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
 import movie from "@/public/Images/movie.jpg";
 import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -39,20 +38,14 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-interface FeedImagePostProps {
-  isInfluencer?: boolean;
-}
-
-export default function FeedImagePost({ isInfluencer: propIsInfluencer }: FeedImagePostProps = {}) {
+export default function FeedImagePost() {
   const context = useContext(useContenthook);
   const setAnalyticsState = context?.setAnalyticsState;
-  const pathname = usePathname();
-  const isInfluencer = propIsInfluencer ?? pathname?.startsWith("/influencer");
+  const { isInfluencer , isFreelancer } = useAuthRole();
 
   const defaultImageSrc = typeof movie === "string" ? movie : (movie as any)?.src || movie;
   const [imageSrc, setImageSrc] = useState<string>(defaultImageSrc);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
-  const [orientationLabel, setOrientationLabel] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,22 +62,12 @@ export default function FeedImagePost({ isInfluencer: propIsInfluencer }: FeedIm
     if (naturalWidth && naturalHeight) {
       const ratio = naturalWidth / naturalHeight;
       setAspectRatio(ratio);
-      if (ratio > 1.25) {
-        setOrientationLabel(`Wide (${naturalWidth}×${naturalHeight})`);
-      } else if (ratio < 0.85) {
-        setOrientationLabel(`Portrait (${naturalWidth}×${naturalHeight})`);
-      } else {
-        setOrientationLabel(`Square (${naturalWidth}×${naturalHeight})`);
-      }
     }
   };
-
- 
 
   const handleResetImage = () => {
     setImageSrc(defaultImageSrc);
     setAspectRatio(null);
-    setOrientationLabel("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -174,7 +157,7 @@ export default function FeedImagePost({ isInfluencer: propIsInfluencer }: FeedIm
         </div>
       </div>
 
-      {isInfluencer ? (
+      {isInfluencer || isFreelancer ? (
         <InfluencerPostAnalytics
           igReach="12.4K"
           fbReach="8.7K"

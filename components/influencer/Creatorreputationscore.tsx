@@ -22,7 +22,7 @@ export default function CreatorReputationScore() {
 
   return (
     <div className="w-[350px] bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col select-none">
-     
+
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
           Creator Reputation Score
@@ -35,9 +35,9 @@ export default function CreatorReputationScore() {
         </Link>
       </div>
 
-     
+
       <div className="flex items-center gap-3 mt-1">
-      
+
         <div className="relative flex-shrink-0 flex items-center justify-center w-28 h-28">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
             <defs>
@@ -47,7 +47,7 @@ export default function CreatorReputationScore() {
                 <stop offset="100%" stopColor="#059669" />
               </linearGradient>
             </defs>
-          
+
             <circle
               cx="50"
               cy="50"
@@ -60,7 +60,7 @@ export default function CreatorReputationScore() {
               strokeDashoffset="0"
               transform="rotate(135 50 50)"
             />
-           
+
             <circle
               cx="50"
               cy="50"
@@ -76,7 +76,7 @@ export default function CreatorReputationScore() {
             />
           </svg>
 
-       
+
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
             <span className="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-none">
               {overallScore}
@@ -87,7 +87,7 @@ export default function CreatorReputationScore() {
           </div>
         </div>
 
-       
+
         <div className="flex-1 flex flex-col gap-2.5 min-w-0">
           {metrics.map((item) => (
             <div key={item.label} className="flex items-center justify-between gap-2">

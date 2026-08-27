@@ -44,7 +44,7 @@ export default function CreatorStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-[350px]">
+    <div className="@container grid grid-cols-2 gap-3 @xs:gap-4 w-full max-w-full">
       {stats.map((stat) => (
         <div
           key={stat.id}

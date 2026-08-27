@@ -49,7 +49,7 @@ export default function ActiveCollaboration() {
               </div>
             </div>
             
-            <button className="text-[10px] font-black text-[#F27D42] hover:text-[#d65f27] hover:underline cursor-pointer transition-all duration-200 uppercase tracking-wider">
+            <button className="text-[10px] font-black text-[#F27D42] hover:text-[#d65f27] hover:underline cursor-pointer transition-all duration-200 uppercase tracking-wider shrink-0 whitespace-nowrap">
               Message
             </button>
           </div>

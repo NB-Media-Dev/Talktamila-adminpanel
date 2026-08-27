@@ -3,7 +3,6 @@
 import { useState, useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import {
   Heart,
   MessageCircle,
@@ -20,6 +19,7 @@ import {
 import avatar3 from "@/public/Images/avatar3.png";
 import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
 interface PollOption {
   id: number;
@@ -27,15 +27,10 @@ interface PollOption {
   votes: number;
 }
 
-interface FeedPollPostProps {
-  isInfluencer?: boolean;
-}
-
-export default function FeedPollPost({ isInfluencer: propIsInfluencer }: FeedPollPostProps = {}) {
+export default function FeedPollPost() {
   const context = useContext(useContenthook);
   const setAnalyticsState = context?.setAnalyticsState;
-  const pathname = usePathname();
-  const isInfluencer = propIsInfluencer ?? pathname?.startsWith("/influencer");
+  const { isInfluencer,isFreelancer } = useAuthRole();
 
   const [options, setOptions] = useState<PollOption[]>([
     { id: 1, text: "Caption Generator", votes: 440 },
@@ -148,7 +143,7 @@ export default function FeedPollPost({ isInfluencer: propIsInfluencer }: FeedPol
         )}
       </div>
 
-      {isInfluencer ? (
+      {isInfluencer || isFreelancer ? (
         <InfluencerPostAnalytics
           igReach="8.5K"
           fbReach="5.2K"

@@ -3,7 +3,6 @@
 import React, { useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import {
   Heart,
   MessageCircle,
@@ -21,6 +20,7 @@ import avatar4 from "@/public/Images/avatar4.png";
 import avatar3 from "@/public/Images/avatar3.png";
 import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
 const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -34,15 +34,10 @@ const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-interface FeedVideoPostProps {
-  isInfluencer?: boolean;
-}
-
-export default function FeedVideoPost({ isInfluencer: propIsInfluencer }: FeedVideoPostProps = {}) {
+export default function FeedVideoPost() {
   const context = useContext(useContenthook);
   const setAnalyticsState = context?.setAnalyticsState;
-  const pathname = usePathname();
-  const isInfluencer = propIsInfluencer ?? pathname?.startsWith("/influencer");
+  const { isInfluencer,isFreelancer} = useAuthRole();
 
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
@@ -105,7 +100,7 @@ export default function FeedVideoPost({ isInfluencer: propIsInfluencer }: FeedVi
         </div>
       </div>
 
-      {isInfluencer ? (
+      {isInfluencer || isFreelancer ? (
         <InfluencerPostAnalytics
           igReach="18.2K"
           fbReach="12.1K"

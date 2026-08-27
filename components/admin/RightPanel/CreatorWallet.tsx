@@ -9,7 +9,7 @@ export default function CreatorWallet() {
 
   if (isInfluencer) {
     return (
-      <div className="w-[350px] bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col justify-between select-none">
+      <div className="@container w-full max-w-full bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col justify-between select-none">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
@@ -98,7 +98,7 @@ export default function CreatorWallet() {
 
 
   return (
-    <div className="w-[350px] bg-gradient-to-br from-[#FFAE64] to-[#FF5B3E] rounded-[32px] p-6 shadow-[0_12px_30px_rgba(255,91,62,0.25)] relative overflow-hidden flex flex-col justify-between min-h-[260px] text-white">
+    <div className="@container w-full max-w-full bg-gradient-to-br from-[#FFAE64] to-[#FF5B3E] rounded-[32px] p-4 @xs:p-6 shadow-[0_12px_30px_rgba(255,91,62,0.25)] relative overflow-hidden flex flex-col justify-between min-h-[260px] text-white">
       <div className="z-10">
         <div className="flex items-center gap-2 mb-3">
           <Wallet className="w-5 h-5 text-white/95" />

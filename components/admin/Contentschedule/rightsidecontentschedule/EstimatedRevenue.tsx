@@ -10,10 +10,10 @@ export default function EstimatedRevenue() {
         <div>
           <div className="flex justify-between items-start gap-1">
             <div className="flex flex-col min-w-0">
-              <span className="text-[9px] sm:text-[10px] font-extrabold tracking-[0.15em] text-white/80 uppercase truncate">
+              <span className="text-[9px] sm:text-[10px] font-extrabold tracking-[0.15em] text-white/80 uppercase">
                 ESTIMATED REVENUE
               </span>
-              <h2 className="text-xl sm:text-3xl font-black text-white mt-1 sm:mt-2 tracking-tight truncate">
+              <h2 className="text-lg sm:text-3xl font-black text-white mt-1 sm:mt-2 tracking-tight whitespace-nowrap">
                 ₹1,84,320
               </h2>
             </div>
@@ -22,13 +22,13 @@ export default function EstimatedRevenue() {
             </div>
           </div>
 
-          <div className="bg-white/15 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 flex justify-between items-center mt-3 sm:mt-4 mb-3 sm:mb-4">
-            <span className="text-[10px] sm:text-xs text-white/90 font-medium italic">Available now</span>
-            <span className="text-xs sm:text-sm font-black text-white">₹45,200</span>
+          <div className="bg-white/15 rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 flex justify-between items-center mt-3 sm:mt-4 mb-3 sm:mb-4 gap-1">
+            <span className="text-[10px] sm:text-xs text-white/90 font-medium italic whitespace-nowrap">Available now</span>
+            <span className="text-xs sm:text-sm font-black text-white whitespace-nowrap">₹45,200</span>
           </div>
         </div>
 
-        <button className="w-full py-2.5 sm:py-3 bg-white hover:bg-orange-50 active:scale-[0.98] text-[#F27D42] text-xs sm:text-sm font-extrabold rounded-full transition-all duration-200 text-center shadow-xs cursor-pointer">
+        <button className="w-full py-2.5 sm:py-3 bg-white hover:bg-orange-50 active:scale-[0.98] text-[#F27D42] text-xs sm:text-sm font-extrabold rounded-full transition-all duration-200 text-center shadow-xs cursor-pointer whitespace-nowrap">
           Withdraw to Bank
         </button>
       </div>
