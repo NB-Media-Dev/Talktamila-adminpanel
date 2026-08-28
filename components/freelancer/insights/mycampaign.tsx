@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Megaphone, Newspaper } from "lucide-react";
+import { buttonVariants } from "@/components/ui/Button";
 
 export interface CampaignItem {
   id: string;
@@ -53,7 +54,7 @@ export default function MyCampaign({
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs font-bold text-[#C04808] hover:underline transition-all cursor-pointer"
+          className={`${buttonVariants({variant:'link'})} text-xs `}
         >
           View All
         </button>
@@ -68,7 +69,7 @@ export default function MyCampaign({
           >
             <div className="flex items-center gap-3 min-w-0">
            
-              <div className="w-10 h-10 rounded-2xl bg-[#FFF2EC] text-[#C04808] flex items-center justify-center shrink-0">
+              <div className={`${buttonVariants({variant:'ghost'})}`}>
                 {item.icon === "megaphone" ? (
                   <Megaphone className="w-5 h-5" />
                 ) : (
@@ -88,7 +89,7 @@ export default function MyCampaign({
             </div>
 
           
-            <span className="bg-[#E8F8F0] text-[#10B981] text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-[#D1F2E2] shrink-0">
+            <span className={`text-[10px] font-bold   px-2.5 py-0.5 rounded-full shrink-0 ${buttonVariants({variant:'sucess'})} "`}>
               {item.status}
             </span>
           </div>

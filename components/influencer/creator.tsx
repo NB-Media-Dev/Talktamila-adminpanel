@@ -65,7 +65,7 @@ export default function Creator({ limit = 2 }: CreatorProps) {
 
   return (
     <div className="w-full select-none">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {displayedCreators.map((creator) => (
           <div
             key={creator.id}

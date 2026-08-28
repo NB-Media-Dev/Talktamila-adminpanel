@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { Sparkle, UploadCloud, X, MoreHorizontal, Play, ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
+import { FacebookIcon } from "@/public/Svgicons/svgicons";
 
 const platformList = [
   { id: "Talk Tamila", name: "Talk Tamila" },
@@ -132,9 +133,10 @@ export function CreatenewPost() {
 
               <div className="flex items-center gap-1.5 px-0.5 select-none">
 
-                <div className="w-4 h-4 rounded-full bg-[#1877F2] flex items-center justify-center text-white font-extrabold text-[9px] shrink-0 leading-none pb-[1px] shadow-xs">
+                {/* <div className="w-4 h-4 rounded-full bg-[#1877F2] flex items-center justify-center text-white font-extrabold text-[9px] shrink-0 leading-none pb-[1px] shadow-xs">
                   f
-                </div>
+                </div> */}
+                <FacebookIcon/>
                 <span className="text-[10px] font-extrabold text-[#1c1e21] tracking-tight">Facebook</span>
               </div>
 

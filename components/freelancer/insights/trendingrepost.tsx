@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonVariants } from "@/components/ui/Button";
 import React from "react";
 
 export interface TrendingItem {
@@ -54,7 +55,7 @@ export default function TrendingRepost({
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs font-bold text-[#C04808] hover:underline transition-all cursor-pointer"
+       className={`${buttonVariants({variant:'link'})} text-xs `}
         >
           View All
         </button>

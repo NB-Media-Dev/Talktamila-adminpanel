@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { buttonVariants } from "../ui/Button";
 
 export interface NotificationItem {
   id: string;
@@ -67,7 +68,7 @@ export default function Notifications({
         <button
           type="button"
           onClick={handleMarkAllRead}
-          className="text-xs sm:text-sm font-semibold text-[#B84218] hover:text-[#9A3412] active:scale-95 transition-all cursor-pointer"
+          className={`${buttonVariants({variant:'link'})} text-sm`}
         >
           {markReadText}
         </button>

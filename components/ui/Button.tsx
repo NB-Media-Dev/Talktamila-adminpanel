@@ -7,31 +7,31 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[linear-gradient(135deg,#E6703A,#FFA663)] text-white hover:brightness-110 transition-all duration-200",
+          "bg-[linear-gradient(135deg,#E6703A,#FFA663)] rounded-full text-white hover:brightness-110 transition-all duration-200 cursor-pointer",
 
         destructive:
-          "bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] text-white",
+          "bg-gradient-to-br from-[#FF416C] to-[#FF4B2B] text-white cursor-pointer rounded-full",
         
         sucess:
-        "bg-emerald-200 text-emerald-700 border border-emerald-100",
+        "bg-emerald-200 text-emerald-700 border border-emerald-100 cursor-pointer rounded-full",
 
         outline:
-          "border border-brand bg-transparent text-brand hover:bg-brand hover:text-white",
+          "border-2 border-[#C04808] text-[#C04808] hover:bg-[#FFF2EC] active:scale-195 rounded-full font-bold transition-all text-center cursor-pointer duration-300 bg-transparent",
 
         secondary:
-          "bg-secondary text-[#000000]/70 hover:bg-secondary-hover transition-all duration-200",
+          "bg-secondary text-[#000000]/70 hover:bg-secondary-hover rounded-full transition-all duration-200 cursor-pointer",
 
         ghost:
-          "text-foreground/70 hover:bg-muted hover:text-foreground",
+          "w-10 h-10 rounded-2xl bg-[#FFF2EC] text-[#C04808] rounded-full flex items-center justify-center shrink-0 cursor-pointer",
 
         link:
-          "text-brand underline-offset-4 hover:underline",
+          "text-brand underline-offset-4  cursor-pointer",
         bgcolor:
-        "bg-[#FFEFE0] hover:bg-[#FCE3CC]  text-gray-600 ",
+        "bg-[#FFEFE0] hover:bg-[#FCE3CC]  text-gray-600 cursor-pointer rounded-full",
         hovericon:
-        "hover:text-[#E05D24] transition-colors cursor-pointer",
+        "hover:text-[#E05D24] transition-colors cursor-pointer cursor-pointer rounded-full",
         hoverButton:
-        "border border-[#FF6B35] text-[#FF6B35] font-semibold text-sm hover:bg-[linear-gradient(135deg,#E6703A,#FFA663)]  hover:text-white transition-all duration-200 active:scale-98 cursor-pointer"
+        "border border-[#FF6B35] text-[#FF6B35] font-semibold text-sm hover:bg-[linear-gradient(135deg,#E6703A,#FFA663)]  hover:text-white transition-all duration-200 rounded-full active:scale-98 cursor-pointer"
       },
 
     },

@@ -34,7 +34,7 @@ export default function VerifiedReposter({
           src={avatarUrl}
           alt={name}
           className="w-20 h-20 rounded-full object-cover border-2 border-white shadow-md"
-        />
+         loading="lazy"/>
         <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[#C04808] text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white shadow-xs whitespace-nowrap">
           {level}
         </span>

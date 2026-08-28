@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { X, MoreHorizontal, Play, Share2, ClipboardCheck, Check, Ban } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
+import { FacebookIcon } from "@/public/Svgicons/svgicons";
 
 const initialReviews = [
   {
@@ -254,9 +255,10 @@ export function Adminreviewpanel() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className="w-3 h-3 text-[7px] bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                      {/* <span className="w-3 h-3 text-[7px] bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
                         f
-                      </span>
+                      </span> */}
+                      <FacebookIcon className="w-3 h-3"/>
                       <span className="bg-orange-50 text-orange-600 text-[8px] font-bold py-0.5 px-1.5 rounded-full uppercase border border-orange-100 tracking-wide">
                         {review.type}
                       </span>

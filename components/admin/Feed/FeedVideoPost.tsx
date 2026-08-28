@@ -3,36 +3,15 @@
 import React, { useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import {
-  Heart,
-  MessageCircle,
-  Send,
-  Bookmark,
-  TrendingUp,
-  IndianRupee,
-  Sparkles,
-  Clock,
-  MapPin,
-  BarChart2,
-  Play
-} from "lucide-react";
+import { Play} from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
 import avatar3 from "@/public/Images/avatar3.png";
 import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { Barcharticons, ClockIcons, HeartIcon, IndianrupeeIcons, LocationsIcons, MessageIcons, SavedIcons, SendIcon, SparkleIcons, TrendingIcons, YoutubeIcon } from "@/public/Svgicons/svgicons";
 
-const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    stroke="currentColor"
-    strokeWidth="0"
-    {...props}
-  >
-    <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.524 3.545 12 3.545 12 3.545s-7.525 0-9.388.511a3.002 3.002 0 0 0-2.11 2.107A31.248 31.248 0 0 0 0 12.007a31.253 31.253 0 0 0 .502 5.844 3.003 3.003 0 0 0 2.11 2.107c1.863.514 9.388.514 9.388.514s7.524 0 9.388-.514a3.002 3.002 0 0 0 2.11-2.107 31.25 31.25 0 0 0 .502-5.844 31.248 31.248 0 0 0-.502-5.844zM9.545 15.568V8.44l6.18 3.568-6.18 3.56z" />
-  </svg>
-);
+
 
 export default function FeedVideoPost() {
   const context = useContext(useContenthook);
@@ -62,7 +41,7 @@ export default function FeedVideoPost() {
               <span className="text-[#8E8E93] text-xs font-normal">@news_tamil</span>
             </div>
             <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
-              <MapPin className="w-3.5 h-3.5" />
+              <LocationsIcons/>
               <span className="text-[0.6875rem]">Chennai, India</span>
               <span className="text-[0.6875rem]">•</span>
               <span className="text-[0.6875rem]">12m</span>
@@ -124,7 +103,7 @@ export default function FeedVideoPost() {
         <>
           <div className="grid grid-cols-2 gap-2 mt-1">
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
+              <TrendingIcons/>
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.2M</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
@@ -132,7 +111,7 @@ export default function FeedVideoPost() {
             </div>
 
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
+              <IndianrupeeIcons/>
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹18,240</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
@@ -140,7 +119,7 @@ export default function FeedVideoPost() {
             </div>
 
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <Sparkles className="w-4 h-4 text-[#FF6B35]" />
+              <SparkleIcons/>
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">96/100</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
@@ -148,7 +127,7 @@ export default function FeedVideoPost() {
             </div>
 
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <Clock className="w-4 h-4 text-[#FF6B35]" />
+              <ClockIcons/>
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1:30 PM</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
@@ -159,19 +138,19 @@ export default function FeedVideoPost() {
           <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
             <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-                <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
+                <HeartIcon/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">52.5K</span>
               </button>
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-                <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
+                <MessageIcons/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">3.2K</span>
               </button>
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-                <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
+                <SendIcon/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">522</span>
               </button>
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-                <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
+                <SavedIcons/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">2.1K</span>
               </button>
             </div>
@@ -180,7 +159,7 @@ export default function FeedVideoPost() {
               onClick={() => setAnalyticsState && setAnalyticsState(true)}
               className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({ variant: 'hoverButton' })} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
             >
-              <BarChart2 className="w-3.5 h-3.5" />
+              <Barcharticons/>
               Analytics
             </button>
           </div>

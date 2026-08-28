@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Megaphone, CheckCircle2 } from "lucide-react";
+import { buttonVariants } from "@/components/ui/Button";
 
 export interface AnnouncementProps {
   title?: string;
@@ -29,7 +30,7 @@ export default function Announcement({
     
       <div className="flex items-center gap-3">
        
-        <div className="w-11 h-11 rounded-2xl bg-[#FFF2EC] text-[#C04808] flex items-center justify-center shrink-0">
+        <div className={`${buttonVariants({variant:'ghost'})}`}>
           <Megaphone className="w-5 h-5" />
         </div>
 
@@ -59,14 +60,14 @@ export default function Announcement({
         <button
           type="button"
           onClick={onRepostNow}
-          className="flex-1 bg-[#C04808] hover:bg-[#A33B05] active:scale-95 text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-full transition-all text-center shadow-xs cursor-pointer"
+          className={`flex-1 ${buttonVariants({variant:'default'})} sm:text-sm py-2.5 px-4 rounded-full text-center shadow-xs `}
         >
           Repost Now
         </button>
         <button
           type="button"
           onClick={onPreview}
-          className="flex-1 border-2 border-[#C04808] text-[#C04808] hover:bg-[#FFF2EC] active:scale-95 font-bold text-xs sm:text-sm py-2.5 px-4 rounded-full transition-all text-center cursor-pointer"
+          className={`flex-1  ${buttonVariants({variant:'outline'})} text-xs sm:text-sm py-2.5 px-4 rounded-full`}
         >
           Preview
         </button>

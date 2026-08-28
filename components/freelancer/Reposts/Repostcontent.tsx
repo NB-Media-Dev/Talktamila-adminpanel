@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, AtSign } from "lucide-react";
+import { ArrowLeft, ArrowLeftToLine, ArrowRight, AtSign } from "lucide-react";
+import { buttonVariants } from "@/components/ui/Button";
+import { InstagramIcon, FacebookIcon, TreadsIcon,YoutubeIcon } from "@/public/Svgicons/svgicons";
 
 export interface RepostedItem {
   id: string;
@@ -147,45 +149,45 @@ export default function RepostContent({
     switch (platform) {
       case "Instagram":
         return (
-          <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white shadow-xs shrink-0">
-            <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-            </svg>
-          </div>
+        <InstagramIcon/>
         );
       case "Facebook":
         return (
-          <div className="w-7 h-7 rounded-full bg-[#1877F2] flex items-center justify-center text-white shadow-xs shrink-0">
-            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-            </svg>
-          </div>
+          <FacebookIcon/>
         );
       case "YouTube":
         return (
-          <div className="w-7 h-7 rounded-full bg-[#FF0000] flex items-center justify-center text-white shadow-xs shrink-0">
-            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-            </svg>
-          </div>
+         <YoutubeIcon/>
         );
       case "Threads":
         return (
-          <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center text-white shadow-xs shrink-0">
-            <AtSign className="w-4 h-4" />
-          </div>
+         <TreadsIcon/>
         );
       default:
         return null;
     }
   };
 
+  const getstatuscolor=(statuscolor:RepostedItem["status"])=>{
+    switch( statuscolor){
+      case "PUBLISHED" :
+        return( "bg-[#E8F8F0] text-[#10B981] border-[#D1F2E2]")     
+      case  "PROCESSING":
+        return("bg-[#FFF8E6] text-[#D97706] border-[#FDE68A]")       
+      case  "REJECTED" :
+        return( "bg-red-50 text-red-500 border-red-200")       
+      default:
+        ""
+    }
+  }
+
   return (
+    <div>
+      <button  onClick={() => window.history.back()} className={`${buttonVariants({variant:'link'})} outline-none`} ><ArrowLeft className="w-8 h-6"/> Back</button>
     <div
       className={`w-full bg-white rounded-3xl border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col select-none ${className}`}
     >
+     
      
       <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
@@ -202,8 +204,8 @@ export default function RepostContent({
                 onClick={() => setActiveFilter(tab.key)}
                 className={`px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? "bg-[#C04808] text-white shadow-xs"
-                    : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                    ? `${buttonVariants({variant:"default"})}`
+                    : `${buttonVariants({variant:'secondary'})}`
                 }`}
               >
                 {tab.label}
@@ -238,13 +240,7 @@ export default function RepostContent({
               </div>
 
               <span
-                className={`inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-wider border shrink-0 ${
-                  item.status === "PUBLISHED"
-                    ? "bg-[#E8F8F0] text-[#10B981] border-[#D1F2E2]"
-                    : item.status === "PROCESSING"
-                    ? "bg-[#FFF8E6] text-[#D97706] border-[#FDE68A]"
-                    : "bg-red-50 text-red-500 border-red-200"
-                }`}
+                className={`inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-wider border shrink-0 ${getstatuscolor(item.status)}` }
               >
                 {item.status}
               </span>
@@ -326,11 +322,7 @@ export default function RepostContent({
                 <td className="py-3.5 px-6 text-right">
                   <span
                     className={`inline-block text-[10px] font-bold px-3 py-1 rounded-full tracking-wider border shrink-0 ${
-                      item.status === "PUBLISHED"
-                        ? "bg-[#E8F8F0] text-[#10B981] border-[#D1F2E2]"
-                        : item.status === "PROCESSING"
-                        ? "bg-[#FFF8E6] text-[#D97706] border-[#FDE68A]"
-                        : "bg-red-50 text-red-500 border-red-200"
+                      getstatuscolor(item.status)
                     }`}
                   >
                     {item.status}
@@ -353,6 +345,7 @@ export default function RepostContent({
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </button>
       </div>
+    </div>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import avatar1 from "@/public/Images/avatar1.png";
 import avatar2 from "@/public/Images/avatar2.png";
 import avatar3 from "@/public/Images/avatar3.png";
 import avatar4 from "@/public/Images/avatar4.png";
+import { buttonVariants } from "../ui/Button";
 
 export interface RepostorItem {
   id: string;
@@ -65,7 +66,7 @@ export default function Toprepostors({
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs sm:text-sm font-semibold text-[#B84218] hover:text-[#9A3412] transition-colors cursor-pointer active:scale-95"
+          className={`${buttonVariants({variant:'link'})} text-sm`}
         >
           {viewAllText}
         </button>

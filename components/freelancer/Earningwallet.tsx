@@ -43,7 +43,7 @@ export default function Earningwallet({
         <button
           type="button"
           onClick={onViewDetails}
-          className="text-xs sm:text-sm text-[#B84218] hover:text-[#9A3412] transition-colors cursor-pointer active:scale-95"
+          className={`${buttonVariants({variant:'link'})} text-sm`}
         >
           View Details
         </button>
@@ -96,7 +96,7 @@ export default function Earningwallet({
       <button
         type="button"
         onClick={onWithdraw}
-        className={`w-full py-3 px-3 active:scale-[0.98] ${buttonVariants({ variant: 'default' })} text-xs sm:text-sm font-bold rounded-full shadow-[0_6px_20px_rgba(255,107,53,0.3)] transition-all cursor-pointer flex items-center justify-center`}
+        className={`w-full py-3 px-3  ${buttonVariants({ variant: 'default' })} text-xs sm:text-sm font-bold shadow-[0_6px_20px_rgba(255,107,53,0.3)] flex items-center justify-center`}
       >
         Withdraw Funds
       </button>
@@ -118,7 +118,7 @@ export default function Earningwallet({
         <button
           type="button"
           onClick={onChangeBank}
-          className="text-xs font-semibold text-[#B84218] hover:text-[#9A3412] transition-colors cursor-pointer shrink-0 active:scale-95"
+          className={`${buttonVariants({variant:'link'})} text-xs`}
         >
           Change
         </button>

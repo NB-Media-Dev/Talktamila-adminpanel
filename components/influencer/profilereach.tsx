@@ -111,34 +111,32 @@ export default function ProfileReach() {
       </div>
 
     
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-        {stats.map((item, index) => {
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
+        {stats.map((item) => {
           const IconComponent = item.icon;
-          const isLastItem = index === stats.length - 1;
           return (
             <div
               key={item.id}
-              className={`bg-[#FAFAFA] border border-gray-100/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between hover:shadow-xs transition-all duration-200 ${
-                isLastItem ? "col-span-2 sm:col-span-1" : ""
-              }`}
+              className="bg-[#FAFAFA] border border-gray-100/80 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between hover:shadow-xs transition-all duration-200"
             >
-             
+              {/* Header: Icon + Label */}
               <div className="flex items-center gap-2">
                 <div className={`p-1.5 rounded-full ${item.iconBg} ${item.iconColor} shrink-0`}>
-                  <IconComponent className="w-3.5 h-3.5" />
+                  <IconComponent className="w-4 h-4" />
                 </div>
-                <span className="text-[11px] sm:text-xs font-medium text-gray-700 truncate">
+                <span className="text-xs font-semibold text-gray-700 leading-snug">
                   {item.label}
                 </span>
               </div>
 
-           
+              {/* Value & Change */}
               <div className="mt-2.5 sm:mt-3">
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 tracking-tight truncate">
+                <div className="text-base sm:text-lg lg:text-xl font-extrabold text-gray-900 tracking-tight whitespace-nowrap">
                   {item.value}
                 </div>
-                <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#10B981] mt-1">
-                  <MoveUp className="w-3 h-3 stroke-[2.5]" />
+                <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#10B981] mt-1 whitespace-nowrap">
+                  <MoveUp className="w-3 h-3 stroke-[2.5] shrink-0" />
                   <span>{item.change}</span>
                   <span className="text-gray-400 font-normal">this week</span>
                 </div>

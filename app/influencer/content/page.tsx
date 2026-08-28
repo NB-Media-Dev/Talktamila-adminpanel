@@ -19,17 +19,16 @@ export default function Page() {
       </div>
 
       
-      <div className="block lg:hidden flex flex-col gap-5 w-full">
-      
-        <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 w-full">
+      <div className="block md:hidden flex flex-col gap-5 w-full">
+        
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-4 w-full">
           <ActiveCampaigns />
           <EstimatedRevenue />
         </div>
 
-    
+     
         <Calendar />
 
-        
         <button
           type="button"
           className="bg-[#F27D42] hover:bg-[#E35420] active:scale-95 text-white font-extrabold text-sm sm:text-base py-3 sm:py-3.5 px-10 rounded-full shadow-md transition-all cursor-pointer w-full max-w-xs mx-auto block text-center my-2"
@@ -37,26 +36,25 @@ export default function Page() {
           Publish
         </button>
 
-   
-        <ActiveCollaboration />
+    
+       
 
-  
+      
         <Queue />
       </div>
 
-
-      <div className="hidden lg:grid grid-cols-12 gap-6 items-start w-full">
-        <div className="col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col gap-6 w-full">
+      <div className="hidden md:grid grid-cols-12 gap-5 sm:gap-6 items-start w-full">
+        <div className="col-span-12 md:col-span-7 lg:col-span-8 xl:col-span-9 flex flex-col gap-5 sm:gap-6 w-full">
           <Calendar />
         </div>
 
-        <div className="col-span-12 lg:col-span-4 xl:col-span-3 flex flex-col gap-6 w-full mt-2">
+        <div className="col-span-12 md:col-span-5 lg:col-span-4 xl:col-span-3 flex flex-col gap-5 sm:gap-6 w-full">
           <ActiveCampaigns />
           <EstimatedRevenue />
           <ActiveCollaboration />
         </div>
 
-        <div className="col-span-12 w-full mt-2">
+        <div className="col-span-12 w-full">
           <Queue />
         </div>
       </div>

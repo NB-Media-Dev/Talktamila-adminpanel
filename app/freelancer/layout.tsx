@@ -7,7 +7,7 @@ export default function freelanceLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex flex-col min-h-screen w-full">
       <Navbar />
-      <main className="max-w-7xl 2xl:max-w-[1770px]  px-2 sm:px-4 py-2 pb-16">
+      <main className="w-full max-w-[1770px] mx-auto px-2 sm:px-4 md:px-6 py-2 pb-28 md:pb-28">
         {children}
       </main>
       <BottomNavigation />

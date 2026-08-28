@@ -9,8 +9,9 @@ import { useAuthRole } from '@/hooks/useAuthRole';
 import { CreatenewPost } from "@/components/admin/dashboard/CreatenewPost";
 import { Adminreviewpanel } from "@/components/admin/dashboard/Adminreviewpanel";
 import { Performanceacrossplatform } from "@/components/admin/dashboard/Performanceacrossplatform";
-import { QuickStudio } from "@/components/admin/dashboard/quickstudi";
+
 import { Radar } from 'lucide-react';
+import { QuickStudio } from '../admin/dashboard/QuickStudio';
 
 export default function BottomNavigation() {
 

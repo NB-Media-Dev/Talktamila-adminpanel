@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Square, CheckSquare } from "lucide-react";
+import { buttonVariants } from "@/components/ui/Button";
 
 export interface TaskItem {
   id: string;
@@ -58,7 +59,7 @@ export default function Todaytask({
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs font-bold text-[#C04808] hover:underline transition-all cursor-pointer"
+            className={`${buttonVariants({variant:'link'})} text-xs `}
         >
           View All
         </button>

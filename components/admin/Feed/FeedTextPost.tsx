@@ -3,23 +3,13 @@
 import { useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
-import {
-  Heart,
-  MessageCircle,
-  Send,
-  Bookmark,
-  TrendingUp,
-  IndianRupee,
-  Sparkles,
-  Clock,
-  MapPin,
-  MessageSquare,
-  BarChart2
-} from "lucide-react";
+import { MessageSquare} from "lucide-react";
 import avatar6 from "@/public/Images/avatar6.png";
 import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { Barcharticons, ClockIcons, HeartIcon, IndianrupeeIcons, LocationsIcons, MessageIcons, SavedIcons, SendIcon, SparkleIcons, TrendingIcons } from "@/public/Svgicons/svgicons";
+
 
 export default function FeedTextPost() {
   const context = useContext(useContenthook);
@@ -49,7 +39,7 @@ export default function FeedTextPost() {
               <span className="text-[#8E8E93] text-xs font-normal">@news_tamil</span>
             </div>
             <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
-              <MapPin className="w-3.5 h-3.5" />
+              <LocationsIcons/>
               <span className="text-[0.6875rem]">Chennai, India</span>
               <span className="text-[0.6875rem]">•</span>
               <span className="text-[0.6875rem]">12m</span>
@@ -96,7 +86,7 @@ export default function FeedTextPost() {
         <>
           <div className="grid grid-cols-2 gap-2 mt-1">
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <TrendingUp className="w-4 h-4 text-[#FF6B35]" />
+              <TrendingIcons/>
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.1M</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
@@ -104,7 +94,7 @@ export default function FeedTextPost() {
             </div>
 
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <IndianRupee className="w-4 h-4 text-[#FF6B35]" />
+              <IndianrupeeIcons />
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹15,420</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
@@ -112,7 +102,7 @@ export default function FeedTextPost() {
             </div>
 
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <Sparkles className="w-4 h-4 text-[#FF6B35]" />
+              <SparkleIcons/>
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">88/100</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
@@ -120,7 +110,7 @@ export default function FeedTextPost() {
             </div>
 
             <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <Clock className="w-4 h-4 text-[#FF6B35]" />
+              <ClockIcons/>
               <div className="flex flex-col">
                 <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1:30 PM</span>
                 <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
@@ -131,19 +121,19 @@ export default function FeedTextPost() {
           <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
             <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-                <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-red-500 transition-all" />
+                <HeartIcon/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">42K</span>
               </button>
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-                <MessageCircle className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-blue-500/20 transition-all" />
+                <MessageIcons/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">2.8K</span>
               </button>
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-                <Send className="w-[15px] h-[15px] sm:w-[17px] sm:h-[17px] transition-all" />
+                <SendIcon/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">450</span>
               </button>
               <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-                <Bookmark className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] group-hover:fill-yellow-500 transition-all" />
+                <SavedIcons/>
                 <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">1.8K</span>
               </button>
             </div>
@@ -152,7 +142,7 @@ export default function FeedTextPost() {
               onClick={() => setAnalyticsState && setAnalyticsState(true)}
               className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({ variant: 'hoverButton' })} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
             >
-              <BarChart2 className="w-3.5 h-3.5" />
+              <Barcharticons/>
               Analytics
             </button>
           </div>

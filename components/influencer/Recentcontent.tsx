@@ -2,41 +2,39 @@
 
 import React, { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
+import { FacebookIcon, InstagramIcon, TalkTamilaIcon, YoutubeIcon } from "@/public/Svgicons/svgicons";
+import { buttonVariants } from "../ui/Button";
 
 
-const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" className="w-4 h-4 shrink-0" {...props}>
-    <radialGradient id="ig-recent-grad" cx="30%" cy="107%" r="130%">
-      <stop offset="0%" stopColor="#fdf497" />
-      <stop offset="5%" stopColor="#fdf497" />
-      <stop offset="45%" stopColor="#fd5949" />
-      <stop offset="60%" stopColor="#d6249f" />
-      <stop offset="90%" stopColor="#285AEB" />
-    </radialGradient>
-    <path
-      fill="url(#ig-recent-grad)"
-      d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
-    />
-  </svg>
-);
+// const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
+//   <svg
+//     viewBox="0 0 24 24"
+//     fill="none"
+//     stroke="currentColor"
+//     strokeWidth="2"
+//     strokeLinecap="round"
+//     strokeLinejoin="round"
+//     {...props}
+//   >
+//     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+//     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+//     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+//   </svg>
+// );
 
-const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="#FF0000" className="w-4.5 h-4.5 shrink-0" {...props}>
-    <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.524 3.545 12 3.545 12 3.545s-7.525 0-9.388.511a3.002 3.002 0 0 0-2.11 2.107A31.248 31.248 0 0 0 0 12.007a31.253 31.253 0 0 0 .502 5.844 3.003 3.003 0 0 0 2.11 2.107c1.863.514 9.388.514 9.388.514s7.524 0 9.388-.514a3.002 3.002 0 0 0 2.11-2.107 31.25 31.25 0 0 0 .502-5.844 31.248 31.248 0 0 0-.502-5.844zM9.545 15.568V8.44l6.18 3.568-6.18 3.56z" />
-  </svg>
-);
+// const YoutubeIcon = (props: React.SVGProps<SVGSVGElement>) => (
+//   <svg viewBox="0 0 24 24" fill="#FF0000" className="w-4.5 h-4.5 shrink-0" {...props}>
+//     <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.524 3.545 12 3.545 12 3.545s-7.525 0-9.388.511a3.002 3.002 0 0 0-2.11 2.107A31.248 31.248 0 0 0 0 12.007a31.253 31.253 0 0 0 .502 5.844 3.003 3.003 0 0 0 2.11 2.107c1.863.514 9.388.514 9.388.514s7.524 0 9.388-.514a3.002 3.002 0 0 0 2.11-2.107 31.25 31.25 0 0 0 .502-5.844 31.248 31.248 0 0 0-.502-5.844zM9.545 15.568V8.44l6.18 3.568-6.18 3.56z" />
+//   </svg>
+// );
 
-const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="#1877F2" className="w-4 h-4 shrink-0" {...props}>
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-  </svg>
-);
+// const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
+//   <svg viewBox="0 0 24 24" fill="#1877F2" className="w-4 h-4 shrink-0" {...props}>
+//     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+//   </svg>
+// );
 
-const TalkTamilaIcon = () => (
-  <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-[#FF5C28] to-[#FF8C42] flex items-center justify-center text-[8px] font-black text-white shrink-0 shadow-xs">
-    TT
-  </div>
-);
+
 
 export interface ContentItem {
   id: string;
@@ -132,7 +130,7 @@ export default function RecentContent() {
   const renderPlatformIcon = (platform: string) => {
     switch (platform) {
       case "Instagram":
-        return <InstagramIcon />;
+        return  <InstagramIcon className="w-5 h-5 text-[#E1306C]  bg-pink-50 rounded-full hover:bg-pink-100 transition-colors" />;
       case "YouTube":
         return <YoutubeIcon />;
       case "Facebook":
@@ -166,12 +164,11 @@ export default function RecentContent() {
         <h2 className="text-lg sm:text-2xl font-bold text-gray-900 tracking-tight">
           Recent Content
         </h2>
-        <button className="text-xs sm:text-sm font-bold text-[#FF6B35] hover:text-[#F95A22] transition-colors cursor-pointer">
+        <button className={` ${buttonVariants({variant:'link'})} text-xs sm:text-sm `}>
           View All
         </button>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
         {tabs.map((tab) => (
           <button
@@ -261,18 +258,18 @@ export default function RecentContent() {
         )}
       </div>
 
-     
-      <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full min-w-[650px] text-left border-collapse">
+      {/* Desktop & Tablet Table View */}
+      <div className="hidden sm:block w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200">
+        <table className="w-full min-w-[620px] text-left border-collapse">
           <thead>
-            <tr className="text-[11px] text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100">
-              <th className="pb-3 pl-2">Content</th>
-              <th className="pb-3 pl-2">Type</th>
-              <th className="pb-3 pl-2">Platform</th>
-              <th className="pb-3 pl-2">Views</th>
-              <th className="pb-3 pl-2">Engagement</th>
-              <th className="pb-3 pl-2">Date</th>
-              <th className="pb-3 pl-2">Status</th>
+            <tr className="text-[10px] sm:text-[11px] text-gray-400 font-bold uppercase tracking-wider border-b border-gray-100">
+              <th className="pb-3 pl-2 pr-2 whitespace-nowrap">Content</th>
+              <th className="pb-3 px-2 text-center whitespace-nowrap">Type</th>
+              <th className="pb-3 px-2 text-center whitespace-nowrap">Platform</th>
+              <th className="pb-3 px-2 text-center whitespace-nowrap">Views</th>
+              <th className="pb-3 px-2 text-center whitespace-nowrap">Engagement</th>
+              <th className="pb-3 px-2 text-left whitespace-nowrap">Date</th>
+              <th className="pb-3 px-2 text-center whitespace-nowrap">Status</th>
               <th className="pb-3 pr-2"></th>
             </tr>
           </thead>
@@ -280,10 +277,10 @@ export default function RecentContent() {
             {filteredContent.length > 0 ? (
               filteredContent.map((item) => (
                 <tr key={item.id} className="group hover:bg-gray-50/50 transition-colors">
-                
-                  <td className="py-3 pl-2">
-                    <div className="flex items-center gap-3 max-w-[280px] sm:max-w-[340px]">
-                      <div className="relative w-[76px] h-[48px] rounded-xl overflow-hidden shrink-0 bg-gray-100 border border-gray-100">
+                  {/* Content (Thumbnail + Title + Description) */}
+                  <td className="py-2.5 sm:py-3 pl-2">
+                    <div className="flex items-center gap-2.5 sm:gap-3 max-w-[240px] sm:max-w-[300px] md:max-w-[260px] lg:max-w-[340px]">
+                      <div className="relative w-[64px] h-[42px] sm:w-[76px] sm:h-[48px] rounded-xl overflow-hidden shrink-0 bg-gray-100 border border-gray-100">
                         <img
                           src={item.thumbnail}
                           alt={item.title}
@@ -293,7 +290,7 @@ export default function RecentContent() {
                           }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent -z-10" />
-                        <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[9px] px-1 py-0.2 rounded backdrop-blur-xs">
+                        <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[8px] sm:text-[9px] px-1 py-0.2 rounded backdrop-blur-xs">
                           {item.duration}
                         </span>
                       </div>
@@ -301,17 +298,17 @@ export default function RecentContent() {
                         <h4 className="text-xs sm:text-sm font-bold text-gray-900 truncate group-hover:text-[#FF6B35] transition-colors">
                           {item.title}
                         </h4>
-                        <p className="text-[11px] font-medium text-gray-400 truncate mt-0.5">
+                        <p className="text-[10px] sm:text-[11px] font-medium text-gray-400 truncate mt-0.5">
                           {item.description}
                         </p>
                       </div>
                     </div>
                   </td>
 
-                  {/* Type */}
-                  <td className="py-3 text-center">
+                  {/* Type Badge */}
+                  <td className="py-2.5 sm:py-3 text-center">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${getTypeBadgeStyle(
+                      className={`inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold ${getTypeBadgeStyle(
                         item.type
                       )}`}
                     >
@@ -319,38 +316,38 @@ export default function RecentContent() {
                     </span>
                   </td>
 
-                  {/* Platform */}
-                  <td className="py-3 text-center">
+                  {/* Platform Icon */}
+                  <td className="py-2.5 sm:py-3 text-center">
                     <div className="flex items-center justify-center">
                       {renderPlatformIcon(item.platform)}
                     </div>
                   </td>
 
                   {/* Views */}
-                  <td className="py-3 text-center text-xs sm:text-sm font-bold text-gray-900">
+                  <td className="py-2.5 sm:py-3 text-center text-xs sm:text-sm text-gray-900 font-semibold">
                     {item.views}
                   </td>
 
                   {/* Engagement */}
-                  <td className="py-3 text-center text-xs sm:text-sm font-bold text-gray-900">
+                  <td className="py-2.5 sm:py-3 text-center text-xs sm:text-sm text-gray-900 font-semibold">
                     {item.engagement}
                   </td>
 
                   {/* Date */}
-                  <td className="py-3 text-left text-xs text-gray-700 whitespace-nowrap">
+                  <td className="py-2.5 sm:py-3 text-left text-[11px] sm:text-xs text-gray-700 whitespace-nowrap">
                     {item.date}
                   </td>
 
-                  {/* Status */}
-                  <td className="py-3 text-center">
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8F0] text-[#10B981]">
+                  {/* Status Badge */}
+                  <td className="py-2.5 sm:py-3 text-center">
+                    <span className="inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-[#E8F8F0] text-[#10B981]">
                       {item.status}
                     </span>
                   </td>
 
-                  {/* Action */}
-                  <td className="py-3 pr-2 text-right">
-                    <button className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                  {/* Actions */}
+                  <td className="py-2.5 sm:py-3 pr-2 text-right">
+                    <button className="p-1 sm:p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
                       <MoreHorizontal className="w-4 h-4" />
                     </button>
                   </td>

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { buttonVariants } from "../ui/Button";
 
 export interface ScoreMetric {
   label: string;
@@ -26,11 +27,11 @@ export default function CreatorScore({
   status = "Good",
   metrics = defaultMetrics,
 }: CreatorScoreProps) {
-  // SVG gauge constants
+
   const radius = 46;
-  const circumference = 2 * Math.PI * radius; // ~289
+  const circumference = 2 * Math.PI * radius; 
   const arcDegree = 240;
-  const arcLength = (arcDegree / 360) * circumference; // ~192.7
+  const arcLength = (arcDegree / 360) * circumference; 
   const filledArc = (score / 100) * arcLength;
 
   return (
@@ -40,15 +41,15 @@ export default function CreatorScore({
         <h3 className="text-base sm:text-xl font-bold text-gray-900 tracking-tight">
           Creator Score
         </h3>
-        <span className="px-3 sm:px-3.5 py-1 rounded-full text-xs font-bold bg-[#E8F8F0] text-[#10B981] border border-[#BCECD2]">
+        <span className={` ${buttonVariants({variant:'sucess'})} px-2 text-xs sm:text-sm `}>
           {status}
         </span>
       </div>
 
     
-      <div className="flex flex-col xs:flex-row items-center justify-between gap-4 sm:gap-6">
-     
-        <div className="relative flex items-center justify-center w-28 h-28 sm:w-36 sm:h-36 shrink-0">
+      <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4 sm:gap-5">
+       
+        <div className="relative flex items-center justify-center w-28 h-28 sm:w-32 sm:h-32 md:w-28 md:h-28 lg:w-36 lg:h-36 shrink-0">
           <svg className="w-full h-full" viewBox="0 0 120 120">
             <defs>
               <linearGradient id="creatorScoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -57,7 +58,7 @@ export default function CreatorScore({
               </linearGradient>
             </defs>
 
-            {/* Background Arc */}
+           
             <circle
               cx="60"
               cy="60"
@@ -70,7 +71,7 @@ export default function CreatorScore({
               transform="rotate(150 60 60)"
             />
 
-            {/* Filled Progress Arc */}
+            
             <circle
               cx="60"
               cy="60"
@@ -87,7 +88,7 @@ export default function CreatorScore({
 
          
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="text-2xl sm:text-4xl font-extrabold text-gray-900 leading-none tracking-tight">
+            <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 leading-none tracking-tight">
               {score}
             </span>
             <span className="text-[10px] sm:text-xs font-medium text-gray-400 mt-0.5 sm:mt-1">
@@ -96,8 +97,8 @@ export default function CreatorScore({
           </div>
         </div>
 
-       
-        <div className="w-full xs:flex-1 flex flex-col gap-2.5 sm:gap-3 min-w-0">
+      
+        <div className="w-full sm:flex-1 md:w-full lg:flex-1 flex flex-col gap-2.5 sm:gap-3 min-w-0">
           {metrics.map((item) => (
             <div
               key={item.label}

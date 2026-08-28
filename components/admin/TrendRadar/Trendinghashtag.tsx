@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { RotateCw, ArrowUpRight } from "lucide-react";
+import { buttonVariants } from "@/components/ui/Button";
 
 interface HashtagItem {
   id: number;
@@ -72,7 +73,7 @@ export default function Trendinghashtag() {
       </div>
 
       <div className="w-full pt-2">
-        <button className="w-full border border-[#FF6B35]/40 hover:border-[#FF5A26] text-[#FF6B35] hover:text-[#FF5A26] font-bold text-sm sm:text-base py-3 px-6 rounded-full transition-all duration-200 bg-transparent hover:bg-[#FFF6ED]/30 active:scale-[0.99] cursor-pointer">
+        <button className={`w-full ${buttonVariants({variant:'hoverButton'})} font-bold text-sm sm:text-base py-3 px-6`}>
           Explore More Topics
         </button>
       </div>
