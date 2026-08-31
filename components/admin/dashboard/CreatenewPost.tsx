@@ -1,26 +1,41 @@
 "use client"
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Sparkle, UploadCloud, X, MoreHorizontal, Play, ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
 import { FacebookIcon } from "@/public/Svgicons/svgicons";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+
+
+
+
 
 const platformList = [
   { id: "Talk Tamila", name: "Talk Tamila" },
   { id: "Instagram", name: "Instagram" },
-  { id: "Facebook", name: "Facebook" },
-  { id: "YouTube", name: "YouTube" },
   { id: "Threads", name: "Threads" },
   { id: "X", name: "X" },
+  { id: "Facebook", name: "Facebook" },
+  { id: "YouTube", name: "YouTube" },
+  { id: "LinkedIn", name: "LinkedIn" },
+  { id: "Telegram", name: "Telegram" },
 ];
 
 export function CreatenewPost() {
+
+ 
 
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([
     "Talk Tamila",
     "Instagram",
     "Facebook",
   ]);
+
+  const router=useRouter()
+
+  const [step, setStep] = useState<"edit" | "loading" | "preview">("edit");
+  const [progress, setProgress] = useState(0);
 
   const context = useContext(useContenthook);
 
@@ -44,6 +59,33 @@ export function CreatenewPost() {
     );
   };
 
+  const handleNext = () => {
+    setStep("loading");
+  };
+
+  useEffect(() => {
+    if (step === "loading") {
+      setProgress(0);
+      const duration = 5000;
+      const intervalTime = 50;
+      const totalSteps = duration / intervalTime;
+      let currentStep = 0;
+
+      const timer = setInterval(() => {
+        currentStep++;
+        const nextProgress = Math.min(Math.round((currentStep / totalSteps) * 100), 100);
+        setProgress(nextProgress);
+
+        if (currentStep >= totalSteps) {
+          clearInterval(timer);
+          setStep("preview");
+        }
+      }, intervalTime);
+
+      return () => clearInterval(timer);
+    }
+  }, [step]);
+
   return (
 
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 z-40">
@@ -56,9 +98,67 @@ export function CreatenewPost() {
           <X size={16} />
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start mt-1">
 
-          <div className="flex flex-col gap-2.5">
+
+        {step === "loading" && (
+          <div className="lg:hidden flex flex-col items-center justify-center min-h-[55vh] py-8 px-4 text-center">
+            <div className="w-full max-w-[270px] mx-auto mb-2 flex items-center justify-between">
+              <Skeleton className="h-4 w-24 bg-orange-200" />
+            </div>
+
+            <div className="bg-[#F0F2F5] h-[500px]  rounded-2xl p-2 border border-gray-200/40 w-full  max-w-[340px] lg:max-w-[270px]mx-auto flex flex-col gap-1.5 overflow-hidden">
+
+              <div className="flex items-center gap-1.5 px-0.5">
+                <Skeleton className="h-4 w-4 rounded-full bg-gray-300" />
+                <Skeleton className="h-3 w-16 bg-gray-300" />
+              </div>
+
+
+              <div className="bg-white mt-5 sm:h-full rounded-xl border border-gray-200/60 p-2 flex flex-col gap-2">
+
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-8 rounded-full bg-gray-300" />
+                  <div className="flex flex-col gap-1.5 flex-grow">
+                    <Skeleton className="h-3 w-28 bg-gray-300" />
+                    <Skeleton className="h-2.5 w-16 bg-gray-200" />
+                  </div>
+                </div>
+
+          
+                <div className="flex flex-col gap-1.5 px-0.5">
+                  <Skeleton className="h-2.5 w-full bg-gray-200" />
+                  <Skeleton className="h-2.5 w-3/4 bg-gray-200" />
+                </div>
+
+              
+                <Skeleton className="w-full aspect-[4/3] bg-gray-200 rounded-md" />
+
+     
+                <div className="flex justify-between items-center px-0.5 pt-0.5">
+                  <Skeleton className="h-3 w-16 bg-gray-200" />
+                  <Skeleton className="h-5 w-16 rounded-md bg-gray-300" />
+                </div>
+              </div>
+            </div>
+
+    
+            <div className="flex gap-1 justify-center mt-4">
+              <Skeleton className="w-3.5 h-1 rounded-full bg-orange-300" />
+              <Skeleton className="w-1 h-1 rounded-full bg-gray-300" />
+              <Skeleton className="w-1 h-1 rounded-full bg-gray-300" />
+            </div> 
+
+        
+             <div className="flex items-center gap-2.5 w-full justify-center mt-3">
+              <Skeleton className="h-7 w-20 rounded-full bg-gray-200" />
+              <Skeleton className="h-7 w-24 rounded-full bg-orange-200" />
+            </div>
+          </div>
+        )}
+
+        <div className={`grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start mt-1 ${step === "loading" ? "hidden lg:grid" : "grid"}`}>
+
+          <div className={`flex flex-col gap-2.5 ${step === "edit" ? "block" : "hidden lg:flex"}`}>
 
             <div>
               <h1 className="text-lg font-bold text-[#9b4811] tracking-tight">Create New Post</h1>
@@ -124,23 +224,39 @@ export function CreatenewPost() {
                 );
               })}
             </div>
+
+        
+            <button
+              type="button"
+              onClick={handleNext}
+              className="mt-5 w-full py-3 bg-[#ef8b54] hover:bg-[#d9723a] text-white text-[12px] font-extrabold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer lg:hidden uppercase tracking-wider select-none"
+            >
+              NEXT
+            </button>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <h3 className="text-xs font-extrabold text-gray-800 tracking-wide uppercase select-none">Live Preview</h3>
+          <div className={`flex flex-col gap-2 ${step === 'preview' ? 'block' : 'hidden lg:flex'}`}>
+            <div className="flex items-center justify-between lg:block mb-1.5 select-none">
+              <h3 className="text-xs font-extrabold text-gray-800 tracking-wide uppercase">Live Preview</h3>
+              <button
+                type="button"
+                onClick={() => setStep("edit")}
+                className="lg:hidden text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors cursor-pointer flex items-center gap-1"
+              >
+                ← Back to Edit
+              </button>
+            </div>
 
-            <div className="bg-[#F0F2F5] rounded-2xl p-2 border border-gray-200/40 flex-grow flex flex-col gap-1.5 w-full max-w-[270px] mx-auto overflow-hidden">
+            <div className="bg-[#F0F2F5] mt-5 h-[500px] sm:h-full rounded-2xl p-2 border border-gray-200/40 flex-grow flex flex-col gap-1.5 w-full  max-w-[340px] lg:max-w-[270px]  mx-auto overflow-hidden">
 
-              <div className="flex items-center gap-1.5 px-0.5 select-none">
+              <div className="flex  items-center gap-1.5 px-0.5 select-none">
 
-                {/* <div className="w-4 h-4 rounded-full bg-[#1877F2] flex items-center justify-center text-white font-extrabold text-[9px] shrink-0 leading-none pb-[1px] shadow-xs">
-                  f
-                </div> */}
-                <FacebookIcon/>
-                <span className="text-[10px] font-extrabold text-[#1c1e21] tracking-tight">Facebook</span>
+
+                <FacebookIcon />
+                <span className="text-[10px]  font-extrabold text-[#1c1e21] tracking-tight">Facebook</span>
               </div>
 
-              <div className="bg-white rounded-xl border border-gray-200/60 shadow-sm p-2 flex flex-col gap-1.5">
+              <div className="bg-white  rounded-xl border border-gray-200/60 shadow-sm p-2 flex flex-col gap-1.5">
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -162,11 +278,11 @@ export function CreatenewPost() {
                   </button>
                 </div>
 
-                <p className="text-[9px] text-[#050505] font-normal leading-normal whitespace-pre-wrap px-0.5 break-words line-clamp-2">
+                <p className="text-[10px] text-[#050505] font-normal leading-normal whitespace-pre-wrap px-0.5 break-words line-clamp-2">
                   {caption || "Write your thoughts here... Use #hashtags to trend!"}
                 </p>
 
-                <div className="w-full aspect-[4/3] bg-slate-950 relative group border border-gray-100 rounded-md overflow-hidden">
+                <div className="w-full h-[300px] sm:h-full aspect-[4/3] bg-slate-950 relative group border border-gray-100 rounded-md overflow-hidden">
                   <img
                     src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=400&q=80"
                     alt="Video Ad Preview"
@@ -250,13 +366,17 @@ export function CreatenewPost() {
               <div className="flex items-center gap-2.5 w-full justify-center">
                 <button
                   type="button"
-                  className="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 text-[11px] font-bold rounded-full hover:bg-gray-50 transition-colors shadow-xs min-w-[90px] cursor-pointer"
+                  onClick={() => {
+                    setHandlestate(false);
+                    router.push("/admin/content");
+                  }}
+                  className={`${buttonVariants({ variant: 'outline' })} px-4 py-1.5 text-[11px] font-bold min-w-[90px] shadow-xs cursor-pointer`}
                 >
                   Schedule
                 </button>
                 <button
                   type="button"
-                  className={`${buttonVariants({ variant: 'default' })} px-6 py-1.5 text-white text-[11px] font-bold rounded-full shadow-md transition-colors min-w-[100px] cursor-pointer`}
+                  className={`${buttonVariants({ variant: 'default' })} px-6 py-1.5 text-white text-[11px] font-bold shadow-md transition-colors min-w-[100px] cursor-pointer`}
                 >
                   Publish
                 </button>

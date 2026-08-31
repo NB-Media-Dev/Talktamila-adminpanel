@@ -9,13 +9,13 @@ export default function ShareThoughtCard() {
     <div className={`@container w-full max-w-full mx-auto select-none p-1 ${islandMoments.variable}`}>
       <div className="relative w-full">
 
-        <div className="relative w-full h-[230px] flex flex-col justify-between">
+        <div className="relative w-full sm:h-[230px]  flex flex-col justify-between">
 
           <svg
             viewBox="0 0 340 230"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+            className="absolute inset-0 w-full h-full  pointer-events-none filter drop-shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
             preserveAspectRatio="none"
           >
             <path
@@ -39,7 +39,7 @@ export default function ShareThoughtCard() {
           </svg>
 
           <div
-            className="absolute top-0 -right-[0px] sm:top-0 sm:right-0 w-24 h-20 sm:w-20 rounded-full pointer-events-none z-10"
+            className="absolute top-0 right-[0] sm:top-0 sm:right-0 w-21 h-15 sm:w-20 sm:h-20  rounded-full pointer-events-none z-10"
             style={{
               background:
                 "radial-gradient(circle at 50% 50%, #EE7233 0%, #F58D4E 45%, rgba(245,141,78,0.55) 65%, rgba(253,241,231,0) 85%)",
@@ -51,8 +51,8 @@ export default function ShareThoughtCard() {
           <button
             type="button"
             className="
-              absolute top-[20px] right-[25px] sm:top-[18px] sm:right-[18px] 
-              w-10 h-10 sm:w-11 sm:h-11 
+              absolute top-[20px] right-[15px] sm:top-[18px] sm:right-[18px] 
+              w-15 h-5 sm:w-11 sm:h-11 
               flex items-center justify-center 
               text-white cursor-pointer z-20 
               transition-transform duration-200 

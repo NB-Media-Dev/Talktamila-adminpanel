@@ -4,22 +4,28 @@
 import { buttonVariants } from "@/components/ui/Button";
 import { Train, ArrowRight, TrendingUp } from "lucide-react";
 
-export default function Liveupdate() {
+interface LiveupdateProps {
+  hideMobileHeader?: boolean;
+}
+
+export default function Liveupdate({ hideMobileHeader = false }: LiveupdateProps) {
   return (
     <div className="w-full">
    
     
-      <div className="block lg:hidden mb-4 sm:mb-6 select-none">
-        <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-          <span className="p-1 rounded-lg bg-orange-100 text-[#FF5A26] inline-flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 stroke-[2.5]" />
-          </span>
-          Trending Topics
-        </h1>
-        <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed mt-1">
-          Design, generate &amp; Publish in one flow
-        </p>
-      </div>
+      {!hideMobileHeader && (
+        <div className="block lg:hidden mb-4 sm:mb-6 select-none">
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+            <span className="p-1 rounded-lg bg-orange-100 text-[#FF5A26] inline-flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 stroke-[2.5]" />
+            </span>
+            Trending Topics
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed mt-1">
+            Design, generate &amp; Publish in one flow
+          </p>
+        </div>
+      )}
 
     
       <div className="hidden lg:block mb-6 select-none">

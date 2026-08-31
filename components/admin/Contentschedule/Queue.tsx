@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Clock, Trash2, MoreHorizontal, Film, ArrowRight, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { Clock, Trash2, MoreHorizontal, Film, ArrowRight, Play, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { InstagramIcon, YoutubeIcon } from "@/public/Svgicons/svgicons";
 
 interface QueueItem {
@@ -168,113 +168,220 @@ export default function Queue() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedItems.map((item) => {
               const isScheduled = item.status === "Scheduled";
 
               return (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-6 shadow-[0_4px_30px_rgba(0,0,0,0.01)] border border-[#FFEFE0] flex flex-col gap-5 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(255,90,38,0.04)]"
-                >
-                 
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-3">
-                     
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-                          isScheduled ? "bg-[#F5EBE1]" : "bg-[#FFEFE0]"
-                        }`}
-                      >
-                        {isScheduled ? (
-                          <Clock className="w-5 h-5 text-gray-700" />
-                        ) : (
-                          <svg
-                            className="w-5 h-5 text-[#9E3B0B]"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                    
-                      <div className="flex flex-col">
-                        <span className="text-gray-900 text-xs sm:text-sm">{item.time}</span>
-                        <span
-                          className={`text-[0.6875rem] sm:text-xs leading-none mt-1 ${
-                            isScheduled ? "text-gray-400" : "text-[#A75D00]"
+                <div key={item.id} className="w-full ">
+                  {/* Desktop Card (sm and up) */}
+                  <div className="hidden sm:flex flex-col bg-white rounded-[32px] p-6 shadow-[0_4px_30px_rgba(0,0,0,0.01)] border border-[#FFEFE0] gap-1 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(255,90,38,0.04)] w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
+                            isScheduled ? "bg-[#F5EBE1]" : "bg-[#FFEFE0]"
                           }`}
                         >
-                          {item.status}
-                        </span>
+                          {isScheduled ? (
+                            <Clock className="w-5 h-5 text-gray-700" />
+                          ) : (
+                            <svg
+                              className="w-5 h-5 text-[#9E3B0B]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      
+                        <div className="flex flex-col">
+                          <span className="text-gray-900 text-xs sm:text-sm">{item.time}</span>
+                          <span
+                            className={`text-[0.6875rem] sm:text-xs leading-none mt-1 ${
+                              isScheduled ? "text-gray-400" : "text-[#A75D00]"
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        {item.platform === "youtube" ? (
+                          <div className="flex items-center gap-1.5 px-3 py-1 bg-red-200/40 rounded-full text-[0.6875rem] sm:text-xs font-semibold text-gray-700 shadow-inner-xs">
+                            <YoutubeIcon/>
+                            <span>YouTube</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 px-3 py-1 bg-[#FFF0F3] rounded-full text-[0.6875rem] sm:text-xs font-semibold text-gray-700 shadow-inner-xs">
+                            <InstagramIcon/>
+                            <span>Instagram</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div>
-                      {item.platform === "youtube" ? (
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-red-200/40 rounded-full text-[0.6875rem] sm:text-xs font-semibold text-gray-700 shadow-inner-xs">
-                          <YoutubeIcon/>
-                          <span>YouTube</span>
+
+                    <div className="flex items-center gap-3 sm:gap-4 py-1 min-w-0">
+                      <img
+                        src={item.thumbnail}
+                        alt={item.title}
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-[16px] sm:rounded-[20px] object-cover shrink-0 border border-gray-100/60 shadow-sm"
+                      />
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-[1.0625rem] leading-tight tracking-tight text-ellipsis overflow-hidden line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-1 text-gray-500 text-[0.6875rem] sm:text-xs mt-0.5 font-semibold">
+                          <Film className="w-3.5 h-3.5 text-gray-400" />
+                          <span>{item.type}</span>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 w-full mt-auto">
+                      {isScheduled ? (
+                        <>
+                          <button className="flex-1 bg-[#9E3B0B] hover:bg-[#8F3204] text-white py-3.5 px-6 rounded-[20px] text-xs sm:text-sm text-center transition-all duration-200 cursor-pointer active:scale-[0.98]">
+                            Edit Studio
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="border border-gray-200 hover:border-red-200 hover:bg-red-50 text-gray-500 hover:text-red-600 p-3.5 rounded-[20px] transition-all duration-200 cursor-pointer shrink-0 active:scale-[0.98]"
+                            title="Delete from Queue"
+                          >
+                            <Trash2 className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                        </>
                       ) : (
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-[#FFF0F3] rounded-full text-[0.6875rem] sm:text-xs font-semibold text-gray-700 shadow-inner-xs">
-                          <InstagramIcon/>
-                          <span>Instagram</span>
-                        </div>
+                        <>
+                          <button className="flex-1 bg-[#EAEFF5] hover:bg-[#DDE5EF] text-[#2C3E50]  py-3.5 px-6 rounded-[20px] text-xs sm:text-sm text-center transition-all duration-200 cursor-pointer active:scale-[0.98]">
+                            Review Assets
+                          </button>
+                          <button
+                            className="border border-gray-200 hover:bg-gray-50 text-gray-500 p-3.5 rounded-[20px] transition-all duration-200 cursor-pointer shrink-0 active:scale-[0.98]"
+                            title="More Actions"
+                          >
+                            <MoreHorizontal className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 sm:gap-4 py-1 min-w-0">
-                    <img
-                      src={item.thumbnail}
-                      alt={item.title}
-                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-[16px] sm:rounded-[20px] object-cover shrink-0 border border-gray-100/60 shadow-sm"
-                    />
-                    <div className="flex flex-col gap-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 text-sm sm:text-[1.0625rem] leading-tight tracking-tight text-ellipsis overflow-hidden line-clamp-2">
-                        {item.title}
-                      </h3>
-                      <div className="flex items-center gap-1 text-gray-500 text-[0.6875rem] sm:text-xs mt-0.5 font-semibold">
-                        <Film className="w-3.5 h-3.5 text-gray-400" />
-                        <span>{item.type}</span>
+               
+                  <div
+                    className="flex sm:hidden flex-col bg-white rounded-[28px] p-5 gap-4 transition-all duration-300 w-full"
+                  >
+                   
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-3">
+                      
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                            isScheduled ? "bg-[#EFE2D5]" : "bg-[#FFEFE0]"
+                          }`}
+                        >
+                          {isScheduled ? (
+                            <Clock className="w-5 h-5 text-[#4A2617]" />
+                          ) : (
+                            <svg
+                              className="w-5 h-5 text-[#9E3B0B]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#3A2218] font-bold text-sm tracking-tight">
+                              {item.time}
+                            </span>
+                            {item.platform === "youtube" ? (
+                              <div className="flex items-center gap-1.5 px-3 py-1 bg-red-200/40 rounded-full text-[0.6875rem] font-semibold text-gray-700 shadow-inner-xs">
+                                <YoutubeIcon />
+                                <span>YouTube</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5 px-3 py-1 bg-[#FFF0F3] rounded-full text-[0.6875rem] font-semibold text-gray-700 shadow-inner-xs">
+                                <InstagramIcon />
+                                <span>Instagram</span>
+                              </div>
+                            )}
+                          </div>
+                          <span
+                            className={`text-[10px] font-semibold leading-none block mt-1 ${
+                              isScheduled ? "text-gray-400" : "text-[#A75D00]"
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-3 w-full mt-auto">
-                    {isScheduled ? (
-                      <>
-                        <button className="flex-1 bg-[#9E3B0B] hover:bg-[#8F3204] text-white py-3.5 px-6 rounded-[20px] text-xs sm:text-sm text-center transition-all duration-200 cursor-pointer active:scale-[0.98]">
-                          Edit Studio
-                        </button>
+               
+                      {isScheduled ? (
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="border border-gray-200 hover:border-red-200 hover:bg-red-50 text-gray-500 hover:text-red-600 p-3.5 rounded-[20px] transition-all duration-200 cursor-pointer shrink-0 active:scale-[0.98]"
+                          className="text-[#4A2617] hover:text-[#9E3B0B] transition-colors duration-200 p-1 cursor-pointer"
                           title="Delete from Queue"
                         >
-                          <Trash2 className="w-4 h-4 stroke-[2.5]" />
+                          <Trash2 className="w-5 h-5 stroke-[2.2]" />
                         </button>
-                      </>
-                    ) : (
-                      <>
-                        <button className="flex-1 bg-[#EAEFF5] hover:bg-[#DDE5EF] text-[#2C3E50]  py-3.5 px-6 rounded-[20px] text-xs sm:text-sm text-center transition-all duration-200 cursor-pointer active:scale-[0.98]">
-                          Review Assets
-                        </button>
+                      ) : (
                         <button
-                          className="border border-gray-200 hover:bg-gray-50 text-gray-500 p-3.5 rounded-[20px] transition-all duration-200 cursor-pointer shrink-0 active:scale-[0.98]"
+                          className="text-[#4A2617] hover:text-[#9E3B0B] transition-colors duration-200 p-1 cursor-pointer"
                           title="More Actions"
                         >
-                          <MoreHorizontal className="w-4 h-4 stroke-[2.5]" />
+                          <MoreHorizontal className="w-5 h-5 stroke-[2.2]" />
                         </button>
-                      </>
-                    )}
+                      )}
+                    </div>
+
+           
+                    <div className="flex items-center justify-between gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <img
+                          src={item.thumbnail}
+                          alt={item.title}
+                          className="w-16 h-16 rounded-[16px] object-cover shrink-0 border border-gray-100/60"
+                        />
+                        <div className="flex flex-col min-w-0 gap-0.5">
+                          <h3 className="font-bold text-[#1A1A1A] text-sm leading-tight tracking-tight line-clamp-2">
+                            {item.title}
+                          </h3>
+                          <div className="flex items-center gap-1 text-gray-500 text-[10px] font-semibold">
+                            <Sparkles className="w-3.5 h-3.5 text-gray-400" />
+                            <span>{item.type}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {isScheduled ? (
+                        <button className="bg-[#9E3B0B] hover:bg-[#8F3204] text-white py-2.5 px-4 rounded-[20px] text-xs font-semibold shrink-0 transition-all duration-200 active:scale-[0.98] cursor-pointer">
+                          Edit Studio
+                        </button>
+                      ) : (
+                        <button className="bg-[#EAEFF5] hover:bg-[#DDE5EF] text-[#2C3E50] py-2.5 px-4 rounded-[20px] text-xs font-semibold shrink-0 transition-all duration-200 active:scale-[0.98] cursor-pointer">
+                          Review Assets
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -286,4 +393,4 @@ export default function Queue() {
   );
 }
 
-//
+

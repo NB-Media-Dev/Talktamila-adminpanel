@@ -16,7 +16,7 @@ export const buttonVariants = cva(
         "bg-emerald-200 text-emerald-700 border border-emerald-100 cursor-pointer rounded-full",
 
         outline:
-          "border-2 border-[#C04808] text-[#C04808] hover:bg-[#FFF2EC] active:scale-195 rounded-full font-bold transition-all text-center cursor-pointer duration-300 bg-transparent",
+          "border-2 border-[#C04808] text-[#C04808] hover:bg-[#FFF2EC]  rounded-full font-bold transition-all text-center cursor-pointer duration-300 bg-transparent",
 
         secondary:
           "bg-secondary text-[#000000]/70 hover:bg-secondary-hover rounded-full transition-all duration-200 cursor-pointer",

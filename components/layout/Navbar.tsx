@@ -5,6 +5,7 @@ import React, { useState, useContext } from "react";
 import { buttonVariants } from "../ui/Button";
 import Image from "next/image";
 import { useContenthook } from "@/hooks/useContent";
+import avatar2 from "@/public/Images/profile2.jpg"
 
 export default function Navbar() {
   const context = useContext(useContenthook);
@@ -75,7 +76,7 @@ export default function Navbar() {
             </button>
 
             <div className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-[#1A3B5C] border border-[#102A45] cursor-pointer shrink-0 relative overflow-hidden shadow-inner">
-              <Image src="/Images/avatar4.png" alt="User Profile" fill sizes="32px" className="object-cover" priority />
+              <Image src={avatar2} alt="User Profile" fill sizes="32px" className="object-cover" priority />
             </div>
           </div>
         </div>
@@ -165,7 +166,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-1 cursor-pointer group">
             <div className="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden relative border border-brand/20 group-hover:border-brand transition-colors">
-              <Image src="/Images/avatar4.png" alt="User Profile" fill sizes="(max-width: 768px) 32px, 36px" className="object-cover" />
+              <Image src={avatar2} alt="User Profile" fill sizes="(max-width: 768px) 32px, 36px" className="object-cover" />
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3 text-gray-500 group-hover:text-brand transition-colors hidden lg:block">
               <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />

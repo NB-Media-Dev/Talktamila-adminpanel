@@ -20,7 +20,11 @@ interface TamilTopic {
   category: "Politics" | "Cinema" | "General";
 }
 
-export default function TrendingTopics() {
+interface TrendingTopicsProps {
+  onExploreMore?: () => void;
+}
+
+export default function TrendingTopics({ onExploreMore }: TrendingTopicsProps = {}) {
   const { isInfluencer } = useAuthRole();
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
@@ -136,7 +140,10 @@ export default function TrendingTopics() {
       </div>
 
       <div className="flex justify-center mt-1">
-        <button className={`flex items-center justify-center gap-2 px-6 py-2.5 w-full rounded-full ${buttonVariants({variant:'hoverButton'})}`}>
+        <button
+          onClick={onExploreMore}
+          className={`flex items-center justify-center gap-2 px-6 py-2.5 w-full rounded-full ${buttonVariants({variant:'hoverButton'})}`}
+        >
           Explore More
           <ArrowRight className="w-4 h-4" />
         </button>

@@ -32,6 +32,11 @@ export const YoutubeIcon=(props: React.SVGProps<SVGSVGElement>)=>(
           </div>
 )
 
+export const ThreadsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-black shrink-0">
+    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.185 13.914c-.16 2.457-1.782 4.195-4.225 4.195-2.616 0-4.462-1.996-4.462-4.815 0-2.827 1.87-4.832 4.542-4.832 2.404 0 3.996 1.572 4.168 3.738h-1.84c-.131-1.22-.962-2.023-2.308-2.023-1.572 0-2.664 1.251-2.664 3.117 0 1.858 1.072 3.109 2.585 3.109 1.346 0 2.196-.86 2.336-2.164h-2.585v-1.547h4.453v1.222z" />
+  </svg>
+);
 export const TalkTamilaIcon = () => (
   <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-[#FF5C28] to-[#FF8C42] flex items-center justify-center text-[8px] font-black text-white shrink-0 shadow-xs">
     TT

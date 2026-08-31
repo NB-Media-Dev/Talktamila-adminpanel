@@ -14,8 +14,8 @@ import Toprepostors from "@/components/freelancer/Toprepostors";
 export default function FreelancerPage() {
   return (
     <div className="w-full max-w-[1440px] mx-auto px-2 sm:px-4 md:px-6 pb-24 select-none">
-      {/* Stories Bar at Top for Mobile and Tablet (< lg) */}
-      <div className="block lg:hidden mb-4 sm:mb-5">
+      {/* Stories Bar at Top for Tablet only (sm to lg) */}
+      <div className="hidden sm:block lg:hidden mb-4">
         <TodayStories />
       </div>
 
@@ -58,7 +58,15 @@ export default function FreelancerPage() {
             <Earningwallet />
             <Repostanalysis />
             <Insights />
-            <ShareThoughtCard />
+            {/* Mobile View: ShareThoughtCard on left, TodayStories on right in a grid */}
+            <div className="w-full flex gap-3 items-start relative">
+              <div className="flex-1 min-w-0">
+                <ShareThoughtCard />
+              </div>
+              <div className="relative w-[72px] shrink-0 h-[230px]">
+                <TodayStories />
+              </div>
+            </div>
             <Toprepostors />
             <Notifications />
           </div>

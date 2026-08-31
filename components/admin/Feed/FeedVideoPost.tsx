@@ -1,58 +1,49 @@
 "use client";
 
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useContenthook } from "@/hooks/useContent";
 import Image from "next/image";
 import { Play} from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
 import avatar3 from "@/public/Images/avatar3.png";
-import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
-import { Barcharticons, ClockIcons, HeartIcon, IndianrupeeIcons, LocationsIcons, MessageIcons, SavedIcons, SendIcon, SparkleIcons, TrendingIcons, YoutubeIcon } from "@/public/Svgicons/svgicons";
+import { YoutubeIcon } from "@/public/Svgicons/svgicons";
+import { FeedCardfooter } from "./FeedCardfooter";
+import { FeedCardheader } from "./FeedCardheader";
 
 
 
 export default function FeedVideoPost() {
-  const context = useContext(useContenthook);
-  const setAnalyticsState = context?.setAnalyticsState;
+  
   const { isInfluencer,isFreelancer} = useAuthRole();
+
+   const Fooderdetail={
+      isViews:'3.2M',
+    isRevenue:'20,250',
+    isAIScore:'98/100',
+    isNextTime:'10:32PM',
+    isLike:'15.4K',
+    isMessage:'2.20K',
+    isSend:'9,810',
+    isSaved:'10.4k',
+  }
 
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-
-          <div className="w-11 h-11 rounded-full overflow-hidden relative border border-[#FFEFE0] bg-gray-50 shrink-0">
-            <Image
-              src={avatar4}
-              alt="News Tamila Avatar"
-              fill
-              className="object-cover"
-              sizes="44px"
-            />
+      <FeedCardheader
+        avatar={avatar4}
+        name="News Tamila"
+        username="@news_tamil"
+        location="Chennai, India"
+        time="12m"
+        rightElement={
+          <div className="text-[#FF0000] p-2 bg-red-50 rounded-full hover:bg-red-100 transition-colors">
+            <YoutubeIcon className="w-5 h-5" />
           </div>
-
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm text-gray-900 leading-none">News Tamila</span>
-
-              <span className="text-[#8E8E93] text-xs font-normal">@news_tamil</span>
-            </div>
-            <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
-              <LocationsIcons/>
-              <span className="text-[0.6875rem]">Chennai, India</span>
-              <span className="text-[0.6875rem]">•</span>
-              <span className="text-[0.6875rem]">12m</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-[#FF0000] p-2 bg-red-50 rounded-full hover:bg-red-100 transition-colors">
-          <YoutubeIcon className="w-5 h-5" />
-        </div>
-      </div>
+        }
+      />
 
       <div className="text-[0.8125rem] text-gray-800 leading-relaxed font-normal">
         சென்னை கடற்கரை சாலையில் புதிய மெட்ரோ வழித்தடப் பணிகள் துவக்கம்!{" "}
@@ -100,70 +91,8 @@ export default function FeedVideoPost() {
           qualityScore="96"
         />
       ) : (
-        <>
-          <div className="grid grid-cols-2 gap-2 mt-1">
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <TrendingIcons/>
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1.2M</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <IndianrupeeIcons/>
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹18,240</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <SparkleIcons/>
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">96/100</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <ClockIcons/>
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1:30 PM</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Best Time</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
-            <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-                <HeartIcon/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">52.5K</span>
-              </button>
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-                <MessageIcons/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">3.2K</span>
-              </button>
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-                <SendIcon/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">522</span>
-              </button>
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-                <SavedIcons/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">2.1K</span>
-              </button>
-            </div>
-
-            <button
-              onClick={() => setAnalyticsState && setAnalyticsState(true)}
-              className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({ variant: 'hoverButton' })} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
-            >
-              <Barcharticons/>
-              Analytics
-            </button>
-          </div>
-        </>
+        <FeedCardfooter PostAnalysis={Fooderdetail}
+              /> 
       )}
     </div>
   );

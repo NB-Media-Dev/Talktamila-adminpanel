@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useContext } from "react";
-import { useContenthook } from "@/hooks/useContent";
+import { useState } from "react";
 import Image from "next/image";
 import {
-  MapPin,
   MoreHorizontal
 } from "lucide-react";
 import avatar3 from "@/public/Images/avatar3.png";
-import { buttonVariants } from "@/components/ui/Button";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
-import { Barcharticons, ClockIcons, HeartIcon, IndianrupeeIcons, LocationsIcons, MessageIcons, SavedIcons, SendIcon, SparkleIcons, TreadsIcon, TrendingIcons } from "@/public/Svgicons/svgicons";
+import { FeedCardfooter } from "./FeedCardfooter";
+import { FeedCardheader } from "./FeedCardheader";
 
 interface PollOption {
   id: number;
@@ -20,8 +18,7 @@ interface PollOption {
 }
 
 export default function FeedPollPost() {
-  const context = useContext(useContenthook);
-  const setAnalyticsState = context?.setAnalyticsState;
+
   const { isInfluencer,isFreelancer } = useAuthRole();
 
   const [options, setOptions] = useState<PollOption[]>([
@@ -47,45 +44,37 @@ export default function FeedPollPost() {
     setHasVoted(true);
   };
 
+  const Fooderdetail={
+      isViews:'1.2M',
+    isRevenue:'18,250',
+    isAIScore:'96/100',
+    isNextTime:'8:32PM',
+    isLike:'12.4K',
+    isMessage:'3.20K',
+    isSend:'5,810',
+    isSaved:'12.4k',
+  }
+
   return (
     <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-
-          <div className="w-11 h-11 rounded-full overflow-hidden relative border border-[#FFEFE0] bg-gray-50 shrink-0">
-            <Image
-              src={avatar3}
-              alt="Tech Tamizhan Avatar"
-              fill
-              className="object-cover"
-              sizes="44px"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm text-gray-900 leading-none">Tech Tamizhan</span>
-              <span className="text-[#8E8E93] text-xs font-normal">@tech_tamizhan</span>
-            </div>
-            <div className="flex items-center gap-1 text-[#8E8E93] mt-0.5">
-              <LocationsIcons/>
-              <span className="text-[0.6875rem]">Coimbatore, India</span>
-              <span className="text-[0.6875rem]">•</span>
-              <span className="text-[0.6875rem]">2h</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[0.5625rem] font-bold tracking-wider uppercase">
-            Poll
-          </span>
-          <button className="text-gray-400 hover:text-gray-600 transition-colors p-1 cursor-pointer">
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+      <FeedCardheader
+        avatar={avatar3}
+        name="Tech Tamizhan"
+        username="@tech_tamizhan"
+        location="Coimbatore, India"
+        time="2h"
+        rightElement={
+          <>
+            <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[0.5625rem] font-bold tracking-wider uppercase">
+              Poll
+            </span>
+            <button className="text-gray-400 hover:text-gray-600 transition-colors p-1 cursor-pointer">
+              <MoreHorizontal className="w-5 h-5" />
+            </button>
+          </>
+        }
+      />
 
       <div className="text-[0.8125rem] text-gray-800 leading-relaxed font-normal">
         தமிழில் AI கருவிகள் - நீங்கள் எதை அதிகம் பயன்படுத்துகிறீர்கள்?{" "}
@@ -156,70 +145,8 @@ export default function FeedPollPost() {
           qualityScore="85"
         />
       ) : (
-        <>
-          <div className="grid grid-cols-2 gap-2 mt-1">
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <TrendingIcons/>
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">315K</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Views</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <IndianrupeeIcons />
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">₹3,140</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Revenue</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <SparkleIcons />
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">81/100</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">AI Score</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 bg-[#FFF6ED] rounded-full px-3 py-1.5 border border-[#FFEFE0] transition-transform duration-200 hover:scale-[1.02]">
-              <ClockIcons />
-              <div className="flex flex-col">
-                <span className="text-[0.6875rem] font-bold text-gray-900 leading-none">1:00 PM</span>
-                <span className="text-[0.5rem] text-[#8E8E93] font-semibold tracking-wider uppercase mt-0.5">Next Time</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between border-t border-[#FFEFE0] pt-4 mt-1">
-            <div className="flex items-center gap-2 sm:gap-3.5 text-[#8E8E93]">
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-red-500 transition-colors group cursor-pointer">
-                <HeartIcon/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">230</span>
-              </button>
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-blue-500 transition-colors group cursor-pointer">
-           <MessageIcons/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">924</span>
-              </button>
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-green-500 transition-colors group cursor-pointer">
-               <SendIcon/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">512</span>
-              </button>
-              <button className="flex items-center gap-0.5 sm:gap-1 hover:text-yellow-500 transition-colors group cursor-pointer">
-              <SavedIcons/>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-semibold">255</span>
-              </button>
-            </div>
-
-            <button
-              onClick={() => setAnalyticsState && setAnalyticsState(true)}
-              className={`flex items-center gap-1.5 border border-[#FF6B35] text-[#FF6B35] rounded-full px-2.5 py-1 sm:px-3.5 sm:py-1.5 text-[0.625rem] sm:text-[0.6875rem] font-bold ${buttonVariants({ variant: 'hoverButton' })} shadow-[0_2px_8px_rgba(255,107,53,0.1)] active:scale-95 shrink-0`}
-            >
-              <Barcharticons/>
-              Analytics
-            </button>
-          </div>
-        </>
+       <FeedCardfooter PostAnalysis={Fooderdetail}
+       />  
       )}
     </div>
   );
