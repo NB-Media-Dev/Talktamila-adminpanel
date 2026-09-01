@@ -1,23 +1,153 @@
 "use client";
 
-import React, { useState, useContext } from "react";
-
+import React, { useState, useContext, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { User, Wallet, Settings, LogOut, ChevronDown } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
 import Image from "next/image";
 import { useContenthook } from "@/hooks/useContent";
-import avatar2 from "@/public/Images/profile2.jpg"
+import { useAuthRole } from "@/hooks/useAuthRole";
+import avatar2 from "@/public/Images/profile2.jpg";
 
 export default function Navbar() {
   const context = useContext(useContenthook);
+  const router = useRouter();
+  const { isInfluencer, isFreelancer, isAdmin } = useAuthRole();
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState<boolean>(false);
+  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
+
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        mobileDropdownRef.current &&
+        !mobileDropdownRef.current.contains(event.target as Node) &&
+        desktopDropdownRef.current &&
+        !desktopDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Searching for:", searchQuery);
   };
+
+  const handleProfileNavigation = (path: string, tab?: string) => {
+    setIsProfileOpen(false);
+    if (context) {
+      context.setActiveTab(tab || 'home');
+      context.setHandlestate(false);
+      context.setAnalyticsState(false);
+    }
+    if (path) {
+      return router.push(path);
+    }
+  };
+
+  const getProfilePath = () => {
+    if (isInfluencer) {
+                return '/influencer'
+              } else if (isFreelancer) {
+                return '/freelancer'
+              } else {
+                return "/admin"
+              }
+  };
+
+  const getWalletPath = () => {
+    if (isInfluencer) {
+                return '/influencer'
+              } else if (isFreelancer) {
+                return '/freelancer'
+              } else {
+                return "/admin/reports"
+              }
+  };
+
+  const getSettingsPath = () => {
+    return "/admin";
+  };
+
+  const renderDropdownMenu = () => (
+    <div className="absolute right-0 top-full mt-2 w-56 sm:w-60 bg-white rounded-2xl shadow-xl border border-orange-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+
+      <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FDEEE2]/60 mb-1 border border-orange-100/40">
+        <div className="w-9 h-9 rounded-full overflow-hidden relative border border-[#FF6B35]/30 shrink-0">
+          <Image src={avatar2} alt="User Profile" fill sizes="36px" className="object-cover" loading="lazy"/>
+        </div>
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-xs font-bold text-gray-900 truncate">
+            {isAdmin ? "Admin User" : isFreelancer ? "Freelancer Creator" : "Influencer Profile"}
+          </span>
+          <span className="text-[11px] text-gray-500 truncate">user@talktamila.com</span>
+        </div>
+      </div>
+
+      <div className="h-[1px] bg-gray-100 my-1" />
+
+
+      <div className="flex flex-col gap-0.5">
+        <button
+          type="button"
+          onClick={() => handleProfileNavigation(getProfilePath())}
+          className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 hover:text-[#FF6B35] hover:bg-orange-50/80 rounded-xl transition-colors w-full text-left cursor-pointer"
+        >
+          <User className="w-4 h-4 text-[#FF6B35]" />
+          <span>My Profile</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleProfileNavigation(getWalletPath())}
+          className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 hover:text-[#FF6B35] hover:bg-orange-50/80 rounded-xl transition-colors w-full text-left cursor-pointer"
+        >
+          <Wallet className="w-4 h-4 text-[#FF6B35]" />
+          <span>Wallet</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleProfileNavigation(getSettingsPath())}
+          className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 hover:text-[#FF6B35] hover:bg-orange-50/80 rounded-xl transition-colors w-full text-left cursor-pointer"
+        >
+          <Settings className="w-4 h-4 text-[#FF6B35]" />
+          <span>Settings</span>
+        </button>
+      </div>
+
+      <div className="h-[1px] bg-gray-100 my-1" />
+
+      <button
+        type="button"
+        onClick={() => {
+          setIsProfileOpen(false);
+          try {
+            localStorage.removeItem("user");
+          } catch (e) { }
+          router.push("/login");
+        }}
+        className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors w-full text-left cursor-pointer"
+      >
+        <LogOut className="w-4 h-4 text-red-500" />
+        <span>Log Out</span>
+      </button>
+    </div>
+  );
+
   return (
-    <header className="sticky top-0 z-40 w-full px-1.5 xs:px-2 sm:px-4 md:px-6 py-2 backdrop-blur-md bg-[#FDEEE2]/90 transition-all duration-200">
+    <header className="sticky top-0 sm:z-40 z-50 w-full px-1.5 xs:px-2 sm:px-4 md:px-6 py-2 backdrop-blur-md bg-[#FDEEE2]/90 transition-all duration-200">
+
 
       <div className="block md:hidden w-full bg-white rounded-2xl sm:rounded-3xl px-2.5 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-orange-100/60">
 
@@ -36,16 +166,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 shrink-0">
 
-            <button
-              type="button"
-              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-              className="p-1.5 min-w-[32px] min-h-[32px] xs:p-2 xs:min-w-[36px] xs:min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors"
-              aria-label="Toggle Search"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-[18px] sm:h-[18px]">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.603 10.603Z" />
-              </svg>
-            </button>
+
 
             <button
               type="button"
@@ -59,9 +180,9 @@ export default function Navbar() {
               className={`p-1.5 min-w-[32px] min-h-[32px] xs:p-2 xs:min-w-[36px] xs:min-h-[36px] flex items-center justify-center rounded-full ${buttonVariants({ variant: "default" })} text-white shadow-xs active:scale-95 transition-all cursor-pointer`}
               title="AI Assistant"
             >
-             <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
-            </svg>
+              <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
+              </svg>
             </button>
 
             <button
@@ -75,32 +196,23 @@ export default function Navbar() {
               <span className="absolute top-1 right-1 xs:top-1.5 xs:right-1.5 w-1.5 h-1.5 bg-[#FF6B35] rounded-full"></span>
             </button>
 
-            <div className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-[#1A3B5C] border border-[#102A45] cursor-pointer shrink-0 relative overflow-hidden shadow-inner">
-              <Image src={avatar2} alt="User Profile" fill sizes="32px" className="object-cover" priority />
+            <div className="relative" ref={mobileDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-[#1A3B5C] border border-[#102A45] cursor-pointer shrink-0 relative overflow-hidden shadow-inner focus:outline-none block"
+                aria-label="User Profile"
+              >
+                <Image src={avatar2} alt="User Profile" fill sizes="32px" className="object-cover" priority />
+              </button>
+              {isProfileOpen && renderDropdownMenu()}
             </div>
           </div>
         </div>
 
-        {isMobileSearchOpen && (
-          <form onSubmit={handleSearchSubmit} className="mt-2.5 pt-2.5 border-t border-gray-100 animate-fadeIn">
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.603 10.603Z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                placeholder="Search News, Topic..."
-                className="w-full bg-[#fce6d4f6] text-gray-800 placeholder-gray-400 pl-9 pr-4 py-2 rounded-full outline-none border border-transparent focus:border-[#FF6B35]/40 text-xs sm:text-sm"
-                autoFocus
-              />
-            </div>
-          </form>
-        )}
+
       </div>
+
 
       <div className="hidden md:flex w-full max-w-7xl 2xl:max-w-[1770px] mt-0.5 rounded-full px-4 md:px-6 py-2 md:py-2.5 mx-auto items-center justify-between gap-3 md:gap-4 bg-white shadow-md border border-[#FFEFE0]">
 
@@ -128,7 +240,7 @@ export default function Navbar() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               placeholder="Search News, Topic..."
               className="w-full bg-[#FDEEE2] text-gray-800 placeholder-gray-400 pl-9 md:pl-12 pr-4 py-2 md:py-2.5 rounded-full outline-none border border-transparent focus:border-brand/30 transition-all text-xs md:text-sm"
-            />
+            />    
           </div>
         </form>
 
@@ -145,7 +257,7 @@ export default function Navbar() {
             className={`flex items-center gap-1 ${buttonVariants({ variant: "default" })} text-white p-2 md:px-3.5 md:py-2 rounded-full text-xs font-semibold shadow-xs active:scale-95 transition-all cursor-pointer`}
             title="AI Assistant"
           >
-           <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
+            <svg xmlns="http://w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
             </svg>
             <span className="hidden lg:inline">AI</span>
@@ -164,13 +276,20 @@ export default function Navbar() {
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-brand rounded-full"></span>
           </button>
 
-          <div className="flex items-center gap-1 cursor-pointer group">
-            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden relative border border-brand/20 group-hover:border-brand transition-colors">
-              <Image src={avatar2} alt="User Profile" fill sizes="(max-width: 768px) 32px, 36px" className="object-cover" />
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3 text-gray-500 group-hover:text-brand transition-colors hidden lg:block">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-            </svg>
+
+          <div className="relative" ref={desktopDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="flex items-center gap-1.5 cursor-pointer group focus:outline-none"
+              aria-label="User Profile Menu"
+            >
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden relative border border-brand/20 group-hover:border-brand transition-colors">
+                <Image src={avatar2} alt="User Profile" fill sizes="(max-width: 768px) 32px, 36px" className="object-cover" />
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 text-gray-500 group-hover:text-brand transition-transform duration-200 hidden lg:block ${isProfileOpen ? "rotate-180 text-brand" : ""}`} />
+            </button>
+            {isProfileOpen && renderDropdownMenu()}
           </div>
         </div>
 
@@ -178,3 +297,5 @@ export default function Navbar() {
     </header>
   );
 }
+
+

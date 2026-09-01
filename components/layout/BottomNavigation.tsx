@@ -19,10 +19,10 @@ export default function BottomNavigation() {
   const context = useContext(useContenthook);
   const router = useRouter();
   const pathname = usePathname();
-  const { isMounted: mounted, isInfluencer,isAdmin,isFreelancer  } = useAuthRole();
+  const { isMounted: mounted, isInfluencer, isAdmin, isFreelancer } = useAuthRole();
 
-  
-    
+
+
   if (!context) {
     throw new Error("BottomNavigation must be used within a UseContentProvider");
   }
@@ -37,6 +37,10 @@ export default function BottomNavigation() {
       setActiveTab('ai');
     } else if (pathname === '/influencer/analytics') {
       setActiveTab('wallet');
+    } else {
+      setActiveTab('home');
+      setHandlestate(false);
+      setAnalyticsState(false);
     }
   }, [pathname, setActiveTab]);
 
@@ -59,35 +63,35 @@ export default function BottomNavigation() {
         <nav className="w-full border-brand/60 backdrop-blur-lg rounded-2xl md:rounded-full px-1.5 xs:px-3 sm:px-6 md:px-4 py-1.5 md:py-1.5 flex items-center justify-around md:justify-between shadow-[0_8px_30px_rgba(0,0,0,0.1)] md:shadow-[0_8px_30px_rgb(242,125,66,0.12)] border border-[#FFEFE0] bg-[#FDEEE2]">
 
           <button
-               onClick={() => {
-              
-               if (isInfluencer) {
-                 router.push('/influencer/trendradar')
-               }else if(isFreelancer){
-                  router.push('/freelancer/trendradar')
-               }else{
-                 router.push("/admin/trendradar")
-               }
-                setActiveTab('ai');
-               setHandlestate(false);
-               setAnalyticsState(false);
-             }}
-             type="button"
-             aria-label="Trend Radar"
-             className={`w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 ${buttonVariants({ variant: "default" })}`
+            onClick={() => {
+
+              if (isInfluencer) {
+                router.push('/influencer/trendradar')
+              } else if (isFreelancer) {
+                router.push('/freelancer/trendradar')
+              } else {
+                router.push("/admin/trendradar")
               }
+              setActiveTab('ai');
+              setHandlestate(false);
+              setAnalyticsState(false);
+            }}
+            type="button"
+            aria-label="Trend Radar"
+            className={`w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 ${buttonVariants({ variant: "default" })}`
+            }
           >
-            <TrendingUp className='h-4 w-4'/>
+            <TrendingUp className='h-4 w-4' />
           </button>
 
           <button
-          
+
             onClick={() => handlepostcard()}
             type="button"
             title="Create New"
-              aria-label="Create New Post"
+            aria-label="Create New Post"
             className={`w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 ${buttonVariants({ variant: "default" })}`
-              }
+            }
           >
             <UploadCloud className='h-5' />
           </button>
@@ -97,21 +101,21 @@ export default function BottomNavigation() {
 
             <button
               type="button"
-           
+
               className={`relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 md:w-12 md:h-12 rounded-full ${buttonVariants({ variant: "destructive" })} flex items-center justify-center font-bold text-lg xs:text-xl sm:text-2xl shadow-lg border-2 xs:border-4 border-white hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer z-10`}
-             
-               onClick={() => {
-              setActiveTab('home');
-              setHandlestate(false);
-              setAnalyticsState(false);
-              router.push(isFreelancer ? '/freelancer' : isInfluencer ? '/influencer' : '/admin');
-            }}
-           
-            aria-label="Home"
+
+              onClick={() => {
+                setActiveTab('home');
+                setHandlestate(false);
+                setAnalyticsState(false);
+                router.push(isFreelancer ? '/freelancer' : isInfluencer ? '/influencer' : '/admin');
+              }}
+
+              aria-label="Home"
             >
-               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-            </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+              </svg>
             </button>
           </div>
 
@@ -119,10 +123,10 @@ export default function BottomNavigation() {
             onClick={() => {
               if (isInfluencer) {
                 router.push('/influencer/analytics')
-              }else if(isFreelancer){
-                 return null
+              } else if (isFreelancer) {
+                return null
               }
-             
+
               setActiveTab('wallet');
               setHandlestate(false);
               setAnalyticsState(false);
@@ -130,7 +134,7 @@ export default function BottomNavigation() {
             type="button"
             aria-label="Admin Review Panel"
             className={`w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 ${buttonVariants({ variant: "default" })}`
-              }
+            }
           >
             <ClipboardCheck className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-4 md:h-4" />
           </button>
@@ -144,7 +148,7 @@ export default function BottomNavigation() {
             type="button"
             aria-label="Quick Studio"
             className={`w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90 ${buttonVariants({ variant: "default" })}`
-              }
+            }
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-4 md:h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />

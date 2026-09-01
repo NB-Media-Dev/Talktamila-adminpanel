@@ -126,14 +126,8 @@ export function Adminreviewpanel() {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 md:pb-24 z-40">
-      <div className="w-full h-full md:h-[480px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-4 md:py-4 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
-        
-        <button
-          onClick={handleClose}
-          className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top,0px))] md:top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer"
-        >
-          <X size={16} />
-        </button>
+      <div className="w-full h-full mt-20 md:h-[480px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-4 md:py-4 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
+     
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-orange-100 pb-2 pr-10 sm:pr-12">
           <div className="flex items-center gap-2.5">

@@ -9,7 +9,7 @@ export default function CreatorWallet() {
 
   if (isInfluencer) {
     return (
-      <div className="@container w-full max-w-full bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col justify-between select-none">
+      <div className="@container w-full max-w-full bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col justify-between select-none">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
@@ -23,14 +23,14 @@ export default function CreatorWallet() {
           </Link>
         </div>
 
-
-        <div className="flex items-center justify-around mb-4">
-          <div >
+        {/* Balance & Action */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
             <span className="text-xs text-gray-400 font-medium block mb-1">
               Total Balance
             </span>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-xl sm:text-2xl  text-gray-900 tracking-tight">
+              <span className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
                 ₹2,45,680.50
               </span>
               <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full">
@@ -40,15 +40,15 @@ export default function CreatorWallet() {
             </div>
           </div>
 
-          <button className="bg-[#FF6B35] hover:bg-[#FF5A26] active:scale-95 text-white font-bold  text-xs sm:text-sm px-4 sm:px-5 py-1.5 rounded-full transition-all shadow-sm cursor-pointer whitespace-nowrap">
+          <button className="bg-[#FF6B35] hover:bg-[#FF5A26] active:scale-95 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-1.5 rounded-full transition-all shadow-sm cursor-pointer whitespace-nowrap">
             Withdraw
           </button>
         </div>
 
-        {/* 3 Stat Cards */}
+        {/* Breakdown Cards */}
         <div className="grid grid-cols-3 gap-2">
           {/* Card 1 */}
-          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2.5 flex flex-col justify-between">
+          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between">
             <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-tight">
               Today's Earnings
             </span>
@@ -63,7 +63,7 @@ export default function CreatorWallet() {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2.5 flex flex-col justify-between">
+          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between">
             <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-tight">
               This Month
             </span>
@@ -78,7 +78,7 @@ export default function CreatorWallet() {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2.5 flex flex-col justify-between">
+          <div className="bg-[#FAFAFA] border border-gray-100 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between">
             <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-tight">
               Pending Payout
             </span>
@@ -96,46 +96,48 @@ export default function CreatorWallet() {
     );
   }
 
-
   return (
-    <div className="@container w-full max-w-full bg-gradient-to-br from-[#FFAE64] to-[#FF5B3E] rounded-[32px] p-4 @xs:p-6 shadow-[0_12px_30px_rgba(255,91,62,0.25)] relative overflow-hidden flex flex-col justify-between min-h-[260px] text-white">
-      <div className="z-10">
-        <div className="flex items-center gap-2 mb-3">
-          <Wallet className="w-5 h-5 text-white/95" />
-          <span className="text-[11px] font-black uppercase tracking-wider text-white/90">
+    <div className="@container w-full max-w-full bg-gradient-to-br from-[#FFAE64] to-[#FF5B3E] rounded-[24px] sm:rounded-[32px] p-4 sm:p-6 shadow-[0_12px_30px_rgba(255,91,62,0.25)] relative overflow-hidden flex flex-col justify-between min-h-[240px] sm:min-h-[260px] text-white select-none">
+      <div className="z-10 max-w-[calc(100%-85px)] xs:max-w-[calc(100%-105px)] sm:max-w-[220px]">
+        <div className="flex items-center gap-2 mb-2.5 sm:mb-3">
+          <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-white/95 shrink-0" />
+          <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-white/90">
             Creator Wallet
           </span>
         </div>
 
-        <h2 className="text-3xl sm:text-4xl font-black tracking-tight leading-none mb-4.5">
+        <h2 className="text-2xl xs:text-3xl sm:text-4xl font-black tracking-tight leading-none mb-3 sm:mb-4.5">
           ₹1,84,320
         </h2>
 
-        <div className="flex flex-col gap-2.5 text-xs font-semibold text-white/90 max-w-[220px]">
-          <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold text-white/90">
+          <div className="flex items-center gap-1 text-white/90">
             <span className="opacity-80">Pending approval</span>
-            <span>₹22,400</span>
+            <span className="opacity-60">-</span>
+            <span className="font-bold">₹22,400</span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center gap-1 text-white/90">
             <span className="opacity-80">Campaign earnings</span>
-            <span>₹90,100</span>
+            <span className="opacity-60">-</span>
+            <span className="font-bold">₹96,100</span>
           </div>
-          <div className="flex justify-between items-center text-white">
+          <div className="flex items-center gap-1 text-white/90">
             <span className="opacity-80">Affiliate income</span>
-            <span>₹71,820</span>
+            <span className="opacity-60">-</span>
+            <span className="font-bold">₹18,750</span>
           </div>
         </div>
       </div>
 
-      <div className="z-10 mt-6 flex items-end">
+      <div className="z-10 mt-5 sm:mt-6 flex items-end">
         <button
-          className="bg-white hover:bg-white/95 active:scale-[0.98] text-[#FF5B3E] font-extrabold text-xs sm:text-sm px-6 py-3 rounded-full transition-all duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.1)] cursor-pointer"
+          className="bg-white hover:bg-white/95 active:scale-[0.98] text-[#FF5B3E] font-extrabold text-xs sm:text-sm px-5 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.1)] cursor-pointer"
         >
           Withdraw
         </button>
       </div>
 
-      <div className="absolute bottom-[-10px] right-[-10px] w-[140px] h-[140px] pointer-events-none opacity-90 select-none hidden sm:block">
+      <div className="absolute bottom-[-5px] right-[-5px] sm:bottom-[-10px] sm:right-[-10px] w-[105px] h-[105px] xs:w-[125px] xs:h-[125px] sm:w-[140px] sm:h-[140px] pointer-events-none opacity-85 sm:opacity-90 select-none block">
         <svg
           viewBox="0 0 200 200"
           fill="none"
