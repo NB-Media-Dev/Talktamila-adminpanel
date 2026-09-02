@@ -76,7 +76,13 @@ export default function Navbar() {
   };
 
   const getSettingsPath = () => {
-    return "/admin";
+     if (isInfluencer) {
+                return '/influencer'
+              } else if (isFreelancer) {
+                return '/freelancer'
+              } else {
+                return "/admin"
+              }
   };
 
   const renderDropdownMenu = () => (
