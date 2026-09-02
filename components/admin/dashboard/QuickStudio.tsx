@@ -21,7 +21,10 @@ import {
   MessageCircle,
   Share2,
   MoreHorizontal,
-  Lightbulb
+  Lightbulb,
+  ArrowRight,
+  ArrowLeft,
+  MoveLeft
 } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { FacebookIcon } from "@/public/Svgicons/svgicons";
@@ -120,15 +123,24 @@ export function QuickStudio() {
     }, 1500);
   };
 
-
+//quickstudio.tsx file when use click generate button when show liveperviewloading.tsx file loadingeffect
 
   return (
-    <div className="fixed inset-0 top-[52px] xs:top-[56px] sm:top-[60px] md:top-0 bg-black/55 backdrop-blur-xs flex items-start md:items-center justify-center p-0 md:p-4 z-40 animate-fade-in select-none">
-      <div className="w-full h-[calc(100vh-56px)] md:h-auto md:max-h-[85vh] md:max-w-[760px] rounded-none md:rounded-3xl bg-[#FAF3EC] shadow-2xl px-4 pt-4 sm:pt-5 pb-28 md:px-5 md:py-5 relative font-sans antialiased border-0 md:border border-orange-100/40 overflow-y-auto md:overflow-hidden flex flex-col gap-3">
+    <div className="fixed inset-0 top-[52px] xs:top-[56px] sm:top-[60px] md:top-0 bg-black/55 backdrop-blur-xs flex items-start  justify-center p-0 md:p-4 z-40 animate-fade-in select-none">
+      <div className="w-full h-[calc(100vh-56px)] md:h-auto md:max-h-[95vh] md:max-w-[760px] rounded-none md:rounded-3xl bg-[#FAF3EC] shadow-2xl px-4 pt-4 sm:pt-5 pb-28 md:px-5 md:py-2 relative font-sans antialiased border-0 md:border border-orange-100/40 overflow-y-auto md:overflow-hidden flex flex-col ">
+
+ <div>
+  <button 
+    onClick={handleClose}
+    className="hover:opacity-80 transition-opacity cursor-pointer flex items-center justify-center"
+  >
+    <MoveLeft size={30}  className="text-brand w-8 h-9 " />
+  </button>
+</div>
 
 
 
-        <div className="flex items-center justify-between border-b border-orange-100/60 pb-2">
+        <div className="flex p-2 items-center justify-between border-b border-orange-100/60 pb-2">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-[#FF6B35] flex items-center justify-center text-white shadow-md shadow-[#FF6B35]/20 shrink-0">
               <Lightbulb className="w-4.5 h-4.5" />
@@ -297,12 +309,7 @@ export function QuickStudio() {
                     className={`w-full h-full object-cover transition-opacity duration-300 ${isGenerating ? 'opacity-40' : 'opacity-95'}`}
                   />
 
-                  {isGenerating && (
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-xs flex flex-col items-center justify-center gap-1.5 z-20">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <p className="text-white text-[8px] font-bold tracking-wider uppercase">Generating...</p>
-                    </div>
-                  )}
+                
 
                   {isVideoFormat && !isGenerating && (
                     <>
@@ -389,7 +396,7 @@ export function QuickStudio() {
 
         </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-end">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-end me-10">
           <button
             type="button"
             className="px-4.5 py-1.5 bg-white border border-orange-200 text-[#FF6B35] text-[10px] md:text-[11px] font-bold rounded-full hover:bg-orange-50/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm min-w-[90px] cursor-pointer"

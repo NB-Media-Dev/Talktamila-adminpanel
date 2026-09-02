@@ -1,11 +1,12 @@
 "use client"
 import { useContext, useState, useEffect } from "react";
-import { Sparkle, UploadCloud, X, MoreHorizontal, Play, ThumbsUp, MessageCircle, Share2 } from "lucide-react";
+import { Sparkle, UploadCloud, X, MoreHorizontal, Play, ThumbsUp, MessageCircle, Share2, ArrowLeft, MoveLeft, ChevronLeft, MoveRight } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
 import { FacebookIcon } from "@/public/Svgicons/svgicons";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LivePreviewloading } from "@/components/ui/Skeletonloading/LivePreviewloading";
 
 const platformList = [
   { id: "Talk Tamila", name: "Talk Tamila" },
@@ -35,7 +36,7 @@ export function CreatenewPost() {
   if (!context) {
     throw new Error("CreatenewPost must be used within a UseContentProvider");
   }
-  const { setHandlestate } = context;
+  const { setHandlestate,setActiveTab } = context;
 
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("Write your thoughts here... Use #hashtags to trend!");
@@ -48,6 +49,10 @@ export function CreatenewPost() {
     );
   };
 
+
+ const handleClose = () => {
+    setActiveTab("home");
+  };
   const handleNext = () => {
     setStep("loading");
     setTimeout(() => {
@@ -68,16 +73,28 @@ export function CreatenewPost() {
   const isPreviewLoading = isLoading || step === "loading";
 
   return (
-    <div className="fixed inset-0 top-[52px] xs:top-[56px] sm:top-[60px] md:top-0 bg-black/50 backdrop-blur-xs flex items-start md:items-center justify-center p-0 md:p-4 z-40">
-      <div className="w-full h-full md:max-h-[85vh] md:max-w-4xl rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(2.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-5 md:py-5 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-hidden">
+    <div className="fixed inset-0 top-[52px] xs:top-[40px]  sm:top-[20px] md:top-0 bg-black/50 backdrop-blur-xs flex items-start justify-center p-0 md:p-4 z-40">
+      <div className="w-full h-full md:max-h-[90vh] md:max-w-4xl rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(2.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-5 md:py-5 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-hidden">
+    <div>
+  <button 
+    onClick={() => { setHandlestate(false) }}
+    className=" hover:opacity-80 transition-opacity cursor-pointer flex items-center justify-center"
+  >
+    <MoveLeft size={30}  className="text-brand w-10 h-9 " />
+  </button>
+</div>
 
-      
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start mt-1">
+      
+
+
+
 
         
           <div className={`flex flex-col gap-2.5 ${step === "edit" ? "block" : "hidden lg:flex"}`}>
             <div>
+            
               <h1 className="text-2xl font-bold text-[#9b4811] tracking-tight">Create New Post</h1>
               <p className="mt-0.5 text-sm text-orange-900/60 font-medium">
                 Share your thoughts or AI-generated content with the Tamil community.
@@ -145,7 +162,6 @@ export function CreatenewPost() {
                 );
               })}
             </div>
-
             <button
               type="button"
               onClick={handleNext}
@@ -155,7 +171,7 @@ export function CreatenewPost() {
             </button>
           </div>
 
-          {/* Preview Section (Mobile preview/loading OR Desktop side preview) */}
+     
           <div className={`flex flex-col gap-2 ${step !== "edit" ? "block" : "hidden lg:flex"}`}>
             <div className="flex items-center justify-between lg:block mb-1.5 select-none">
               <h3 className="text-xs font-extrabold text-gray-800 tracking-wide uppercase">Live Preview</h3>
@@ -169,55 +185,9 @@ export function CreatenewPost() {
             </div>
 
             {isPreviewLoading ? (
-              /* Loading Skeleton View */
-              <div className="bg-[#F0F2F5] mt-5 h-[480px] rounded-2xl p-2 border border-gray-200/40 flex-grow flex flex-col gap-2 w-full max-w-[340px] lg:max-w-[270px] mx-auto overflow-hidden shadow-xs">
-                <div className="flex items-center gap-2 px-1 py-0.5">
-                  <Skeleton className="w-4 h-4 rounded-full bg-orange-200/80" />
-                  <Skeleton className="h-3 w-16 bg-orange-200/80" />
-                </div>
-
-                <div className="bg-white rounded-xl border border-gray-200/60 shadow-xs p-2.5 flex flex-col gap-2 flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Skeleton className="w-8 h-8 rounded-full bg-orange-100/80 shrink-0" />
-                      <div className="flex flex-col gap-1">
-                        <Skeleton className="h-3 w-24 bg-orange-100/80" />
-                        <Skeleton className="h-2 w-16 bg-orange-100/60" />
-                      </div>
-                    </div>
-                    <Skeleton className="w-4 h-4 bg-orange-100/60 rounded" />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5 my-1">
-                    <Skeleton className="h-2.5 w-full bg-orange-100/70" />
-                    <Skeleton className="h-2.5 w-3/4 bg-orange-100/60" />
-                  </div>
-
-                  <div className="w-full flex-1 min-h-[160px] bg-slate-900/5 rounded-lg flex items-center justify-center border border-gray-100 relative overflow-hidden">
-                    <Skeleton className="w-full h-full bg-orange-100/40" />
-                    <div className="absolute w-9 h-9 rounded-full bg-orange-200/60 flex items-center justify-center">
-                      <Skeleton className="w-4 h-4 rounded-full bg-orange-300/80" />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center px-0.5 pt-1">
-                    <Skeleton className="h-3 w-20 bg-orange-100/70" 
-                  />
-                    
-                    <Skeleton className="h-6 w-16 rounded-lg bg-orange-200/80" />
-                  </div>
-
-                  <div className="border-t border-gray-100 my-0.5"></div>
-
-                  <div className="flex items-center justify-around">
-                    <Skeleton className="h-3 w-12 bg-orange-100/70" />
-                    <Skeleton className="h-3 w-14 bg-orange-100/70" />
-                    <Skeleton className="h-3 w-12 bg-orange-100/70" />
-                  </div>
-                </div>
-              </div>
+              <LivePreviewloading/>
             ) : (
-              /* Actual Live Preview View */
+             
               <div className="bg-[#F0F2F5] mt-5 h-[500px] sm:h-full rounded-2xl p-2 border border-gray-200/40 flex-grow flex flex-col gap-1.5 w-full max-w-[340px] lg:max-w-[270px] mx-auto overflow-hidden">
 
                 <div className="flex items-center gap-1.5 px-0.5 select-none">

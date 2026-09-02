@@ -1,6 +1,6 @@
 "use client"
 import { useContext, useState } from "react";
-import { X, MoreHorizontal, Play, Share2, ClipboardCheck, Check, Ban } from "lucide-react";
+import { X, MoreHorizontal, Play, Share2, ClipboardCheck, Check, Ban, ArrowLeft, MoveLeft } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
 import { FacebookIcon } from "@/public/Svgicons/svgicons";
@@ -126,8 +126,16 @@ export function Adminreviewpanel() {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 md:pb-24 z-40">
-      <div className="w-full h-full mt-20 md:h-[480px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-4 md:py-4 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
+      <div className="w-full h-full mt-10 md:h-[51  0px] md:max-w-[820px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-4 md:py-5 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto">
      
+     <div>
+  <button 
+    onClick={handleClose}
+    className=" hover:opacity-80 transition-opacity cursor-pointer flex items-center justify-center"
+  >
+    <MoveLeft size={30}  className="text-brand w-10 h-9 " />
+  </button>
+</div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-orange-100 pb-2 pr-10 sm:pr-12">
           <div className="flex items-center gap-2.5">
