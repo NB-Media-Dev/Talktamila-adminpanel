@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { MoveUp } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 export interface EarningsOverviewProps {
   balance?: string;
@@ -12,6 +14,7 @@ export interface EarningsOverviewProps {
   thisMonthChange?: string;
   thisYear?: string;
   thisYearChange?: string;
+  isLoading?: boolean;
 }
 
 export default function EarningsOverview({
@@ -22,7 +25,12 @@ export default function EarningsOverview({
   thisMonthChange = "16.8%",
   thisYear = "₹12,45,300",
   thisYearChange = "22.5%",
+  isLoading: propIsLoading,
 }: EarningsOverviewProps) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
+
+
   return (
     <div className="w-full bg-white rounded-[20px] sm:rounded-[28px] p-4 sm:p-5 md:p-6 border border-gray-100 shadow-[0_2px_16px_rgba(0,0,0,0.03)] select-none">
      
@@ -35,8 +43,8 @@ export default function EarningsOverview({
         </button>
       </div>
 
-      {/* Total Balance Row */}
-      <div className="flex items-center justify-between gap-3 mb-5">
+      {isLoading ? <ContentSkeleton  count={2} height="h-[50px]"/> :<div>
+       <div className="flex items-center justify-between gap-3 mb-5">
         <div className="min-w-0 flex-1">
           <span className="text-xs font-semibold text-gray-400 block mb-1">
             Total Balance
@@ -50,9 +58,9 @@ export default function EarningsOverview({
         </button>
       </div>
 
-      {/* Stats Breakdown Row */}
+  
       <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
-        {/* Stat 1 */}
+
         <div className="bg-[#FAFAFA] border border-gray-100/80 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between">
           <span className="text-[10px] sm:text-[11px] font-semibold text-gray-400 leading-tight whitespace-nowrap">
             This Week
@@ -68,7 +76,7 @@ export default function EarningsOverview({
           </div>
         </div>
 
-        {/* Stat 2 */}
+      
         <div className="bg-[#FAFAFA] border border-gray-100/80 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between">
           <span className="text-[10px] sm:text-[11px] font-semibold text-gray-400 leading-tight whitespace-nowrap">
             This Month
@@ -84,7 +92,7 @@ export default function EarningsOverview({
           </div>
         </div>
 
-        {/* Stat 3 */}
+     
         <div className="bg-[#FAFAFA] border border-gray-100/80 rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between">
           <span className="text-[10px] sm:text-[11px] font-semibold text-gray-400 leading-tight whitespace-nowrap">
             This Year
@@ -100,6 +108,8 @@ export default function EarningsOverview({
           </div>
         </div>
       </div>
+      </div> }
+      
     </div>
   );
 

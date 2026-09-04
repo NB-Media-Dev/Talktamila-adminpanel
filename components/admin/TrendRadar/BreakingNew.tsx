@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
-import { Sparkles } from "lucide-react";
+import React, { useState } from "react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 interface NewsAlert {
   id: number;
@@ -28,6 +29,10 @@ export default function BreakingNew() {
     },
   ];
 
+   const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
+
+ 
   return (
     <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.015)] border border-[#FFEFE0] flex flex-col gap-5 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.05)]">
       
@@ -39,8 +44,7 @@ export default function BreakingNew() {
           View All
         </span>
       </div>
-
-      <div className="flex flex-col gap-4">
+      {isLoading ? <ContentSkeleton height="h-[30px]" width="w-full"/> :<div className="flex flex-col gap-4">
         {alerts.map((item) => (
           <div
             key={item.id}
@@ -54,7 +58,8 @@ export default function BreakingNew() {
             </p>
           </div>
         ))}
-      </div>
+      </div> }
+      
 
     </div>
   );

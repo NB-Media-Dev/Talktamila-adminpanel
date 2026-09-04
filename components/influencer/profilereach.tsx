@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Eye, Heart, User, Wallet, ChevronDown, TrendingUp, MoveUp } from "lucide-react";
+import { Users, Eye, Heart, User, Wallet, ChevronDown, MoveUp } from "lucide-react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { MetricsSkeleton } from "@/components/ui/Skeletonloading";
 
 interface StatItem {
   id: string;
@@ -61,7 +63,13 @@ const stats: StatItem[] = [
   },
 ];
 
-export default function ProfileReach() {
+interface ProfileReachProps {
+  isLoading?: boolean;
+}
+
+export default function ProfileReach({ isLoading: propIsLoading }: ProfileReachProps = {}) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const [workspace, setWorkspace] = useState("Influencer");
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
 
@@ -111,9 +119,11 @@ export default function ProfileReach() {
       </div>
 
     
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
-        {stats.map((item) => {
+      {isLoading ? (
+        <MetricsSkeleton count={5} columns={5} />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
+          {stats.map((item) => {
           const IconComponent = item.icon;
           return (
             <div
@@ -145,6 +155,7 @@ export default function ProfileReach() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }

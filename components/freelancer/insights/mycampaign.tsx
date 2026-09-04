@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
+import  { useState } from "react";
 import { Megaphone, Newspaper } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { Avatarloading } from "@/components/ui/Skeletonloading";
 
 export interface CampaignItem {
   id: string;
@@ -16,6 +18,7 @@ export interface MyCampaignProps {
   title?: string;
   campaigns?: CampaignItem[];
   className?: string;
+  isLoading?: boolean;
   onViewAll?: () => void;
 }
 
@@ -40,8 +43,11 @@ export default function MyCampaign({
   title = "My Campaigns",
   campaigns = defaultCampaigns,
   className = "",
+  isLoading: propIsLoading,
   onViewAll,
 }: MyCampaignProps) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   return (
     <div
       className={`w-full max-w-full bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4 ${className}`}
@@ -62,7 +68,10 @@ export default function MyCampaign({
 
 
       <div className="flex flex-col gap-3">
-        {campaigns.map((item) => (
+        {isLoading ? (
+          <Avatarloading/>
+        ) : (
+          campaigns.map((item) => (
           <div
             key={item.id}
             className="flex items-center justify-between gap-3 p-1 rounded-2xl hover:bg-gray-50/80 transition-colors"
@@ -93,7 +102,7 @@ export default function MyCampaign({
               {item.status}
             </span>
           </div>
-        ))}
+        )))}
       </div>
     </div>
   );

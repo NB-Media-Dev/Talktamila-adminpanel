@@ -5,6 +5,8 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/Button";
 import { TrendingUp, ArrowRight } from "lucide-react";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 interface AdminTopic {
   id: number;
@@ -27,6 +29,11 @@ interface TrendingTopicsProps {
 export default function TrendingTopics({ onExploreMore }: TrendingTopicsProps = {}) {
   const { isInfluencer } = useAuthRole();
   const [activeCategory, setActiveCategory] = useState<string>("All");
+
+     const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
 
   
   const adminTopics: AdminTopic[] = [
@@ -66,7 +73,10 @@ export default function TrendingTopics({ onExploreMore }: TrendingTopicsProps = 
         </div>
 
       
-        <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 scrollbar-none">
+       
+
+          {isLoading ? <ContentSkeleton count={4} height="h-[30px]" width="w-full"/> : <div className="flex flex-col gap-3">
+             <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 scrollbar-none">
           {["All", "Politics", "Cinema"].map((cat) => {
             const isActive = activeCategory === cat;
             return (
@@ -84,9 +94,6 @@ export default function TrendingTopics({ onExploreMore }: TrendingTopicsProps = 
             );
           })}
         </div>
-
-  
-        <div className="flex flex-col gap-3">
           {filteredTamilTopics.map((topic) => (
             <div
               key={topic.id}
@@ -105,7 +112,8 @@ export default function TrendingTopics({ onExploreMore }: TrendingTopicsProps = 
               </span>
             </div>
           ))}
-        </div>
+        </div>}
+        
       </div>
     );
   }
@@ -120,8 +128,7 @@ export default function TrendingTopics({ onExploreMore }: TrendingTopicsProps = 
           Trending Topics
         </h2>
       </div>
-
-      <div className="flex flex-col mb-4">
+    {isLoading ? <ContentSkeleton count={5} height="h-[30px]" width="w-full" />:<div> <div className="flex flex-col mb-4">
         {adminTopics.map((topic, index) => (
           <div
             key={topic.id}
@@ -147,7 +154,8 @@ export default function TrendingTopics({ onExploreMore }: TrendingTopicsProps = 
           Explore More
           <ArrowRight className="w-4 h-4" />
         </button>
-      </div>
+      </div></div>}
+     
     </div>
   );
 }

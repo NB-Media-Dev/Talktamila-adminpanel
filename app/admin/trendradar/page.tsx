@@ -16,7 +16,7 @@ export default function TrendRadarPage() {
   const [activeMobilePage, setActiveMobilePage] = useState<"first" | "second">("first");
 
   return (
-    <div className="w-full max-w-7xl 2xl:max-w-[1500px] mx-auto py-3 sm:py-6 px-2.5 sm:px-4 select-none">
+    <div className="w-full py-3 sm:py-6 px-2.5 sm:px-4 select-none">
       
       {/* Mobile & Tablet Layout (< lg) */}
       {activeMobilePage === "first" ? (
@@ -27,7 +27,7 @@ export default function TrendRadarPage() {
               <span className="p-1 rounded-lg bg-orange-100 text-[#FF5A26] inline-flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 stroke-[2.5]" />
               </span>
-              Trending Topics
+              <span>Trending Topics</span>
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed mt-1">
               Design, generate &amp; Publish in one flow

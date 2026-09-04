@@ -1,12 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Rocket } from "lucide-react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 export default function ActiveCampaigns() {
+   const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
   return (
     <div className="w-full bg-[#E5632A] rounded-[20px] sm:rounded-[32px] p-3 sm:p-5 text-white shadow-[0_8px_30px_rgba(229,99,42,0.18)] flex flex-col justify-between select-none min-w-0 aspect-[142/141] min-[420px]:aspect-auto hover:scale-[1.01] transition-all duration-300">
-      {/* Top Section */}
+    
       <div>
         <div className="flex justify-between items-start gap-1">
           <div className="flex flex-col min-w-0">
@@ -21,15 +25,13 @@ export default function ActiveCampaigns() {
             <Rocket className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
           </div>
         </div>
-
-        {/* Number Section */}
+</div>
+{isLoading ? <ContentSkeleton count={1}/> : <>
         <div className="flex items-baseline mt-2 sm:mt-4 mb-1 sm:mb-4">
           <span className="text-2xl min-[420px]:text-3xl sm:text-4xl md:text-5xl font-black text-white leading-none">12</span>
           <span className="text-[8px] min-[420px]:text-[10px] sm:text-xs text-white/90 uppercase tracking-widest ml-1 sm:ml-1.5 font-bold">BRANDS</span>
         </div>
-      </div>
 
-      {/* Bottom Progress Section */}
       <div className="w-full">
         <div className="flex justify-between items-center text-[7.5px] min-[420px]:text-[9px] sm:text-[10px] font-bold text-white/90 mb-1 sm:mb-1.5 tracking-wider uppercase">
           <span>Monthly Target</span>
@@ -42,6 +44,8 @@ export default function ActiveCampaigns() {
           />
         </div>
       </div>
+      </> }
+       
     </div>
   );
 }

@@ -1,20 +1,33 @@
 "use client";
 
+import { Avatarloading } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Calendar } from "lucide-react";
+import { useState } from "react";
 
 export default function UpcomingSchedule() {
+
+
+
+     const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
   const events = [
     {
+      id:1,
       time: "09:30",
       title: "Morning news drop",
       platform: "TalkTamila - Instagram",
     },
     {
+      id:2,
       time: "13:00",
       title: "Metro explainer reel",
       platform: "YouTube - Threads",
     },
     {
+      id:3,
       time: "19:45",
       title: "Live Q&A",
       platform: "TalkTamila Live",
@@ -30,10 +43,12 @@ export default function UpcomingSchedule() {
           Upcoming Schedule
         </h2>
       </div>
-
-      <div className="flex flex-col gap-4.5 py-1">
-        {events.map((event, idx) => (
-          <div key={idx} className="flex gap-4 items-start">
+    {isLoading ?
+    <Avatarloading/> :
+    <div>
+       <div className="flex flex-col gap-4.5 py-1">
+        {events.map((event) => (
+          <div key={event.id} className="flex gap-4 items-start">
             <span className="text-xs font-black text-[#FF5A26] min-w-[42px]">
               {event.time}
             </span>
@@ -48,6 +63,9 @@ export default function UpcomingSchedule() {
           </div>
         ))}
       </div>
+      </div>
+    }
+     
     </div>
   );
 }

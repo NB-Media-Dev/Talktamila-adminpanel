@@ -3,6 +3,9 @@
 import { Radar } from "lucide-react";
 import Link from "next/link";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { useState } from "react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 interface AdminTrendItem {
   id: number;
@@ -23,8 +26,13 @@ interface AITrendRadarProps {
 }
 
 export default function AITrendRadar({ compact = false }: AITrendRadarProps) {
-  const { isInfluencer } = useAuthRole();
+  const { isInfluencer ,isAdmin } = useAuthRole();
 
+
+    const [isLoading, setIsLoading] = useState(true);
+  
+    
+   UsetimeoutLoader(setIsLoading)
   
   const adminTrends: AdminTrendItem[] = [
     { id: 1, title: "Metro Phase II", score: 94, status: "Peaks in 3h" },
@@ -68,9 +76,8 @@ export default function AITrendRadar({ compact = false }: AITrendRadarProps) {
         )}
       </div>
 
-      {isInfluencer ? (
-      
-        <div className="flex flex-col">
+      {isInfluencer &&(
+        isLoading ? <ContentSkeleton count={3} height="h-[30px]" width="w-full"/> : <div className="flex flex-col">
           {influencerTrends.map((item, index) => (
             <div
               key={item.id}
@@ -98,9 +105,11 @@ export default function AITrendRadar({ compact = false }: AITrendRadarProps) {
             </div>
           ))}
         </div>
-      ) : (
-       
-        <div className={`flex flex-col ${compact ? "gap-2.5" : "gap-4"}`}>
+        
+      ) }
+      
+      {isAdmin && (
+        isLoading ?  <ContentSkeleton count={3} height="h-[30px]" width="w-full"/>:<div className={`flex flex-col ${compact ? "gap-2.5" : "gap-4"}`}>
           {adminTrends.map((item) => (
             <div key={item.id} className="flex flex-col group min-w-0">
               <div className="flex items-center justify-between mb-1 sm:mb-1.5">
@@ -124,7 +133,8 @@ export default function AITrendRadar({ compact = false }: AITrendRadarProps) {
               </span>
             </div>
           ))}
-        </div>
+        </div> 
+        
       )}
     </div>
   );

@@ -6,8 +6,6 @@ import avatar1 from "@/public/Images/profile1.jpg";
 import avatar2 from "@/public/Images/profile2.jpg";
 import avatar3 from "@/public/Images/profile3.jpg";
 import avatar4 from "@/public/Images/profile4.jpg";
-import avatar5 from "@/public/Images/profile1.jpg";
-import avatar6 from "@/public/Images/profile2.jpg";
 import { useState } from "react";
 
 interface Story {
@@ -25,16 +23,13 @@ export default function TodayStories() {
     { id: 1, userName: "Amrita", avatar: avatar1, hasActiveStory: true },
     { id: 2, userName: "Priya", avatar: avatar2, hasActiveStory: true },
     { id: 3, userName: "Arjun", avatar: avatar3, hasActiveStory: true },
-    { id: 4, userName: "Karthik", avatar: avatar5, hasActiveStory: true },
-    { id: 5, userName: "Vishwa", avatar: avatar6, hasActiveStory: true },
-    { id: 6, userName: "swathi", avatar: avatar4, hasActiveStory: true },
-    { id: 7, userName: "Amrita", avatar: avatar1, hasActiveStory: true },
-    { id: 8, userName: "Priya", avatar: avatar2, hasActiveStory: true },
-    { id: 9, userName: "Arjun", avatar: avatar3, hasActiveStory: true },
-    { id: 10, userName: "swathi", avatar: avatar4, hasActiveStory: true },
-    { id: 11, userName: "Amrita", avatar: avatar1, hasActiveStory: true },
-    { id: 12, userName: "Priya", avatar: avatar2, hasActiveStory: true },
-    { id: 13, userName: "Arjun", avatar: avatar3, hasActiveStory: true },
+    { id: 4, userName: "Karthik", avatar: avatar4, hasActiveStory: true },
+    { id: 5, userName: "Vishwa", avatar: avatar1, hasActiveStory: true },
+    { id: 6, userName: "Swathi", avatar: avatar2, hasActiveStory: true },
+    { id: 7, userName: "Deepak", avatar: avatar3, hasActiveStory: true },
+    { id: 8, userName: "Ananya", avatar: avatar4, hasActiveStory: true },
+    { id: 9, userName: "Rohan", avatar: avatar1, hasActiveStory: true },
+    { id: 10, userName: "Kavya", avatar: avatar2, hasActiveStory: true },
   ];
 
   const handleTouchStart = (e: React.TouchEvent) => {

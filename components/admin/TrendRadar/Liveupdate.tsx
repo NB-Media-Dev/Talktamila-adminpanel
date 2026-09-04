@@ -2,13 +2,20 @@
 
 
 import { buttonVariants } from "@/components/ui/Button";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Train, ArrowRight, TrendingUp } from "lucide-react";
+import { useState } from "react";
 
 interface LiveupdateProps {
   hideMobileHeader?: boolean;
 }
 
 export default function Liveupdate({ hideMobileHeader = false }: LiveupdateProps) {
+ const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
+
+  
   return (
     <div className="w-full">
    
@@ -19,7 +26,7 @@ export default function Liveupdate({ hideMobileHeader = false }: LiveupdateProps
             <span className="p-1 rounded-lg bg-orange-100 text-[#FF5A26] inline-flex items-center justify-center">
               <TrendingUp className="w-5 h-5 stroke-[2.5]" />
             </span>
-            Trending Topics
+            <span>Trending Topics</span>
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed mt-1">
             Design, generate &amp; Publish in one flow
@@ -36,10 +43,10 @@ export default function Liveupdate({ hideMobileHeader = false }: LiveupdateProps
           Real-time insights across Tamil Nadu and Global ecosystems.
         </p>
       </div>
-
-    
-      <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.06)] relative overflow-hidden group">
+       <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(255,107,53,0.06)] relative overflow-hidden group">
         
+      {isLoading ? <ContentSkeleton/> :<div>
+       
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <div className="w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-2xl bg-[#FFF2EC] text-[#FF5A26] border border-[#FFEFE0] shrink-0 shadow-sm transition-transform duration-300 group-hover:scale-105">
@@ -98,6 +105,8 @@ export default function Liveupdate({ hideMobileHeader = false }: LiveupdateProps
         </div>
 
       </div>
+     }
+        </div>
     </div>
   );
 }

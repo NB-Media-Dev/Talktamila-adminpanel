@@ -1,5 +1,4 @@
 "use client"
-import { useContext, useState } from "react";
 import TodayStories from "@/components/admin/dashboard/TodaysStories";
 import FeedPost from "@/components/admin/Feed/FeedPost";
 import TrendingTopics from "@/components/admin/dashboard/TrendingTopics";
@@ -22,7 +21,7 @@ import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
 export default function AdminPage() {
   return (
     <div className="@container w-full max-w-full">
-      <div className="w-full max-w-[1440px] @7xl:max-w-[1870px] mx-auto px-2 @xs:px-3 @sm:px-4 @3xl:px-6 pb-24">
+      <div className="w-full px-2 @xs:px-3 @sm:px-4 @3xl:px-6 pb-24">
         <div className="hidden sm:block @6xl:hidden mb-4">
           <TodayStories />
         </div>
@@ -54,9 +53,9 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="col-span-1 @3xl:col-span-7 @6xl:col-span-4 flex flex-col gap-4 w-full max-w-[680px] mx-auto">
+          <div className="col-span-1 @3xl:col-span-7 @6xl:col-span-4 flex flex-col gap-4 w-full mx-auto">
           
-            <div className="sm:hidden w-full flex gap-3 items-start relative">
+            <div className="sm:hidden w-full flex gap-2 xs:gap-3 items-start relative">
               <div className="flex-1 min-w-0">
                 <ShareThoughtCard />
               </div>

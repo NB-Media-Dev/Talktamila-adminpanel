@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-
+import  { useState } from "react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import {  MetricsSkeleton } from "@/components/ui/Skeletonloading";
+import Image, { StaticImageData } from "next/image";
+import avatar1 from "@/public/Images/avatar1.png";
 export interface CreatorItem {
   id: string;
   name: string;
   handle: string;
   score: number;
-  avatar: string;
+  avatar: string | StaticImageData;
   isFollowing?: boolean;
 }
 
@@ -17,7 +20,7 @@ const creatorsData: CreatorItem[] = [
     name: "Indhu Vlogs",
     handle: "@indhuvlogs",
     score: 92,
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    avatar: avatar1,
     isFollowing: false,
   },
   {
@@ -25,7 +28,7 @@ const creatorsData: CreatorItem[] = [
     name: "Tech Tamizha",
     handle: "@techtamizha",
     score: 92,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    avatar: avatar1,
     isFollowing: false,
   },
   {
@@ -33,7 +36,7 @@ const creatorsData: CreatorItem[] = [
     name: "Chennai Paiyan",
     handle: "@chennaipaiyan",
     score: 89,
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    avatar: avatar1,
     isFollowing: false,
   },
   {
@@ -41,17 +44,24 @@ const creatorsData: CreatorItem[] = [
     name: "Ananya Trends",
     handle: "@ananyatrends",
     score: 95,
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+    avatar: avatar1,
     isFollowing: false,
   },
 ];
 
 export interface CreatorProps {
   limit?: number;
+  isLoading?: boolean;
 }
 
-export default function Creator({ limit = 2 }: CreatorProps) {
+export default function Creator({ limit = 2, isLoading: propIsLoading }: CreatorProps) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const [creators, setCreators] = useState<CreatorItem[]>(creatorsData);
+
+  if (isLoading) {
+    return < MetricsSkeleton count={2} columns={2}/>;
+  }
 
   const toggleFollow = (id: string) => {
     setCreators((prev) =>
@@ -76,9 +86,9 @@ export default function Creator({ limit = 2 }: CreatorProps) {
               
               <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full p-[2px] bg-gradient-to-tr from-[#FF6B35] via-[#FF8C42] to-[#FF4D8D] shrink-0 shadow-xs">
                 <div className="w-full h-full rounded-full overflow-hidden bg-white border border-white">
-                  <img
+                  <Image
                     src={creator.avatar}
-                    alt={creator.name}
+                    alt={creator.name} 
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       (e.target as HTMLElement).style.display = "none";

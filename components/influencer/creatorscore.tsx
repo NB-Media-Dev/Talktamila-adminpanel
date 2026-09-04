@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import  { useState } from "react";
 import { buttonVariants } from "../ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import {  ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 export interface ScoreMetric {
   label: string;
@@ -13,6 +15,7 @@ interface CreatorScoreProps {
   score?: number;
   status?: string;
   metrics?: ScoreMetric[];
+  isLoading?: boolean;
 }
 
 const defaultMetrics: ScoreMetric[] = [
@@ -26,7 +29,12 @@ export default function CreatorScore({
   score = 87,
   status = "Good",
   metrics = defaultMetrics,
+  isLoading: propIsLoading,
 }: CreatorScoreProps) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
+
+ 
 
   const radius = 46;
   const circumference = 2 * Math.PI * radius; 
@@ -41,13 +49,14 @@ export default function CreatorScore({
         <h3 className="text-base sm:text-xl font-bold text-gray-900 tracking-tight">
           Creator Score
         </h3>
+        
         <span className={` ${buttonVariants({variant:'sucess'})} px-2 text-xs sm:text-sm `}>
           {status}
         </span>
       </div>
 
-    
-      <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4 sm:gap-5">
+    {isLoading ? <ContentSkeleton count={3} height="h-[50px]" width="w-full"/> :
+     <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center justify-between gap-4 sm:gap-5">
        
         <div className="relative flex items-center justify-center w-28 h-28 sm:w-32 sm:h-32 md:w-28 md:h-28 lg:w-36 lg:h-36 shrink-0">
           <svg className="w-full h-full" viewBox="0 0 120 120">
@@ -115,6 +124,8 @@ export default function CreatorScore({
           ))}
         </div>
       </div>
+    }
+     
     </div>
   );
 }

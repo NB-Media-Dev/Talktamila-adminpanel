@@ -10,7 +10,7 @@ import TodaysEvents from "../dashboard/TodaysEvents";
 
 export default function FeedPost() {
   return (
-    <div className="w-full max-w-[680px] gap-6 mx-auto flex flex-col select-none">
+    <div className="w-full gap-6 flex flex-col select-none">
       <FeedImagePost />
       <div className="md:hidden w-full">
         <BreakingNews />

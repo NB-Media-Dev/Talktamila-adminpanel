@@ -2,20 +2,20 @@
 
 import { buttonVariants } from "@/components/ui/Button";
 import { islandMoments } from "@/public/Fonts/Fonts";
-import { Pencil, Image, Video } from "lucide-react";
+import { Pencil, Image as ImageIcon, Video } from "lucide-react";
 
 export default function ShareThoughtCard() {
   return (
-    <div className={`@container w-full max-w-full mx-auto select-none p-1 ${islandMoments.variable}`}>
+    <div className={`@container w-full max-w-[24rem] mx-auto select-none p-0.5 sm:p-1 ${islandMoments.variable}`}>
       <div className="relative w-full">
 
-        <div className="relative w-full sm:h-[230px]  flex flex-col justify-between">
+        <div className="relative w-full h-[178px] sm:h-auto sm:aspect-[340/230] sm:min-h-[14.5rem] flex flex-col justify-between">
 
           <svg
             viewBox="0 0 340 230"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="absolute inset-0 w-full h-full  pointer-events-none filter drop-shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+            className="absolute inset-0 w-full h-full pointer-events-none filter drop-shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
             preserveAspectRatio="none"
           >
             <path
@@ -39,20 +39,19 @@ export default function ShareThoughtCard() {
           </svg>
 
           <div
-            className="absolute top-0 right-[0] sm:top-0 sm:right-0 w-21 h-15 sm:w-20 sm:h-20  rounded-full pointer-events-none z-10"
+            className="absolute top-0 right-0 w-14 h-14 sm:w-20 sm:h-20 rounded-full pointer-events-none z-10"
             style={{
               background:
                 "radial-gradient(circle at 50% 50%, #EE7233 0%, #F58D4E 45%, rgba(245,141,78,0.55) 65%, rgba(253,241,231,0) 85%)",
               filter: "blur(6px)",
             }}
-
           />
 
           <button
             type="button"
             className="
-              absolute top-[20px] right-[15px] sm:top-[18px] sm:right-[18px] 
-              w-15 h-5 sm:w-11 sm:h-11 
+              absolute top-2 right-2 sm:top-4 sm:right-4 
+              w-7 h-7 sm:w-11 sm:h-11 
               flex items-center justify-center 
               text-white cursor-pointer z-20 
               transition-transform duration-200 
@@ -62,38 +61,38 @@ export default function ShareThoughtCard() {
             aria-label="Edit thought"
           >
             <Pencil
-              className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] text-white transform -rotate-12 drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.25)]"
+              className="w-3.5 h-3.5 sm:w-5.5 sm:h-5.5 text-white transform -rotate-12 drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.25)]"
               strokeWidth={2.4}
             />
           </button>
 
-          <div className="relative z-10 pt-5 px-6 pb-1">
-            <span className="text-[13px] sm:text-[14px] font-sans text-[#8E8E93] block mb-0.5 tracking-normal font-medium">
+          <div className="relative z-10 pt-3 sm:pt-5 px-3.5 sm:px-6 pb-0.5 sm:pb-1">
+            <span className="text-[11px] sm:text-[14px] font-sans text-[#8E8E93] block mb-0 sm:mb-0.5 tracking-normal font-medium">
               Share Your
             </span>
 
             <h2
-              className="text-[38px] sm:text-[44px] font-normal leading-[0.92] text-[#E05D24] tracking-normal"
+              className="text-[28px] sm:text-[44px] font-normal leading-[0.9] sm:leading-[0.92] text-[#E05D24] tracking-normal"
               style={{ fontFamily: "var(--font-island-moments), cursive" }}
             >
               Thoughts...
             </h2>
 
-            <p className="text-[13px] sm:text-[14px] text-[#3A3A3C] font-sans font-normal mt-3 sm:mt-4">
+            <p className="text-[11px] sm:text-[14px] text-[#3A3A3C] font-sans font-normal mt-1 sm:mt-4 truncate">
               New Thought Incoming...
             </p>
           </div>
 
-          <div className="relative z-10 flex items-center justify-between px-6 pt-2 pb-4 mt-auto">
+          <div className="relative z-10 flex items-center justify-between px-3.5 sm:px-6 pt-1 sm:pt-2 pb-3 sm:pb-4 mt-auto">
 
-            <div className="flex items-center gap-4 sm:gap-5 text-[#8E8E93]">
+            <div className="flex items-center gap-1.5 xs:gap-2.5 sm:gap-5 text-[#8E8E93]">
               <button
                 type="button"
                 className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Add Image"
                 aria-label="Add Image"
               >
-                <Image className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
+                <ImageIcon className="w-[17px] h-[17px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
               </button>
 
               <button
@@ -102,7 +101,7 @@ export default function ShareThoughtCard() {
                 title="Add Video"
                 aria-label="Add Video"
               >
-                <Video className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
+                <Video className="w-[17px] h-[17px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
               </button>
 
               <button
@@ -112,7 +111,7 @@ export default function ShareThoughtCard() {
                 aria-label="Create Poll"
               >
                 <svg
-                  className="w-[19px] h-[19px] sm:w-[20px] sm:h-[20px]"
+                  className="w-[16px] h-[16px] sm:w-[20px] sm:h-[20px]"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -132,7 +131,7 @@ export default function ShareThoughtCard() {
                 aria-label="Add Emoji"
               >
                 <svg
-                  className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]"
+                  className="w-[17px] h-[17px] sm:w-[22px] sm:h-[22px]"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -149,13 +148,13 @@ export default function ShareThoughtCard() {
               className={`
                ${buttonVariants({ variant: "default" })}
                 text-white
-                text-[14px] sm:text-[15px]
+                text-[12px] sm:text-[15px]
                 font-bold
-                ml-3
-                px-4 sm:px-4
-                py-2 sm:py-2 
+                ml-1 sm:ml-3
+                px-3 sm:px-4
+                py-1 sm:py-2 
                 rounded-full
-                shadow-[0_6px_16px_rgba(240,90,36,0.35)]
+                shadow-[0_4px_12px_rgba(240,90,36,0.35)]
                 transition-all
                 active:scale-95
                 cursor-pointer

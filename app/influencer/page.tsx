@@ -23,7 +23,7 @@ import Insights from "@/components/influencer/Insights";
 export default function InfluencerPage() {
   return (
     <div className="@container w-full max-w-full">
-      <div className="w-full max-w-[1440px] @7xl:max-w-[1870px] mx-auto px-2 @xs:px-3 @sm:px-4 @3xl:px-6 pb-24">
+      <div className="w-full px-2 @xs:px-3 @sm:px-4 @3xl:px-6 pb-24">
         <div className="hidden sm:block @6xl:hidden mb-4">
           <TodayStories />
         </div>
@@ -46,13 +46,13 @@ export default function InfluencerPage() {
             </div>
           </div>
 
-          <div className="col-span-1 @3xl:col-span-7 @6xl:col-span-4 flex flex-col gap-4 w-full max-w-[680px] mx-auto">
-            {/* Mobile View: ShareThoughtCard on left, TodayStories on right in a grid */}
-            <div className="sm:hidden w-full flex gap-3 items-start relative">
+          <div className="col-span-1 @3xl:col-span-7 @6xl:col-span-4 flex flex-col gap-4 w-full mx-auto">
+          
+            <div className="sm:hidden w-full flex gap-2 xs:gap-3 items-start relative">
               <div className="flex-1 min-w-0">
                 <ShareThoughtCard />
               </div>
-              <div className="relative w-[72px] shrink-0 h-[230px]">
+              <div className="relative w-[72px] shrink-0">
                 <TodayStories />
               </div>
             </div>

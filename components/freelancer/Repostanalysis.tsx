@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { ChevronDown, MoveUp } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
+import { ChartSkeleton } from "../ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 
 export interface DailyStat {
   day: string;
@@ -49,6 +51,13 @@ export default function Repostanalysis({
   const [selectedFilter, setSelectedFilter] = useState(initialFilter);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hoveredBar, setHoveredBar] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+    UsetimeoutLoader(setIsLoading);
+  
+
+    if (isLoading) {
+      return <ChartSkeleton />;
+    }
 
   const handleSelectFilter = (option: string) => {
     setSelectedFilter(option);

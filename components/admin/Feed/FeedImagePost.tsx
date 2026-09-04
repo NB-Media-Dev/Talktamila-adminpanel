@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useContext, useState, useRef } from "react";
-import { useContenthook } from "@/hooks/useContent";
-import Image from "next/image";
+import React, { useState, useRef } from "react";
 import { X} from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
 import movie from "@/public/Images/movie.jpg";
@@ -11,14 +9,30 @@ import { useAuthRole } from "@/hooks/useAuthRole";
 import {  InstagramIcon } from "@/public/Svgicons/svgicons";
 import { FeedCardfooter } from "./FeedCardfooter";
 import { FeedCardheader } from "./FeedCardheader";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { FeedPostSkeleton } from "@/components/ui/Skeletonloading";
+import Image from "next/image";
 
+interface FeedImagePostProps {
+  isLoading?: boolean;
+}
 
-
-export default function FeedImagePost() {
+export default function FeedImagePost({ isLoading: propIsLoading }: FeedImagePostProps = {}) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const { isInfluencer , isFreelancer } = useAuthRole();
 
-   const Fooderdetail={
-      isViews:'1.2M',
+  const defaultImageSrc = typeof movie === "string" ? movie : movie.src;
+  const [imageSrc, setImageSrc] = useState<string>(defaultImageSrc);
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  if (isLoading) {
+    return <FeedPostSkeleton />;
+  }
+
+  const Fooderdetail={
+    isViews:'1.2M',
     isRevenue:'18,250',
     isAIScore:'96/100',
     isNextTime:'8:32PM',
@@ -26,12 +40,7 @@ export default function FeedImagePost() {
     isMessage:'3.20K',
     isSend:'5,810',
     isSaved:'12.4k',
-  }
-
-  const defaultImageSrc = typeof movie === "string" ? movie : (movie as any)?.src || movie;
-  const [imageSrc, setImageSrc] = useState<string>(defaultImageSrc);
-  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,7 +68,7 @@ export default function FeedImagePost() {
   };
 
   return (
-    <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
+    <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3.5 sm:gap-4">
 
       <FeedCardheader
         avatar={avatar4}
@@ -88,9 +97,10 @@ export default function FeedImagePost() {
             aspectRatio: aspectRatio ? `${aspectRatio}` : undefined,
           }}
         >
-          <img
+          <Image
             src={imageSrc}
             alt="Post Image"
+            fill
             onLoad={handleImageLoad}
             className="w-full h-full object-contain animate-fade-in rounded-[24px] max-h-[550px]"
           />

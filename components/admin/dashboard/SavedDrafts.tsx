@@ -1,8 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { FileText, ArrowRight } from "lucide-react";
 import QuickNotes from "./QuickNotes";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
+import Link from "next/link";
 
 interface DraftItem {
   id: number;
@@ -12,6 +15,11 @@ interface DraftItem {
 }
 
 export default function SavedDrafts() {
+
+     const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
   const drafts: DraftItem[] = [
     {
       id: 1,
@@ -45,14 +53,16 @@ export default function SavedDrafts() {
             Saved Drafts
           </h2>
         </div>
-        <a
-          href="#"
+        <Link
+          href="/admin"
           className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
         >
           Open
-        </a>
+        </Link>
       </div>
-
+      {isLoading ? <ContentSkeleton/> :
+      
+       <div>
       <div className="flex flex-col gap-3">
         {drafts.map((item) => (
           <div
@@ -71,10 +81,11 @@ export default function SavedDrafts() {
           </div>
         ))}
       </div>
-
       <div className="mt-1">
         <QuickNotes />
       </div>
+      </div>}
+   
     </div>
   );
 }

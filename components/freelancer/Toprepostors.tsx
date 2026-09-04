@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import  { useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import avatar1 from "@/public/Images/avatar1.png";
 import avatar2 from "@/public/Images/avatar2.png";
 import avatar3 from "@/public/Images/avatar3.png";
-import avatar4 from "@/public/Images/avatar4.png";
 import { buttonVariants } from "../ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { Avatarloading } from "../ui/Skeletonloading";
 
 export interface RepostorItem {
   id: string;
@@ -54,9 +55,13 @@ export default function Toprepostors({
   onRepostorClick,
   className = "",
 }: TopRepostorsProps) {
+
+  const [isLoading, setIsLoading] = useState( true);
+    UsetimeoutLoader(setIsLoading);
+  
   return (
     <div
-      className={`w-full max-w-sm bg-white rounded-[28px] p-4 sm:p-6 border border-gray-100/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] select-none flex flex-col gap-4 ${className}`}
+      className={`w-full max-w-full bg-white rounded-[28px] p-4 sm:p-6 border border-gray-100/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] select-none flex flex-col gap-4 ${className}`}
     >
       
       <div className="flex items-center justify-between">
@@ -72,13 +77,13 @@ export default function Toprepostors({
         </button>
       </div>
 
-      
-      <div className="flex flex-col gap-3">
+      {isLoading ? <Avatarloading/> : <div className="flex flex-col gap-3">
         {repostors.map((repostor, idx) => (
-          <div
+          <button
+            type="button"
             key={repostor.id}
             onClick={() => onRepostorClick?.(repostor)}
-            className="flex items-center justify-between gap-3 group cursor-pointer hover:bg-gray-50/70 p-1.5 -mx-1.5 rounded-2xl transition-colors"
+            className="flex items-center justify-between gap-3 group cursor-pointer hover:bg-gray-50/70 p-1.5 -mx-1.5 rounded-2xl transition-colors w-full text-left bg-transparent border-0"
           >
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-xs font-bold text-gray-400 w-4 text-center shrink-0">
@@ -100,9 +105,10 @@ export default function Toprepostors({
             <span className="text-xs sm:text-sm font-bold text-gray-900 shrink-0">
               {repostor.amount}
             </span>
-          </div>
+          </button>
         ))}
-      </div>
+      </div> }
+     
     </div>
   );
 }

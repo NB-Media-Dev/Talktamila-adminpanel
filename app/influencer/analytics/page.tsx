@@ -9,7 +9,7 @@ import CreatorScore from "@/components/influencer/creatorscore";
 
 export default function AnalyticsPage() {
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-2 sm:px-4 md:px-6 py-3 sm:py-6 select-none">
+    <div className="w-full px-2 sm:px-4 md:px-6 py-3 sm:py-6 select-none">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start w-full">
         
         {/* Left Main Column */}

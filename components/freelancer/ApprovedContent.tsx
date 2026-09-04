@@ -13,11 +13,15 @@ import {
   X,
 } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ListSkeleton } from "@/components/ui/Skeletonloading";
+import Image, { StaticImageData } from "next/image";
+import avatar1 from "@/public/Images/avatar1.png";
 
 export interface Creator {
   name: string;
   isVerified: boolean;
-  avatar: string;
+  avatar: string | StaticImageData;
   platform: string;
   platformType: string;
 }
@@ -37,7 +41,7 @@ export interface RewardInfo {
 export interface ApprovedContentItem {
   id: string;
   type: "video" | "image";
-  mediaUrl?: string;
+  mediaUrl?: string | StaticImageData;
   duration?: string;
   posterBg?: string;
   posterContent?: {
@@ -58,6 +62,7 @@ export interface ApprovedContentProps {
   badgeCount?: number;
   items?: ApprovedContentItem[];
   className?: string;
+  isLoading?: boolean;
   onRepost?: (item: ApprovedContentItem) => void;
   onPreview?: (item: ApprovedContentItem) => void;
 }
@@ -67,13 +72,13 @@ const defaultApprovedItems: ApprovedContentItem[] = [
     id: "ac-1",
     type: "video",
     mediaUrl:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+      avatar1,
     duration: "0:38",
     creator: {
       name: "Travel Tamizha",
       isVerified: true,
       avatar:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+        avatar1,
       platform: "Instagram Reel",
       platformType: "Instagram",
     },
@@ -104,7 +109,7 @@ const defaultApprovedItems: ApprovedContentItem[] = [
       name: "News Tamila",
       isVerified: true,
       avatar:
-        "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150&q=80",
+      avatar1 ,
       platform: "Facebook Post",
       platformType: "Facebook",
     },
@@ -128,9 +133,12 @@ export default function ApprovedContent({
   badgeCount = 18,
   items: initialItems = defaultApprovedItems,
   className = "",
+  isLoading: propIsLoading,
   onRepost,
   onPreview,
 }: ApprovedContentProps) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const [items, setItems] = useState<ApprovedContentItem[]>(initialItems);
   const [selectedSort, setSelectedSort] = useState("Latest First");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -146,14 +154,14 @@ export default function ApprovedContent({
     const sorted = [...items];
     if (option === "Highest Reward") {
       sorted.sort((a, b) => {
-        const numA = parseInt(a.reward.amount.replace(/\D/g, "")) || 0;
-        const numB = parseInt(b.reward.amount.replace(/\D/g, "")) || 0;
+        const numA = Number.parseInt(a.reward.amount.replace(/\D/g, "")) || 0;
+        const numB = Number.parseInt(b.reward.amount.replace(/\D/g, "")) || 0;
         return numB - numA;
       });
     } else if (option === "Most Views") {
       sorted.sort((a, b) => {
-        const numA = parseFloat(a.stats.views || a.stats.reach || "0") * 1000;
-        const numB = parseFloat(b.stats.views || b.stats.reach || "0") * 1000;
+        const numA = Number.parseFloat(a.stats.views || a.stats.reach || "0") * 1000;
+        const numB = Number.parseFloat(b.stats.views || b.stats.reach || "0") * 1000;
         return numB - numA;
       });
     }
@@ -175,7 +183,7 @@ export default function ApprovedContent({
   };
 
   return (
-    <div className={`w-full max-w-5xl mx-auto flex flex-col gap-5 sm:gap-6 select-none ${className}`}>
+    <div className={`w-full flex flex-col gap-5 sm:gap-6 select-none ${className}`}>
       
       <div className="flex flex-wrap items-center justify-between gap-3 px-1">
         <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
@@ -222,7 +230,10 @@ export default function ApprovedContent({
 
       
       <div className="flex flex-col gap-4 sm:gap-5">
-        {items.map((item) => (
+        {isLoading ? (
+          <ListSkeleton count={2}/>
+        ) : (
+          items.map((item) => (
           <div
             key={item.id}
             className="bg-white rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-4 border border-gray-100/90 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 flex flex-col md:flex-row gap-3.5 sm:gap-4 md:gap-5"
@@ -231,9 +242,10 @@ export default function ApprovedContent({
             <div className="w-full md:w-[200px] lg:w-[220px] xl:w-[270px] 2xl:w-[300px] h-[180px] sm:h-[200px] md:h-auto min-h-[180px] shrink-0 rounded-2xl relative overflow-hidden group">
               {item.type === "video" ? (
                 <>
-                  <img
-                    src={item.mediaUrl}
+                  <Image
+                    src={item.mediaUrl || ""}
                     alt={item.title}
+                    fill
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
@@ -282,7 +294,7 @@ export default function ApprovedContent({
            
               <div className="flex items-start justify-between gap-2 min-w-0">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <img
+                  <Image
                     src={item.creator.avatar}
                     alt={item.creator.name}
                     className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-gray-100 shadow-xs shrink-0"
@@ -398,7 +410,7 @@ export default function ApprovedContent({
               </div>
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
      
@@ -417,8 +429,8 @@ export default function ApprovedContent({
               <div className="h-56 sm:h-64 bg-gray-900 relative flex items-center justify-center shrink-0">
                 {previewItem.type === "video" ? (
                   <>
-                    <img
-                      src={previewItem.mediaUrl}
+                    <Image
+                      src={previewItem.mediaUrl || ""}
                       alt={previewItem.title}
                       className="w-full h-full object-cover"
                     />
@@ -448,7 +460,7 @@ export default function ApprovedContent({
 
               <div className="p-4 sm:p-6 space-y-4">
                 <div className="flex items-center gap-3">
-                  <img
+                  <Image
                     src={previewItem.creator.avatar}
                     alt={previewItem.creator.name}
                     className="w-10 h-10 rounded-full object-cover shrink-0"

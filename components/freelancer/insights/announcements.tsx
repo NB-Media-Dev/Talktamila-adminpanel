@@ -1,8 +1,10 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import { Megaphone, CheckCircle2 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 export interface AnnouncementProps {
   title?: string;
@@ -23,11 +25,13 @@ export default function Announcement({
   onRepostNow,
   onPreview,
 }: AnnouncementProps) {
+    const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
   return (
     <div
       className={`w-full bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4 ${className}`}
     >
-    
+      {isLoading ? <ContentSkeleton count={1}/> : <div>
       <div className="flex items-center gap-3">
        
         <div className={`${buttonVariants({variant:'ghost'})}`}>
@@ -72,6 +76,8 @@ export default function Announcement({
           Preview
         </button>
       </div>
+      </div> }
+     
     </div>
   );
 }

@@ -2,6 +2,10 @@
 
 import { Star, CheckCircle2 } from "lucide-react";
 import verified from "@/public/Images/verifiyedprofile.jpg";
+import { useState } from "react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
+import Image, { StaticImageData } from "next/image";
 
 export interface VerifiedReposterProps {
   name?: string;
@@ -9,7 +13,7 @@ export interface VerifiedReposterProps {
   level?: string;
   rating?: number;
   reviewsCount?: number;
-  avatarUrl?: string | any;
+  avatarUrl?: string | StaticImageData;
   className?: string;
 }
 
@@ -23,16 +27,19 @@ export default function VerifiedReposter({
   className = "",
 }: VerifiedReposterProps) {
 
-
+    const [isLoading, setIsLoading] = useState(true);
+    UsetimeoutLoader(setIsLoading);
   return (
     <div
       className={`w-full max-w-full bg-white rounded-3xl p-5 sm:p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col items-center text-center relative ${className}`}
     >
-
+      {isLoading ? <ContentSkeleton count={1}/> : <>
       <div className="relative mb-3">
-        <img
+        <Image
           src={avatarUrl}
           alt={name}
+          width={80}
+          height={80}
           className="w-20 h-20 rounded-full object-cover border-2 border-white shadow-md"
          loading="lazy"/>
         <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[#C04808] text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white shadow-xs whitespace-nowrap">
@@ -53,9 +60,9 @@ export default function VerifiedReposter({
 
       <div className="flex items-center justify-center gap-1 mt-3">
         <div className="flex items-center gap-0.5">
-          {[...Array(5)].map((_, i) => (
+          {[1, 2, 3, 4, 5].map((starVal) => (
             <Star
-              key={i}
+              key={`star-${starVal}`}
               className="w-3.5 h-3.5 fill-[#C04808] text-[#C04808]"
             />
           ))}
@@ -65,6 +72,8 @@ export default function VerifiedReposter({
         </span>
         <span className="text-xs text-gray-400">({reviewsCount})</span>
       </div>
+      </>}
+      
     </div>
   );
 }

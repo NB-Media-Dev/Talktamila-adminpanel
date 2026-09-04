@@ -1,6 +1,10 @@
 "use client";
 
+import { Avatarloading } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Zap } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 interface NewsItem {
   id: number;
@@ -9,6 +13,13 @@ interface NewsItem {
 }
 
 export default function BreakingNews() {
+
+    const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
+
+
   const newsList: NewsItem[] = [
     {
       id: 1,
@@ -39,15 +50,14 @@ export default function BreakingNews() {
               Breaking News
             </h2>
           </div>
-          <a
-            href="#"
+          <Link
+            href="/admin"
             className="text-xs sm:text-sm text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
           >
             All news
-          </a>
+          </Link>
         </div>
-
-      <div className="flex flex-col gap-3.5">
+    {isLoading ? <Avatarloading/> : <div className="flex flex-col gap-3.5">
         {newsList.map((item) => (
           <div
             key={item.id}
@@ -63,7 +73,8 @@ export default function BreakingNews() {
             </p>
           </div>
         ))}
-      </div>
+      </div> }
+     
     </div>
   );
 }

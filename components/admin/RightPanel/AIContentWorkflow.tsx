@@ -2,16 +2,16 @@
 
 export default function AIContentWorkflow() {
   const steps = [
-    { name: "Idea", active: true },
-    { name: "AI Research", active: true },
-    { name: "Caption", active: true },
-    { name: "Poster", active: true },
-    { name: "Reel", active: false },
-    { name: "Review", active: false },
-    { name: "Approval", active: false },
-    { name: "Publish", active: false },
-    { name: "Analytics", active: false },
-    { name: "Revenue", active: false },
+    {id:1, name: "Idea", active: true },
+    {id:2, name: "AI Research", active: true },
+    {id:3, name: "Caption", active: true },
+    {id:4, name: "Poster", active: true },
+    {id:5, name: "Reel", active: false },
+    {id:6, name: "Review", active: false },
+    {id:7, name: "Approval", active: false },
+    {id:8, name: "Publish", active: false },
+    {id:9, name: "Analytics", active: false },
+    {id:10, name: "Revenue", active: false },
   ];
 
   return (
@@ -29,8 +29,8 @@ export default function AIContentWorkflow() {
           />
         </div>
 
-        {steps.map((step, idx) => (
-          <div key={idx} className="flex items-center gap-3.5 relative z-10">
+        {steps.map((step) => (
+          <div key={step.id} className="flex items-center gap-3.5 relative z-10">
             <div className={`w-2.5 h-2.5 rounded-full ${step.active ? "bg-[#FF5A26]" : "bg-gray-200"}`} />
 
             <span className={`text-xs font-bold ${step.active ? "text-gray-900" : "text-gray-400"}`}>

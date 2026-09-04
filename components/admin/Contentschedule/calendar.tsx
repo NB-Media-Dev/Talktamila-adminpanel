@@ -6,6 +6,9 @@ import {
   ChevronRight, 
 } from "lucide-react";
 
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { CalendarSkeleton } from "@/components/ui/Skeletonloading";
+
 interface ScheduledItem {
   id: string;
   platform: 'youtube' | 'twitter' | 'instagram' | 'linkedin';
@@ -66,10 +69,21 @@ const getMockEvents = (): Record<string, DayEvent> => {
 
 const defaultEvents = getMockEvents();
 
-export default function Calendar() {
+interface CalendarProps {
+  isLoading?: boolean;
+}
+
+export default function Calendar({ isLoading: propIsLoading }: CalendarProps = {}) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
+
   const [currentDate, setCurrentDate] = useState<Date>(new Date()); 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [events, setEvents] = useState<Record<string, DayEvent>>(defaultEvents);
+  const [events] = useState<Record<string, DayEvent>>(defaultEvents);
+
+  if (isLoading) {
+    return <CalendarSkeleton />;
+  }
 
   const weekdays = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const months = [
@@ -198,11 +212,11 @@ export default function Calendar() {
           </div>
         </div>
 
-        {/* Weekday Labels */}
+        
         <div className="grid grid-cols-7 border-b border-gray-100 pb-2 sm:pb-6 mb-2 sm:mb-6">
-          {weekdays.map((day, idx) => (
+          {weekdays.map((day) => (
             <div 
-              key={idx} 
+              key={day} 
               className="text-center text-[8px] min-[360px]:text-[10px] sm:text-xs md:text-sm font-extrabold text-[#F27D42] tracking-wider py-0"
             >
               {day}
@@ -210,9 +224,8 @@ export default function Calendar() {
           ))}
         </div>
 
-        {/* Calendar Grid (7 Columns) */}
         <div className="grid grid-cols-7 gap-1 min-[360px]:gap-1.5 sm:gap-3 md:gap-2">
-          {calendarDays.map((cell, idx) => {
+          {calendarDays.map((cell) => {
             const dateKey = formatDateKey(cell.date);
             const isSelected = formatDateKey(selectedDate) === dateKey;
             const eventInfo = events[dateKey];
@@ -223,7 +236,7 @@ export default function Calendar() {
             let cellClass = "h-11 min-[360px]:h-12 sm:h-14 md:h-16 lg:h-20 flex flex-col justify-between items-center py-1 px-0.5 sm:p-3 rounded-[16px] min-[360px]:rounded-[20px] sm:rounded-2xl md:rounded-[20px] transition-all duration-200 border relative cursor-pointer select-none ";
             
             if (!cell.isCurrentMonth) {
-              cellClass += "border-transparent bg-transparent text-gray-300 pointer-events-none ";
+              cellClass += "border-transparent bg-transparent text-gray-300 pointer-events-none disabled:opacity-40 ";
             } else if (isSelected) {
               cellClass += "border-2 border-[#F27D42] ring-2 min-[360px]:ring-4 ring-[#F27D42]/15 bg-white shadow-xs ";
             } else {
@@ -231,8 +244,10 @@ export default function Calendar() {
             }
 
             return (
-              <div 
-                key={idx}
+              <button 
+                type="button"
+                key={dateKey}
+                disabled={!cell.isCurrentMonth}
                 className={cellClass}
                 onClick={() => {
                   if (cell.isCurrentMonth) {
@@ -259,7 +274,7 @@ export default function Calendar() {
                     <div className="flex gap-0.5 justify-center items-center">
                       {eventInfo.dots?.map((color, dIdx) => (
                         <span 
-                          key={dIdx}
+                          key={`${color}-${dIdx}`}
                           className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${
                             color === 'orange' ? 'bg-[#F27D42]' : 'bg-gray-300'
                           }`}
@@ -268,7 +283,7 @@ export default function Calendar() {
                     </div>
                   )}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

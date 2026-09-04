@@ -1,7 +1,6 @@
 "use client";
 
-import { useContext } from "react";
-import { useContenthook } from "@/hooks/useContent";
+import { useState } from "react";
 import Image from "next/image";
 import { Play} from "lucide-react";
 import avatar4 from "@/public/Images/avatar4.png";
@@ -11,12 +10,21 @@ import { useAuthRole } from "@/hooks/useAuthRole";
 import { YoutubeIcon } from "@/public/Svgicons/svgicons";
 import { FeedCardfooter } from "./FeedCardfooter";
 import { FeedCardheader } from "./FeedCardheader";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { FeedPostSkeleton } from "@/components/ui/Skeletonloading";
 
+interface FeedVideoPostProps {
+  isLoading?: boolean;
+}
 
-
-export default function FeedVideoPost() {
-  
+export default function FeedVideoPost({ isLoading: propIsLoading }: FeedVideoPostProps = {}) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const { isInfluencer,isFreelancer} = useAuthRole();
+
+  if (isLoading) {
+    return <FeedPostSkeleton />;
+  }
 
    const Fooderdetail={
       isViews:'3.2M',
@@ -30,7 +38,7 @@ export default function FeedVideoPost() {
   }
 
   return (
-    <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
+    <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3.5 sm:gap-4">
 
       <FeedCardheader
         avatar={avatar4}

@@ -1,1 +1,1 @@
-export default function Page({ params }: { params: Promise<{ slug: string }> }) { return null; }
+export default function Page() { return null; }

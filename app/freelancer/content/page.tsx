@@ -11,7 +11,7 @@ import VerifiedReposter from "@/components/freelancer/insights/verifiedreposter"
 export default function ContentPage() {
   return (
     <div className="w-full min-h-screen px-2.5 sm:px-4 md:px-6 py-4 sm:py-6">
-      <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
        
         <div className="lg:col-span-7 xl:col-span-8 w-full flex flex-col gap-6">
           <ApprovedContent />

@@ -1,21 +1,17 @@
 "use client"
-import { useContext, useState, useEffect } from "react";
-import { ArrowLeft, X } from "lucide-react";
+import { useContext, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Processloading } from "@/components/ui/Skeletonloading/Prcessbarloading";
+import { Processloading, ContentSkeleton } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 
 export function Performanceacrossplatform() {
   const context = useContext(useContenthook);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000);
+     const [isLoading, setIsLoading] = useState(true);
 
-    return () => clearTimeout(timer);
-  }, []);
+  
+ UsetimeoutLoader(setIsLoading)
 
   if (!context) {
     throw new Error("Performanceacrossplatform must be used within a UseContentProvider");
@@ -27,38 +23,38 @@ export function Performanceacrossplatform() {
   };
 
   const metrics = [
-    { label: "CTR", value: "7.8%" },
-    { label: "Watch Time", value: "2m 41s" },
-    { label: "Retention", value: "62%" },
-    { label: "SEO Score", value: "88" },
-    { label: "Sentiment", value: "Positive" },
-    { label: "Trending Score", value: "94" },
+    {id:1, label: "CTR", value: "7.8%" },
+    {id:2, label: "Watch Time", value: "2m 41s" },
+    {id:3, label: "Retention", value: "62%" },
+    {id:4, label: "SEO Score", value: "88" },
+    {id:5, label: "Sentiment", value: "Positive" },
+    { id:6,label: "Trending Score", value: "94" },
   ];
 
   const platforms = [
-    { name: "Instagram", reach: "482K", growth: "8.4%", percentage: 90 },
-    { name: "YouTube", reach: "356K", growth: "6.1%", percentage: 75 },
-    { name: "Facebook", reach: "214K", growth: "4.9%", percentage: 65 },
-    { name: "Threads", reach: "128K", growth: "5.6%", percentage: 55 },
-    { name: "X", reach: "96K", growth: "3.2%", percentage: 45 },
-    { name: "Telegram", reach: "74K", growth: "9.1%", percentage: 35 },
-    { name: "WhatsApp", reach: "58K", growth: "11.3%", percentage: 25 },
-    { name: "LinkedIn", reach: "31K", growth: "2.7%", percentage: 18 },
-    { name: "Pinterest", reach: "22K", growth: "3.8%", percentage: 12 },
+    {id:1, name: "Instagram", reach: "482K", growth: "8.4%", percentage: 90 },
+    {id:2, name: "YouTube", reach: "356K", growth: "6.1%", percentage: 75 },
+    {id:3, name: "Facebook", reach: "214K", growth: "4.9%", percentage: 65 },
+    {id:4, name: "Threads", reach: "128K", growth: "5.6%", percentage: 55 },
+    {id:5, name: "X", reach: "96K", growth: "3.2%", percentage: 45 },
+    {id:6, name: "Telegram", reach: "74K", growth: "9.1%", percentage: 35 },
+    {id:7, name: "WhatsApp", reach: "58K", growth: "11.3%", percentage: 25 },
+    {id:8, name: "LinkedIn", reach: "31K", growth: "2.7%", percentage: 18 },
+    {id:9, name: "Pinterest", reach: "22K", growth: "3.8%", percentage: 12 },
   ];
 
   const ages = [
-    { range: "18-24", percentage: 34 },
-    { range: "25-34", percentage: 41 },
-    { range: "35-44", percentage: 17 },
-    { range: "45+", percentage: 8 },
+    {id:1, range: "18-24", percentage: 34 },
+    {id:2, range: "25-34", percentage: 41 },
+    {id:3, range: "35-44", percentage: 17 },
+    {id:4, range: "45+", percentage: 8 },
   ];
 
   const audienceMix = [
-    { label: "Country", value: "India 82% - Sri Lanka 9%" },
-    { label: "Language", value: "Tamil 91% - English 9%" },
-    { label: "Gender", value: "M 54% - F 46%" },
-    { label: "Best time", value: "9:00 PM" },
+    { id:1,label: "Country", value: "India 82% - Sri Lanka 9%" },
+    {id:2, label: "Language", value: "Tamil 91% - English 9%" },
+    { id:3,label: "Gender", value: "M 54% - F 46%" },
+    {id:4, label: "Best time", value: "9:00 PM" },
   ];
 
   return (
@@ -71,8 +67,8 @@ export function Performanceacrossplatform() {
   onClick={handleClose}
   className="flex md:flex absolute right-5 top-7 h-6 px-2 items-center justify-center rounded-full bg-white/20 hover:bg-white/35 text-white font-bold text-xs shadow-sm transition-all duration-200 cursor-pointer gap-1.5"
 >
-  <ArrowLeft size={16} className="stroke-[2.5]" />
-  <span>Back</span>
+
+  <span>X</span>
 </button>
 
           <h1 className="text-lg tracking-tight">Performance across platforms</h1>
@@ -82,13 +78,17 @@ export function Performanceacrossplatform() {
         </div>
 
         {isLoading ? (
+          <div>
+        <ContentSkeleton count={3} height="h-[30px]" width="w-full" /> 
         <Processloading/>
+        <ContentSkeleton count={4} height="h-[35px]" width="w-full"/>
+        </div>
         ) : (
           <div className="flex-1 p-3 pt-3 pb-28 md:pb-5 flex flex-col gap-4.5 bg-[#FCFAF7] overflow-y-auto">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {metrics.map((m, idx) => (
+              {metrics.map((m) => (
                 <div
-                  key={idx}
+                  key={m.id}
                   className="bg-[#FFF6ED] border border-[#FFEFE0] rounded-xl p-2.5 flex flex-col shadow-2xs hover:scale-[1.01] transition-transform"
                 >
                   <span className="text-[9px] text-[#A67C52] font-extrabold tracking-wider uppercase leading-none">
@@ -106,8 +106,8 @@ export function Performanceacrossplatform() {
                 Platform Comparison
               </h3>
               <div className="flex flex-col gap-2.5">
-                {platforms.map((p, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
+                {platforms.map((p) => (
+                  <div key={p.id} className="flex items-center gap-3">
                     <span className="text-[11px] font-bold text-gray-700 w-16 shrink-0 leading-none">
                       {p.name}
                     </span>
@@ -137,8 +137,8 @@ export function Performanceacrossplatform() {
                   Audience Age
                 </h3>
                 <div className="flex flex-col gap-2">
-                  {ages.map((a, idx) => (
-                    <div key={idx} className="flex items-center gap-3">
+                  {ages.map((a) => (
+                    <div key={a.id} className="flex items-center gap-3">
                       <span className="text-[10px] font-bold text-gray-600 w-10 shrink-0 leading-none">
                         {a.range}
                       </span>
@@ -163,8 +163,8 @@ export function Performanceacrossplatform() {
                   Audience Mix
                 </h3>
                 <div className="flex flex-col gap-2">
-                  {audienceMix.map((mix, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-[10px] leading-none">
+                  {audienceMix.map((mix) => (
+                    <div key={mix.id} className="flex justify-between items-center text-[10px] leading-none">
                       <span className="font-bold text-gray-400">
                         {mix.label}
                       </span>

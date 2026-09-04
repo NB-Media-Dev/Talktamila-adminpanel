@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import {
   MoreHorizontal
 } from "lucide-react";
@@ -10,6 +9,8 @@ import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnaly
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { FeedCardfooter } from "./FeedCardfooter";
 import { FeedCardheader } from "./FeedCardheader";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { FeedPostSkeleton } from "@/components/ui/Skeletonloading";
 
 interface PollOption {
   id: number;
@@ -17,8 +18,13 @@ interface PollOption {
   votes: number;
 }
 
-export default function FeedPollPost() {
+interface FeedPollPostProps {
+  isLoading?: boolean;
+}
 
+export default function FeedPollPost({ isLoading: propIsLoading }: FeedPollPostProps = {}) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const { isInfluencer,isFreelancer } = useAuthRole();
 
   const [options, setOptions] = useState<PollOption[]>([
@@ -27,9 +33,12 @@ export default function FeedPollPost() {
     { id: 3, text: "Poster Studio", votes: 180 },
     { id: 4, text: "Translate", votes: 80 }
   ]);
-
   const [hasVoted, setHasVoted] = useState<boolean>(false);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+
+  if (isLoading) {
+    return <FeedPostSkeleton />;
+  }
 
   const totalVotes = options.reduce((sum, opt) => sum + opt.votes, 0);
 
@@ -56,7 +65,7 @@ export default function FeedPollPost() {
   }
 
   return (
-    <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
+    <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3.5 sm:gap-4">
 
       <FeedCardheader
         avatar={avatar3}
@@ -87,17 +96,21 @@ export default function FeedPollPost() {
           const percentage = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
           const isSelected = opt.id === selectedOptionId;
 
+          let optionStyleClass;
+          if (!hasVoted) {
+            optionStyleClass = "border-[#FFEFE0] bg-white hover:border-[#FF6B35] hover:shadow-sm";
+          } else if (isSelected) {
+            optionStyleClass = "border-[#FF6B35] bg-orange-50/10";
+          } else {
+            optionStyleClass = "border-[#FFEFE0] bg-gray-50/30";
+          }
+
           return (
             <button
               key={opt.id}
               onClick={() => handleVote(opt.id)}
               disabled={hasVoted}
-              className={`w-full relative h-12 rounded-full overflow-hidden text-left border transition-all duration-300 flex items-center justify-between px-5 cursor-pointer select-none group active:scale-[0.98] ${hasVoted
-                  ? isSelected
-                    ? "border-[#FF6B35] bg-orange-50/10"
-                    : "border-[#FFEFE0] bg-gray-50/30"
-                  : "border-[#FFEFE0] bg-white hover:border-[#FF6B35] hover:shadow-sm"
-                }`}
+              className={`w-full relative h-12 rounded-full overflow-hidden text-left border transition-all duration-300 flex items-center justify-between px-5 cursor-pointer select-none group active:scale-[0.98] ${optionStyleClass}`}
             >
 
               <div

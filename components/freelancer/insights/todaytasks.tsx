@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { Square, CheckSquare } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { Avatarloading } from "@/components/ui/Skeletonloading";
 
 export interface TaskItem {
   id: string;
@@ -40,6 +42,8 @@ export default function Todaytask({
   onViewAll,
 }: TodattaskProps) {
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks);
+  const [isLoading, setIsLoading] = useState(true);
+  UsetimeoutLoader(setIsLoading);
 
   const toggleTask = (id: string) => {
     setTasks((prev) =>
@@ -49,9 +53,8 @@ export default function Todaytask({
 
   return (
     <div
-      className={`w-full max-w-sm bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4 ${className}`}
+      className={`w-full max-w-full bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4 ${className}`}
     >
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-gray-900 text-base tracking-tight">
           {title}
@@ -59,50 +62,50 @@ export default function Todaytask({
         <button
           type="button"
           onClick={onViewAll}
-            className={`${buttonVariants({variant:'link'})} text-xs `}
+          className={`${buttonVariants({ variant: "link" })} text-xs `}
         >
           View All
         </button>
       </div>
 
-     
-      <div className="flex flex-col gap-3">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            onClick={() => toggleTask(task.id)}
-            className="flex items-center justify-between gap-3 p-1 rounded-2xl hover:bg-gray-50/80 transition-colors cursor-pointer group"
-          >
-           
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <button
-                type="button"
-                className="text-gray-400 group-hover:text-[#C04808] transition-colors shrink-0"
-              >
-                {task.completed ? (
-                  <CheckSquare className="w-4 h-4 text-[#C04808]" />
-                ) : (
-                  <Square className="w-4 h-4 text-gray-300" />
-                )}
-              </button>
+      {isLoading ? (
+        <Avatarloading />
+      ) : (
+        <div className="flex flex-col gap-3">
+          {tasks.map((task) => (
+            <button
+              type="button"
+              key={task.id}
+              onClick={() => toggleTask(task.id)}
+              className="flex items-center justify-between gap-3 p-1 rounded-2xl hover:bg-gray-50/80 transition-colors cursor-pointer group w-full text-left bg-transparent border-0"
+            >
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <span className="text-gray-400 group-hover:text-[#C04808] transition-colors shrink-0">
+                  {task.completed ? (
+                    <CheckSquare className="w-4 h-4 text-[#C04808]" />
+                  ) : (
+                    <Square className="w-4 h-4 text-gray-300" />
+                  )}
+                </span>
 
-              <span
-                className={`text-xs sm:text-sm font-semibold truncate transition-all ${task.completed
-                    ? "line-through text-gray-400"
-                    : "text-gray-700 group-hover:text-gray-900"
+                <span
+                  className={`text-xs sm:text-sm font-semibold truncate transition-all ${
+                    task.completed
+                      ? "line-through text-gray-400"
+                      : "text-gray-700 group-hover:text-gray-900"
                   }`}
-              >
-                {task.title}
-              </span>
-            </div>
+                >
+                  {task.title}
+                </span>
+              </div>
 
-         
-            <span className="text-xs font-semibold text-gray-400 shrink-0">
-              {task.progress}
-            </span>
-          </div>
-        ))}
-      </div>
+              <span className="text-xs font-semibold text-gray-400 shrink-0">
+                {task.progress}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

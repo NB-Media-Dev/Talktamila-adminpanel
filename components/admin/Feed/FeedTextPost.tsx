@@ -2,17 +2,28 @@
 
 
 
+import { useState } from "react";
 import { MessageSquare} from "lucide-react";
 import avatar6 from "@/public/Images/avatar6.png";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { FeedCardfooter } from "./FeedCardfooter";
 import { FeedCardheader } from "./FeedCardheader";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { FeedPostSkeleton } from "@/components/ui/Skeletonloading";
 
+interface FeedTextPostProps {
+  isLoading?: boolean;
+}
 
-export default function FeedTextPost() {
-
+export default function FeedTextPost({ isLoading: propIsLoading }: FeedTextPostProps = {}) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const { isInfluencer, isFreelancer } = useAuthRole();
+
+  if (isLoading) {
+    return <FeedPostSkeleton />;
+  }
    const Fooderdetail={
       isViews:'1.2M',
     isRevenue:'18,250',
@@ -24,7 +35,7 @@ export default function FeedTextPost() {
     isSaved:'12.4k',
   }
   return (
-    <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4">
+    <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3.5 sm:gap-4">
 
       <FeedCardheader
         avatar={avatar6}

@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
-import { TrendingUp, Flame } from "lucide-react";
+import React, { useState } from "react";
+import { TrendingUp } from "lucide-react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { MetricsSkeleton } from "@/components/ui/Skeletonloading";
 
 interface ReachoutItem {
   id: number;
@@ -37,11 +39,13 @@ export default function Reachout() {
       posts: "8.2k Posts",
     },
   ];
+ const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
-        {items.map((item) => (
+      
+        {isLoading ? <MetricsSkeleton count={2} columns={2}/> :<div className="grid grid-cols-2 gap-3 sm:gap-4"> {items.map((item) => (
           <div
             key={item.id}
             className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col justify-between transition-all duration-300 hover:shadow-[0_8px_32px_rgba(255,107,53,0.08)] hover:scale-[1.01] group cursor-pointer"
@@ -79,8 +83,9 @@ export default function Reachout() {
               </span>
             </div>
           </div>
-        ))}
+        ))}</div>}
+       
       </div>
-    </div>
+  
   );
 }

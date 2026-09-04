@@ -1,6 +1,9 @@
 "use client";
 
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Hash } from "lucide-react";
+import { useState } from "react";
 
 interface Hashtag {
   id: number;
@@ -9,6 +12,11 @@ interface Hashtag {
 }
 
 export default function TrendingHashtags() {
+
+     const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
   const hashtags: Hashtag[] = [
     { id: 1, tag: "#தமிழ்நாடு", growth: "+128%" },
     { id: 2, tag: "#ChennaiRains", growth: "+96%" },
@@ -27,8 +35,9 @@ export default function TrendingHashtags() {
           Trending Hashtags
         </h2>
       </div>
-
-      <div className="flex flex-col gap-2.5">
+    {isLoading ? <ContentSkeleton count={4} height="h-[30px]" width="w-full" />
+ :
+    <div className="flex flex-col gap-2.5">
         {hashtags.map((item) => (
           <div key={item.id} className="flex">
             <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-[#FFF6ED] hover:bg-[#FCE3CC]/70 transition-colors rounded-2xl cursor-pointer group">
@@ -42,7 +51,9 @@ export default function TrendingHashtags() {
           </div>
         ))}
       </div>
+    }
+      
     </div>
   );
 }
-
+

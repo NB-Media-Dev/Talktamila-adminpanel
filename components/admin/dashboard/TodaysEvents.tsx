@@ -3,6 +3,9 @@
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { useState } from "react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { Avatarloading } from "@/components/ui/Skeletonloading";
 
 interface EventItem {
   id: number;
@@ -22,6 +25,11 @@ interface ScheduleItem {
 
 export default function TodaysEvents() {
   const { isInfluencer, isFreelancer } = useAuthRole();
+
+     const [isLoading, setIsLoading] = useState(true);
+  
+    
+   UsetimeoutLoader(setIsLoading)
 
   const events: EventItem[] = [
     {
@@ -63,8 +71,12 @@ export default function TodaysEvents() {
       isActive: false,
     },
   ];
+  // Influencer or Freelancer page
+  if (isInfluencer || isFreelancer) {
+    const calendarHref = isInfluencer
+      ? "/influencer/content"
+      : "/freelancer/content";
 
-  if (isInfluencer) {
     return (
       <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
         <div className="flex items-center justify-between">
@@ -72,109 +84,58 @@ export default function TodaysEvents() {
             Today&apos;s Schedule
           </h2>
           <Link
-            href="/influencer/assignments"
+            href={calendarHref}
             className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
           >
             View Calendar
           </Link>
         </div>
-
-        <div className="flex flex-col gap-2">
-          {influencerSchedule.map((item) =>
-            item.isActive ? (
-              <div
-                key={item.id}
-                className="bg-[#FFF2EC] rounded-[22px] px-4 py-3 flex items-center justify-between transition-all duration-200 hover:shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs sm:text-sm font-bold text-[#FF5A26] shrink-0">
-                    {item.time}
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-gray-900">
-                    {item.title}
-                  </span>
+        {isLoading ? (
+          <Avatarloading />
+        ) : (
+          <div className="flex flex-col gap-2">
+            {influencerSchedule.map((item) =>
+              item.isActive ? (
+                <div
+                  key={item.id}
+                  className="bg-[#FFF2EC] rounded-[22px] px-4 py-3 flex items-center justify-between transition-all duration-200 hover:shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs sm:text-sm font-bold text-[#FF5A26] shrink-0">
+                      {item.time}
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-gray-900">
+                      {item.title}
+                    </span>
+                  </div>
+                  {item.isLive && (
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] shrink-0 ml-2" />
+                  )}
                 </div>
-                {item.isLive && (
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] shrink-0 ml-2" />
-                )}
-              </div>
-            ) : (
-              <div
-                key={item.id}
-                className="px-4 py-2.5 flex items-center justify-between transition-all duration-200"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs sm:text-sm font-semibold text-gray-400 shrink-0">
-                    {item.time}
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-[#4A5568]">
-                    {item.title}
-                  </span>
+              ) : (
+                <div
+                  key={item.id}
+                  className="px-4 py-2.5 flex items-center justify-between transition-all duration-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs sm:text-sm font-semibold text-gray-400 shrink-0">
+                      {item.time}
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-[#4A5568]">
+                      {item.title}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )
-          )}
-        </div>
-      </div>
-    );
-  }
-
-   if (isFreelancer) {
-    return (
-      <div className="w-full bg-white rounded-[32px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-4 select-none">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
-            Today&apos;s Schedule
-          </h2>
-          <Link
-            href="/freelancer/assignments"
-            className="text-xs sm:text-sm font-semibold text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
-          >
-            View Calendar
-          </Link>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          {influencerSchedule.map((item) =>
-            item.isActive ? (
-              <div
-                key={item.id}
-                className="bg-[#FFF2EC] rounded-[22px] px-4 py-3 flex items-center justify-between transition-all duration-200 hover:shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs sm:text-sm font-bold text-[#FF5A26] shrink-0">
-                    {item.time}
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-gray-900">
-                    {item.title}
-                  </span>
-                </div>
-                {item.isLive && (
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] shrink-0 ml-2" />
-                )}
-              </div>
-            ) : (
-              <div
-                key={item.id}
-                className="px-4 py-2.5 flex items-center justify-between transition-all duration-200"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs sm:text-sm font-semibold text-gray-400 shrink-0">
-                    {item.time}
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-[#4A5568]">
-                    {item.title}
-                  </span>
-                </div>
-              </div>
-            )
-          )}
-        </div>
+              )
+            )}
+          </div>
+        )}
       </div>
     );
   }
 
   return (
+    //admin page
     <div className="w-full bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0]">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -193,8 +154,10 @@ export default function TodaysEvents() {
           Calendar
         </Link>
       </div>
-
-      <div className="flex flex-col gap-4">
+      {isLoading ?
+      <Avatarloading/>
+    :
+    <div className="flex flex-col gap-4">
         {events.map((event) => (
           <div
             key={event.id}
@@ -220,6 +183,8 @@ export default function TodaysEvents() {
           </div>
         ))}
       </div>
+    }
+      
     </div>
   );
 }

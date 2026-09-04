@@ -1,27 +1,31 @@
-// hooks/useAuthRole.ts
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 
-export function useAuthRole() {
-  const pathname = usePathname();
-  const [isMounted, setIsMounted] = useState(false);
-  const [userRole, setUserRole] = useState<string>('');
-
-  useEffect(() => {
-    setIsMounted(true);
-
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const parsed = JSON.parse(storedUser);
-        const role = parsed?.role?.toLowerCase() || '';
-        setUserRole(role);
-      }
-    } catch (e) {
-      console.error('Error reading user role from localStorage:', e);
+function getStoredUserRole(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      return parsed?.role?.toLowerCase() || '';
     }
-  }, [pathname]);
+  } catch (e) {
+    console.error('Error reading user role from localStorage:', e);
+  }
+  return '';
+}
 
+const subscribe = (callback: () => void) => {
+  window.addEventListener('storage', callback);
+  return () => window.removeEventListener('storage', callback);
+};
+
+const mountSubscribe = () => () => {};
+
+export function useAuthRole() {
+  const isMounted = useSyncExternalStore(mountSubscribe, () => true, () => false);
+  const userRole = useSyncExternalStore(subscribe, getStoredUserRole, () => '');
+  const pathname = usePathname();
 
   const isInfluencer = userRole.startsWith('influencer') || pathname.startsWith('/influencer');
   const isFreelancer = userRole.startsWith('freelancer') || userRole.startsWith('freekancer') || userRole.startsWith('free') || pathname.startsWith('/freelancer');

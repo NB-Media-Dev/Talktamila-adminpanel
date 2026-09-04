@@ -5,14 +5,22 @@ import avatar4 from "@/public/Images/avatar4.png";
 import avatar5 from "@/public/Images/avatar5.png";
 import avatar6 from "@/public/Images/avatar6.png";
 import { buttonVariants } from "@/components/ui/Button";
+import { useState } from "react";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { Avatarloading } from "@/components/ui/Skeletonloading";
 
 export default function TopCreators() {
+
+     const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
   const creators = [
-    { name: "Mr. Vlogger", followers: "545K Followers", avatar: avatar4 },
-    { name: "Indhu Vlogs", followers: "152K Followers", avatar: avatar5 },
-    { name: "Chennai Paiyan", followers: "278K Followers", avatar: avatar6 },
-    { name: "News TamilA", followers: "185K Followers", avatar: avatar4 },
-    { name: "Tech Tamizhan", followers: "125K Followers", avatar: avatar5 },
+    {id:1, name: "Mr. Vlogger", followers: "545K Followers", avatar: avatar4 },
+    {id:2, name: "Indhu Vlogs", followers: "152K Followers", avatar: avatar5 },
+    {id:3, name: "Chennai Paiyan", followers: "278K Followers", avatar: avatar6 },
+    {id:4, name: "News TamilA", followers: "185K Followers", avatar: avatar4 },
+    {id:5, name: "Tech Tamizhan", followers: "125K Followers", avatar: avatar5 },
   ];
 
   return (
@@ -29,11 +37,12 @@ export default function TopCreators() {
           View All
         </button>
       </div>
-
+      {isLoading ? <Avatarloading/> :
+      <div>
       <div className="flex lg:hidden items-center gap-3 overflow-x-auto no-scrollbar pb-1">
-        {creators.map((creator, idx) => (
+        {creators.map((creator) => (
           <div
-            key={idx}
+            key={creator.id}
             className="w-[140px] sm:w-[150px] bg-white rounded-[24px] border border-[#FFEFE0] p-4 flex flex-col items-center text-center gap-3 shrink-0 shadow-xs"
           >
             <div className="w-16 h-16 rounded-full overflow-hidden border border-[#FFEFE0] relative shrink-0">
@@ -61,8 +70,8 @@ export default function TopCreators() {
       </div>
 
       <div className="hidden lg:flex flex-col gap-3.5">
-        {creators.map((creator, idx) => (
-          <div key={idx} className="flex items-center justify-between gap-3">
+        {creators.map((creator) => (
+          <div key={creator.id} className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden border border-[#FFEFE0] relative shrink-0">
                 <Image
@@ -88,6 +97,8 @@ export default function TopCreators() {
           </div>
         ))}
       </div>
+      </div>}
+      
     </div>
   );
 }

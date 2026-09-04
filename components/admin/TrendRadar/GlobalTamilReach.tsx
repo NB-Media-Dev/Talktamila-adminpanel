@@ -1,7 +1,16 @@
 "use client";
 
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { useState } from "react";
+
 
 export default function GlobalTamilReach() {
+
+   const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
+
+ 
   return (
     <div className="w-full bg-[#A33F0F] rounded-[32px] p-6 sm:p-7 shadow-[0_8px_30px_rgba(163,63,15,0.08)] relative overflow-hidden flex flex-col justify-between select-none group min-h-[170px]">
       
@@ -13,7 +22,7 @@ export default function GlobalTamilReach() {
 </svg>
 
       </div>
-
+      {isLoading ? <ContentSkeleton count={1}/> : <div>
       <div className="relative z-10 flex flex-col gap-1">
         <span className="text-[10px] sm:text-xs font-bold text-orange-200 tracking-wider uppercase">
           Global Tamil Reach
@@ -30,7 +39,8 @@ export default function GlobalTamilReach() {
           Active creators worldwide
         </span>
       </div>
-
+</div> }
+   
     </div>
   );
 }

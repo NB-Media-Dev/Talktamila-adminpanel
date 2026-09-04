@@ -1,21 +1,32 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/Button";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Briefcase } from "lucide-react";
+import { useState } from "react";
 
 export default function CampaignMarketplace() {
+
+     const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
   const campaigns = [
     {
+      id:1,
       brand: "Swiggy",
       details: "2 Reels - Tamil - Due 5 Aug",
       price: "₹85,000",
     },
     {
+      id:2,
       brand: "Samsung",
       details: "Unboxing Short - Due 12 Aug",
       price: "₹1,40,000",
     },
     {
+      id:3,
       brand: "Netflix",
       details: "Review Carousel - Due 18 Aug",
       price: "₹95,000",
@@ -36,10 +47,9 @@ export default function CampaignMarketplace() {
           All
         </button>
       </div>
-
-      <div className="flex flex-col gap-3.5">
-        {campaigns.map((camp, idx) => (
-          <div key={idx} className="bg-[#FFF9F5] border border-[#FFEFE0] rounded-[24px] p-4 flex justify-between items-start">
+    {isLoading ? <ContentSkeleton/> : <div className="flex flex-col gap-3.5">
+        {campaigns.map((camp) => (
+          <div key={camp.id} className="bg-[#FFF9F5] border border-[#FFEFE0] rounded-[24px] p-4 flex justify-between items-start">
             <div className="flex flex-col gap-2.5">
               <div>
                 <h3 className="text-xs text-gray-900">{camp.brand}</h3>
@@ -52,7 +62,8 @@ export default function CampaignMarketplace() {
             <span className="text-xs font-black text-[#FF5A26] pt-0.5">{camp.price}</span>
           </div>
         ))}
-      </div>
+      </div> }
+     
     </div>
   );
 }

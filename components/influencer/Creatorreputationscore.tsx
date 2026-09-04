@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { Processloading } from "@/components/ui/Skeletonloading";
 
 interface ReputationMetric {
   label: string;
@@ -16,12 +19,20 @@ const metrics: ReputationMetric[] = [
   { label: "Originality", score: 86, maxScore: 100 },
 ];
 
-export default function CreatorReputationScore() {
+interface CreatorReputationScoreProps {
+  isLoading?: boolean;
+}
+
+export default function CreatorReputationScore({ isLoading: propIsLoading }: CreatorReputationScoreProps = {}) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
+
+ 
   const overallScore = 87;
   const ratingText = "Excellent";
 
   return (
-    <div className="w-[350px] bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col select-none">
+    <div className="w-full max-w-full bg-white rounded-[32px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col select-none">
 
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
@@ -35,8 +46,7 @@ export default function CreatorReputationScore() {
         </Link>
       </div>
 
-
-      <div className="flex items-center gap-3 mt-1">
+      {isLoading ? <Processloading/> :  <div className="flex items-center gap-3 mt-1">
 
         <div className="relative flex-shrink-0 flex items-center justify-center w-28 h-28">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
@@ -107,7 +117,8 @@ export default function CreatorReputationScore() {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
+     
     </div>
   );
 }

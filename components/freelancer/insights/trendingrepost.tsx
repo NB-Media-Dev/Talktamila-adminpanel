@@ -1,14 +1,17 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/Button";
-import React from "react";
-
+import { Avatarloading } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import Image, { StaticImageData } from "next/image";
+import React, { useState } from "react";
+import avatar1 from "@/public/Images/avatar1.png";
 export interface TrendingItem {
   id: string;
   title: string;
   isHot?: boolean;
   reward: string;
-  imageUrl: string;
+  imageUrl: string | StaticImageData;
 }
 
 export interface TrendingRepostProps {
@@ -25,7 +28,7 @@ const defaultTrending: TrendingItem[] = [
     isHot: true,
     reward: "₹500 / 1K Impressions",
     imageUrl:
-      "https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=150&q=80",
+      avatar1,
   },
   {
     id: "tr-2",
@@ -33,7 +36,7 @@ const defaultTrending: TrendingItem[] = [
     isHot: false,
     reward: "₹250 / 1K Impressions",
     imageUrl:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=150&q=80",
+      avatar1,
   },
 ];
 
@@ -43,6 +46,9 @@ export default function TrendingRepost({
   className = "",
   onViewAll,
 }: TrendingRepostProps) {
+
+    const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
   return (
     <div
       className={`w-full max-w-full bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col gap-4 ${className}`}
@@ -61,15 +67,14 @@ export default function TrendingRepost({
         </button>
       </div>
 
-      
-      <div className="flex flex-col gap-3.5">
+      {isLoading ? <Avatarloading /> : <div className="flex flex-col gap-3.5">
         {items.map((item) => (
           <div
             key={item.id}
             className="flex items-center gap-3 p-1 rounded-2xl hover:bg-gray-50/80 transition-colors"
           >
             
-            <img
+            <Image
               src={item.imageUrl}
               alt={item.title}
               className="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-100 shadow-xs"
@@ -87,7 +92,8 @@ export default function TrendingRepost({
             </div>
           </div>
         ))}
-      </div>
+      </div> }
+      
     </div>
   );
 }

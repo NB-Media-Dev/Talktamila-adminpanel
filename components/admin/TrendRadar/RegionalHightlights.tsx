@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useRef } from "react";
+import  { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { MetricsSkeleton } from "@/components/ui/Skeletonloading";
+import avatar1 from "@/public/Images/avatar1.png"
+import Image, { StaticImageData } from "next/image";
 interface HighlightItem {
   id: number;
   location: string;
-  image: string;
+  image: string | StaticImageData;
   title: string;
   description: string;
 }
@@ -18,28 +21,28 @@ export default function RegionalHightlights() {
     {
       id: 1,
       location: "Madurai",
-      image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=600&auto=format&fit=crop&q=80",
+      image: avatar1,
       title: "Food Festival Trends",
       description: "Cultural culinary tourism is spiking on social feeds.",
     },
     {
       id: 2,
       location: "Coimbatore",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=80",
+      image: avatar1,
       title: "EV Startup Growth",
       description: "Local startups lead in sustainable mobility discussions.",
     },
     {
       id: 3,
       location: "Kanchipuram",
-      image: "https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=600&auto=format&fit=crop&q=80",
+      image: avatar1,
       title: "Handloom 2.0",
       description: "D2C textile brands gaining massive traction online.",
     },
     {
       id: 4,
       location: "Tiruchendur",
-      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&auto=format&fit=crop&q=80",
+      image: avatar1,
       title: "Spiritual Tourism",
       description: "Pilgrimage travel vlogs seeing 3x engagement surge.",
     },
@@ -60,25 +63,30 @@ export default function RegionalHightlights() {
       });
     }
   };
+   const [isLoading, setIsLoading] = useState( true);
+  UsetimeoutLoader(setIsLoading);
+
 
   return (
     <>
-      {/* Mobile & Tablet View: 2x2 Grid Container */}
+
       <div className="block lg:hidden w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 sm:p-5 border border-gray-100 shadow-xs select-none">
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        {isLoading ? <MetricsSkeleton count={4} columns={2} /> : <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {highlights.map((item) => (
             <div
               key={item.id}
               className="w-full bg-[#FFECE2] border border-[#FFE3D5] rounded-2xl sm:rounded-3xl p-3 sm:p-4 flex flex-col justify-between hover:shadow-md transition-all duration-300 group cursor-pointer"
             >
               <div className="relative h-24 sm:h-36 w-full rounded-xl overflow-hidden shrink-0 mb-2 sm:mb-3">
-                <img
+                <Image
                   src={item.image}
                   alt={`${item.location} highlight`}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 250px"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <span className="absolute bottom-2 left-2.5 font-bold text-white text-xs sm:text-base drop-shadow-sm">
+                <span className="absolute bottom-2 left-2.5 font-bold text-white text-xs sm:text-base drop-shadow-sm z-10">
                   {item.location}
                 </span>
               </div>
@@ -93,11 +101,12 @@ export default function RegionalHightlights() {
               </div>
             </div>
           ))}
-        </div>
+        </div> }
+        
       </div>
 
-      {/* Desktop View: Original Horizontal Carousel (UNTOUCHED) */}
-      <div className="hidden lg:flex flex-col gap-5 w-full">
+        {isLoading ? <div className="hidden lg:block w-full"><MetricsSkeleton count={4} columns={4} /></div> : <div className="hidden lg:flex flex-col gap-5 w-full">
+
         <div className="flex items-center justify-between w-full select-none">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
             Regional Highlights
@@ -132,15 +141,17 @@ export default function RegionalHightlights() {
             >
             
               <div className="relative h-[160px] w-full overflow-hidden shrink-0">
-                <img
+                <Image
                   src={item.image}
                   alt={`${item.location} highlight`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 280px"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
               
-                <span className="absolute bottom-4 left-5 font-bold text-white text-base sm:text-lg tracking-wide drop-shadow-sm select-none">
+                <span className="absolute bottom-4 left-5 font-bold text-white text-base sm:text-lg tracking-wide drop-shadow-sm select-none z-10">
                   {item.location}
                 </span>
               </div>
@@ -156,7 +167,8 @@ export default function RegionalHightlights() {
             </div>
           ))}
         </div>
-      </div>
+      </div>}
+     
     </>
   );
 }

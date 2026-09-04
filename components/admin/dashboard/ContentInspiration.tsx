@@ -1,6 +1,9 @@
 "use client";
 
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Lightbulb } from "lucide-react";
+import { useState } from "react";
 
 interface InspirationItem {
   id: number;
@@ -10,6 +13,12 @@ interface InspirationItem {
 }
 
 export default function ContentInspiration() {
+
+     const [isLoading, setIsLoading] = useState(true);
+
+  
+ UsetimeoutLoader(setIsLoading)
+
   const inspirations: InspirationItem[] = [
     {
       id: 1,
@@ -42,7 +51,7 @@ export default function ContentInspiration() {
           Content Inspiration
         </h2>
       </div>
-
+      {isLoading ? <ContentSkeleton height="h-[40px]" width="w-full" /> :
       <div className="flex flex-col gap-3">
         {inspirations.map((item) => (
           <div
@@ -53,6 +62,8 @@ export default function ContentInspiration() {
           </div>
         ))}
       </div>
+      }
+      
     </div>
   );
 }

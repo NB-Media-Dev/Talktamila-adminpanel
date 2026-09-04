@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { RotateCw, ArrowUpRight } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 interface HashtagItem {
   id: number;
@@ -13,9 +15,25 @@ interface HashtagItem {
 
 interface TrendinghashtagProps {
   compact?: boolean;
+  isLoading?: boolean;
 }
 
-export default function Trendinghashtag({ compact = false }: TrendinghashtagProps) {
+const getRandomGrowthPercentage = (): string => {
+  const randomArray = new Uint32Array(1);
+  crypto.getRandomValues(randomArray);
+  const randomVal = (randomArray[0] / 4294967296) * 100;
+  return `+${Math.floor(randomVal) + 30}%`;
+};
+
+const updateHashtagsGrowth = (prevList: HashtagItem[]): HashtagItem[] =>
+  prevList.map((item) => ({
+    ...item,
+    growth: getRandomGrowthPercentage(),
+  }));
+
+export default function Trendinghashtag({ compact = false, isLoading: propIsLoading }: TrendinghashtagProps) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
   const [isRotating, setIsRotating] = useState(false);
   const [hashtags, setHashtags] = useState<HashtagItem[]>([
     { id: 1, tag: "#தமிழ்நாடு", interactions: "124K interactions", growth: "+128%" },
@@ -28,12 +46,7 @@ export default function Trendinghashtag({ compact = false }: TrendinghashtagProp
     setIsRotating(true);
     setTimeout(() => {
       setIsRotating(false);
-      setHashtags((prev) =>
-        prev.map((h) => ({
-          ...h,
-          growth: `+${Math.floor(Math.random() * 100) + 30}%`,
-        }))
-      );
+      setHashtags(updateHashtagsGrowth);
     }, 800);
   };
 
@@ -57,7 +70,11 @@ export default function Trendinghashtag({ compact = false }: TrendinghashtagProp
       </div>
 
       <div className={`flex flex-col ${compact ? "gap-2.5" : "gap-5"}`}>
-        {hashtags.map((item) => (
+        {isLoading ? (
+          <ContentSkeleton count={4} height="h-[50px]" />
+        ) : (
+          hashtags.map((item) => (
+
           <div
             key={item.id}
             className={`flex items-center justify-between group hover:bg-[#FFF9F5]/40 rounded-xl transition-all duration-200 ${
@@ -81,10 +98,11 @@ export default function Trendinghashtag({ compact = false }: TrendinghashtagProp
               <span>{item.growth}</span>
             </div>
           </div>
-        ))}
+        )))
+        }
       </div>
 
-      {!compact && (
+      {!compact && !isLoading && (
         <div className="w-full pt-2">
           <button className={`w-full ${buttonVariants({variant:'hoverButton'})} font-bold text-sm sm:text-base py-3 px-6`}>
             Explore More Topics

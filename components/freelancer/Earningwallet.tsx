@@ -1,8 +1,10 @@
 "use client";
 
-
+import { useState } from "react";
 import { Landmark } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
+import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
+import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 export interface EarningWalletProps {
   title?: string;
@@ -12,6 +14,7 @@ export interface EarningWalletProps {
   totalBalance?: string;
   bankName?: string;
   bankAccountLast4?: string;
+  isLoading?: boolean;
   onWithdraw?: () => void;
   onViewDetails?: () => void;
   onChangeBank?: () => void;
@@ -26,11 +29,16 @@ export default function Earningwallet({
   totalBalance = "₹86,200",
   bankName = "Bank Transfer",
   bankAccountLast4 = "4567",
+  isLoading: propIsLoading,
   onWithdraw,
   onViewDetails,
   onChangeBank,
   className = "",
 }: EarningWalletProps) {
+  const [isLoading, setIsLoading] = useState(propIsLoading ?? true);
+  UsetimeoutLoader(setIsLoading);
+
+ 
   return (
     <div
       className={`w-full max-w-full bg-white rounded-[28px] p-4 sm:p-6 border border-gray-100/80 shadow-[0_4px_24px_rgba(0,0,0,0.03)] select-none flex flex-col gap-4 ${className}`}
@@ -49,7 +57,7 @@ export default function Earningwallet({
         </button>
       </div>
 
-
+      {isLoading ? <ContentSkeleton count={2} height="h-[50px]"/> :  <div>
       <div className="-mt-1">
         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
           Available Balance
@@ -123,6 +131,8 @@ export default function Earningwallet({
           Change
         </button>
       </div>
+      </div>}
+     
     </div>
   );
 }
