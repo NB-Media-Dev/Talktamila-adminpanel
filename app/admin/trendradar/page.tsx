@@ -18,10 +18,10 @@ export default function TrendRadarPage() {
   return (
     <div className="w-full py-3 sm:py-6 px-2.5 sm:px-4 select-none">
       
-      {/* Mobile & Tablet Layout (< lg) */}
+      
       {activeMobilePage === "first" ? (
         <div className="block lg:hidden flex flex-col gap-4 sm:gap-5 w-full">
-          {/* Header */}
+        
           <div className="mb-2 sm:mb-4 select-none">
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
               <span className="p-1 rounded-lg bg-orange-100 text-[#FF5A26] inline-flex items-center justify-center">

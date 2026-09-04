@@ -233,14 +233,13 @@ export default function RepostContent({
             </div>
           </div>
 
-          {/* Mobile view */}
+        
           <div className="block sm:hidden divide-y divide-gray-100/80">
             {displayItems.map((item, index) => (
               <MobileItemCard key={`mobile-${item.id}-${index}`} item={item} />
             ))}
           </div>
 
-          {/* Desktop view */}
           <div className="hidden sm:block w-full overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[650px]">
               <thead>

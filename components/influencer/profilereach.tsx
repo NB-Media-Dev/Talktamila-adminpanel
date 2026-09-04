@@ -130,7 +130,6 @@ export default function ProfileReach({ isLoading: propIsLoading }: ProfileReachP
               key={item.id}
               className="bg-[#FAFAFA] border border-gray-100/80 rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between hover:shadow-xs transition-all duration-200"
             >
-              {/* Header: Icon + Label */}
               <div className="flex items-center gap-2">
                 <div className={`p-1.5 rounded-full ${item.iconBg} ${item.iconColor} shrink-0`}>
                   <IconComponent className="w-4 h-4" />
@@ -140,7 +139,6 @@ export default function ProfileReach({ isLoading: propIsLoading }: ProfileReachP
                 </span>
               </div>
 
-              {/* Value & Change */}
               <div className="mt-2.5 sm:mt-3">
                 <div className="text-base sm:text-lg lg:text-xl font-extrabold text-gray-900 tracking-tight whitespace-nowrap">
                   {item.value}

@@ -73,7 +73,7 @@ export function CreatenewPost() {
   return (
     <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/50 backdrop-blur-xs flex items-start md:items-center justify-center p-0 md:p-4 z-40">
       <div className="w-full h-full xs:mt-5 md:h-auto md:max-h-[92vh] md:max-w-4xl min-[2560px]:max-w-[1250px] min-[3840px]:max-w-[1600px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-3 pb-28 md:px-6 md:py-5 min-[2560px]:p-6 min-[3840px]:p-8 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-hidden flex flex-col justify-start">
-        {/* Mobile Back Button */}
+  
         <div className="block sm:hidden mb-2">
           <button 
             onClick={() => { setHandlestate(false) }}
@@ -84,7 +84,7 @@ export function CreatenewPost() {
           </button>
         </div>
 
-        {/* Desktop and Tablet Cancel (X) Button */}
+  
         <button
           onClick={() => { setHandlestate(false) }}
           className="hidden sm:flex absolute right-4 top-4 md:right-5 md:top-5 h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer z-10"

@@ -174,7 +174,7 @@ export function Adminreviewpanel() {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-0 md:p-4 md:pb-24 min-[2560px]:pb-6 min-[3840px]:pb-6 z-40">
       <div className="w-full h-full mt-10 md:mt-0 md:h-auto md:max-h-[90vh] md:max-w-[820px] min-[2560px]:max-w-[1200px] min-[3840px]:max-w-[1550px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-[calc(3.5rem+env(safe-area-inset-top,0px))] pb-28 md:px-5 md:py-5 min-[2560px]:p-6 min-[3840px]:p-7 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-y-auto min-[2560px]:overflow-hidden min-[3840px]:overflow-hidden">
-        {/* Mobile Back Button */}
+
         <div className="block sm:hidden">
           <button
             onClick={handleClose}
@@ -185,7 +185,7 @@ export function Adminreviewpanel() {
           </button>
         </div>
 
-        {/* Desktop and Tablet Cancel (X) Button */}
+    
         <button
           onClick={handleClose}
           className="hidden sm:flex absolute right-4 top-4 md:right-5 md:top-5 h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer z-10"

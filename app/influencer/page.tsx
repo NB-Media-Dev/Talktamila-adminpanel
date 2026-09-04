@@ -57,7 +57,7 @@ export default function InfluencerPage() {
               </div>
             </div>
 
-            {/* Tablet View: ShareThoughtCard full width */}
+      
             <div className="hidden sm:block @3xl:hidden w-full">
               <ShareThoughtCard />
             </div>

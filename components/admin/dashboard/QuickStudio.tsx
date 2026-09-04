@@ -110,7 +110,7 @@ export function QuickStudio() {
     <div className="fixed inset-0 top-[52px] xs:top-[60px] sm:top-[20px] md:top-0 bg-black/55 backdrop-blur-xs flex items-start md:items-center justify-center p-0 md:p-4 z-40 animate-fade-in select-none">
       <div className="w-full h-full  md:h-auto md:max-h-[86vh] md:max-w-[750px] lg:max-w-[780px] min-[2560px]:max-w-[1050px] min-[3840px]:max-w-[1350px] rounded-none md:rounded-3xl bg-[#FAF3EC] shadow-2xl px-4 pt-3 pb-32 sm:px-4 sm:py-3 md:px-5 md:py-3.5 min-[2560px]:p-5 min-[3840px]:p-6 relative font-sans antialiased border-0 md:border border-orange-100/40 overflow-y-auto flex flex-col justify-between gap-2.5">
 
-        {/* Mobile Back Button */}
+      
         <div className="block sm:hidden">
           <button
             onClick={handleClose}
@@ -122,7 +122,7 @@ export function QuickStudio() {
           </button>
         </div>
 
-        {/* Desktop and Tablet Cancel (X) Button */}
+    
         <button
           onClick={handleClose}
           className="hidden sm:flex absolute right-3.5 top-3 md:right-4 md:top-3.5 h-7 w-7 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer z-10"
@@ -179,7 +179,7 @@ export function QuickStudio() {
               </div>
             </div>
 
-            {/* AI Prompt */}
+           
             <div>
               <h2 className="text-[8.5px] min-[2560px]:text-[9.5px] min-[3840px]:text-xs font-bold text-[#8A5237] tracking-wider uppercase mb-1">
                 AI Prompt
@@ -229,7 +229,7 @@ export function QuickStudio() {
               </div>
             </div>
 
-            {/* Target Social Channels */}
+           
             <div>
               <h2 className="text-[8.5px] min-[2560px]:text-[9.5px] min-[3840px]:text-xs font-bold text-[#8A5237] tracking-wider uppercase mb-1">
                 Publish Channels
@@ -281,7 +281,7 @@ export function QuickStudio() {
           </div>
         </div>
 
-        {/* Footer Actions */}
+   
         <div className="flex items-center gap-2 w-full xs:justify-center sm:justify-end sm:-ml-15 pt-2 border-t border-orange-100/60">
           <button
             type="button"

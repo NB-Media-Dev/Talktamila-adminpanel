@@ -112,7 +112,7 @@ function QueueCard({ item, onDelete }: QueueCardProps) {
 
   return (
     <div className="w-full">
-      {/* Desktop view */}
+  
       <div className="hidden sm:flex flex-col bg-white rounded-[32px] p-6 shadow-[0_4px_30px_rgba(0,0,0,0.01)] border border-[#FFEFE0] gap-1 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(255,90,38,0.04)] w-full">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
@@ -169,7 +169,7 @@ function QueueCard({ item, onDelete }: QueueCardProps) {
         </div>
       </div>
 
-      {/* Mobile view */}
+    
       <div className="flex sm:hidden flex-col bg-white rounded-[28px] p-5 gap-4 transition-all duration-300 w-full">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">

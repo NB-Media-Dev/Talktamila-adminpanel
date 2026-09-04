@@ -40,7 +40,7 @@ export function LivePreviewloading({ className }: { className?: string }) {
             </div>
           </div>
 
-          {/* Media Info */}
+        
           <div className="flex justify-between items-center px-0.5 pt-1">
             <Skeleton className="h-2.5 sm:h-3 w-16 sm:w-20 bg-orange-100/70" />
             <Skeleton className="h-5 sm:h-6 w-14 sm:w-16 rounded-lg bg-orange-200/80" />
@@ -48,7 +48,7 @@ export function LivePreviewloading({ className }: { className?: string }) {
 
           <div className="border-t border-gray-100 my-0.5"></div>
 
-          {/* Action Bar */}
+         
           <div className="flex items-center justify-around">
             <Skeleton className="h-2.5 sm:h-3 w-10 sm:w-12 bg-orange-100/70" />
             <Skeleton className="h-2.5 sm:h-3 w-12 sm:w-14 bg-orange-100/70" />

@@ -155,7 +155,7 @@ export default function TodayStories() {
         )}
       </div>
 
-      {/* Tablet/Desktop view: Standard horizontal scroll card */}
+     
       <div className="hidden sm:flex sm:flex-col sm:relative sm:top-0 sm:right-0 sm:z-0 sm:w-full sm:max-w-full sm:bg-white sm:rounded-[32px] sm:p-5 sm:shadow-[0_4px_24px_rgba(0,0,0,0.03)] sm:border sm:border-[#FFEFE0] sm:overflow-hidden">
         <div className="flex items-center justify-between mb-2 py-2">
           <div className="flex items-center gap-2">

@@ -250,7 +250,7 @@ export default function RecentContent({ isLoading: propIsLoading }: RecentConten
         ))}
       </div>
 
-      {/* Mobile view */}
+   
       <div className="flex sm:hidden flex-col gap-3">
         {filteredContent.length > 0 ? (
           filteredContent.map((item, index) => (
@@ -263,7 +263,7 @@ export default function RecentContent({ isLoading: propIsLoading }: RecentConten
         )}
       </div>
 
-      {/* Desktop & Tablet Table View */}
+
       <div className="hidden sm:block w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200">
         <table className="w-full min-w-[620px] text-left border-collapse">
           <thead>

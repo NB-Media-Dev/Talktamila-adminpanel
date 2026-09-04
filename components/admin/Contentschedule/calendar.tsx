@@ -177,7 +177,7 @@ export default function Calendar({ isLoading: propIsLoading }: CalendarProps = {
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3 min-[360px]:p-4 sm:p-6 md:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-[#FFEFE0]">
-        {/* Month Header & Controls */}
+    
         <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3 sm:mb-6">
           <div className="flex flex-col">
             <h2 className="text-lg min-[360px]:text-xl sm:text-2xl font-extrabold text-gray-900 leading-none">
@@ -255,7 +255,7 @@ export default function Calendar({ isLoading: propIsLoading }: CalendarProps = {
                   }
                 }}
               >
-                {/* Day Number */}
+            
                 <span className={`
                   mt-0.5 sm:mt-0 text-center transition-transform
                   ${!cell.isCurrentMonth ? 'text-gray-300' : ''}
@@ -264,7 +264,7 @@ export default function Calendar({ isLoading: propIsLoading }: CalendarProps = {
                   {cell.date.getDate()}
                 </span>
 
-                {/* Event Indicators */}
+           
                 <div className="w-full flex flex-col items-center mt-auto pb-1 min-w-0">
                   {cell.isCurrentMonth && hasThickBottomBar && (
                     <div className="w-3.5 sm:w-6 h-1 bg-[#F27D42] rounded-full" />

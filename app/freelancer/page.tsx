@@ -36,7 +36,7 @@ export default function FreelancerPage() {
             <Notifications />
           </div>
 
-          {/* Desktop specific left widgets */}
+         
           <div className="hidden lg:flex flex-col gap-4 sm:gap-5">
             <Toprepostors />
             <Notifications />
@@ -44,7 +44,7 @@ export default function FreelancerPage() {
         </div>
 
         <div className="col-span-1 sm:col-span-7 lg:col-span-6 flex flex-col gap-4 sm:gap-5 w-full mx-auto">
-          {/* Mobile View */}
+       
           <div className="block sm:hidden w-full flex flex-col gap-4">
             <Insights />
 
