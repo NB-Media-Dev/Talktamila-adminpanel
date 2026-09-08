@@ -7,6 +7,7 @@ import avatar2 from "@/public/Images/profile2.jpg";
 import avatar3 from "@/public/Images/profile3.jpg";
 import avatar4 from "@/public/Images/profile4.jpg";
 import { useState } from "react";
+import Addstories from "./Addstories";
 
 interface Story {
   id: number;
@@ -18,6 +19,7 @@ interface Story {
 export default function TodayStories() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [isAddStoryOpen, setIsAddStoryOpen] = useState(false);
 
   const stories: Story[] = [
     { id: 1, userName: "Amrita", avatar: avatar1, hasActiveStory: true },
@@ -64,7 +66,11 @@ export default function TodayStories() {
       >
         {!isExpanded ? (
           <div className="flex flex-col items-center gap-7.5 w-full mt-2">
-            <div className="relative shrink-0 group cursor-pointer hover:scale-105 transition-all duration-200">
+            <div 
+              onClick={() => setIsAddStoryOpen(true)}
+              className="relative shrink-0 group cursor-pointer hover:scale-105 transition-all duration-200"
+              title="Add Story"
+            >
               <div className="w-[55px] h-[75px] p-[2.5px] rounded-[28px] bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]">
                 <div className="w-full h-full rounded-[26px] border-2 border-white overflow-hidden relative bg-gray-50">
                   <Image
@@ -172,7 +178,43 @@ export default function TodayStories() {
         </div>
 
         <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-1 mb-3 w-full max-w-full">
-          {stories.map((story) => (
+          {/* Add Story Button / First Item */}
+          <div
+            onClick={() => setIsAddStoryOpen(true)}
+            className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
+            title="Add New Story"
+          >
+            <div className="relative shrink-0 group-hover:scale-105 transition-all duration-200">
+              <div className="w-[55px] h-[65px] p-[2.5px] rounded-[28px] bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]">
+                <div className="w-full h-full rounded-[26px] border-2 border-white overflow-hidden relative bg-[#fff0e7] flex items-center justify-center">
+                  <Image
+                    src={avatar1}
+                    alt="Your Story"
+                    fill
+                    sizes="55px"
+                    className="object-cover opacity-85"
+                  />
+                </div>
+              </div>
+              <span className="absolute bottom-[2px] right-[2px] w-[18px] h-[18px] bg-[#FF3B30] text-white rounded-full border-2 border-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-2.5 h-2.5"
+                >
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+              </span>
+            </div>
+            <span className="text-[10px] font-bold text-gray-700">Add Story</span>
+          </div>
+
+          {stories.slice(1).map((story) => (
             <div
               key={story.id}
               className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
@@ -204,10 +246,21 @@ export default function TodayStories() {
                   </svg>
                 </span>
               </div>
+              <span className="text-[10px] font-medium text-gray-600 truncate max-w-[55px]">
+                {story.userName}
+              </span>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Add Story Modal */}
+      {isAddStoryOpen && (
+        <Addstories
+          isOpen={isAddStoryOpen}
+          onClose={() => setIsAddStoryOpen(false)}
+        />
+      )}
     </>
   );
 }
