@@ -18,6 +18,7 @@ export default function RegisterPage() {
     birthDay: '',
     birthYear: '',
     username: '',
+    role:''
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -50,6 +51,7 @@ export default function RegisterPage() {
     if (!formData.mobile.trim()) return setError('Please enter your mobile number.')
     if (!formData.password) return setError('Please enter a password.')
     if (!formData.username.trim()) return setError('Please choose a username.')
+      if (!formData.role.trim()) return setError('Please choose a Role.')
     
     setIsSubmitting(true)
 
@@ -72,6 +74,7 @@ export default function RegisterPage() {
           mobile_no: formData.mobile,
           password: formData.password,
           dob,
+          role:formData.role
         }),
       })
 
@@ -180,6 +183,23 @@ export default function RegisterPage() {
             <input type="text" name="username" id="username" placeholder="Choose a username" value={formData.username} onChange={handleChange}
               className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 placeholder-gray-400 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition" />
           </div>
+          {/* Role Dropdown Option */}
+<div>
+  <label htmlFor="role" className="block text-xs font-semibold text-gray-800 mb-1.5">Join as</label>
+  <select
+    name="role"
+    id="role"
+    value={formData.role}
+    onChange={handleChange}
+    className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition"
+    required
+  >
+    <option value="" disabled>Select your account type</option>
+    <option value="user">Influencer</option>
+    <option value="creator">freelancer</option>
+  </select>
+</div>
+
 
           <button type="submit" disabled={isSubmitting}
             className="w-full rounded-full bg-[#FA7A22] py-3.5 font-bold text-white shadow-lg shadow-orange-500/30 hover:bg-[#E06412] transition disabled:opacity-60">

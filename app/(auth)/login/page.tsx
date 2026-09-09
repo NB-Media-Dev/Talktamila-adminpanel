@@ -43,7 +43,7 @@ export default function LoginPage() {
 
       const roleRoutes: Record<string, string> = {
         admin: '/admin',
-        influencer: '/influencer',
+        influencer: '/influencer',      
         freelancer: '/freelancer',
       }
       router.push(roleRoutes[data.user.role] || '/admin')
