@@ -58,7 +58,7 @@ export default function BottomNavigation() {
   }
   return (
     <>
-      <div className="fixed bottom-2 left-2 right-2 sm:bottom-3 sm:left-4 sm:right-4 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] md:max-w-xl lg:w-[calc(50%-3rem)] 2xl:w-[calc(50%-3rem)] min-[2560px]:w-[calc(50%-3.5rem)] min-[3840px]:w-[calc(50%-3.5rem)] select-none transform-gpu pb-[env(safe-area-inset-bottom,0px)] mx-auto">
+      <div className="fixed bottom-2 left-2 right-2 sm:bottom-3 sm:left-4 sm:right-4 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 xs:z-50 sm:z-40 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] md:max-w-xl lg:w-[calc(50%-3rem)] 2xl:w-[calc(50%-3rem)] min-[2560px]:w-[calc(50%-3.5rem)] min-[3840px]:w-[calc(50%-3.5rem)] select-none transform-gpu pb-[env(safe-area-inset-bottom,0px)] mx-auto">
 
         <nav className="w-full border-brand/60 backdrop-blur-lg rounded-2xl md:rounded-full px-3 xs:px-4 sm:px-6 md:px-8 lg:px-10 2xl:px-12 min-[3840px]:px-16 py-1.5 md:py-2 min-[3840px]:py-3 flex items-center justify-between shadow-[0_8px_30px_rgba(0,0,0,0.1)] md:shadow-[0_8px_30px_rgb(242,125,66,0.12)] border border-[#FFEFE0] bg-[#FDEEE2]">
 
