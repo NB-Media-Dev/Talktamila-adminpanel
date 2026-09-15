@@ -12,34 +12,10 @@ import food from "@/public/Images/food.jpg";
 import rain from "@/public/Images/rain.jpg";
 import waterfall from "@/public/Images/waterfall.jpg";
 import Addstories from "./Addstories";
-import PreviewStories, { type StoryUser, type StorySlide } from "./Previewstories";
+import PreviewStories, { type StoryUser } from "./Previewstories";
 import { useAuthuser } from "@/hooks/useAuthuser";
-import { getAuthToken } from "@/lib/cookies";
-
-interface BackendSlide {
-  id: number;
-  story_id?: number;
-  imageUrl?: string;
-  media_url?: string;
-  media_type?: string;
-  caption?: string;
-  duration?: number;
-  liked?: boolean;
-  likes_count?: number;
-  views_count?: number;
-  musicTrack?: string;
-}
-
-interface BackendStoryGroup {
-  id: number;
-  userName: string;
-  avatar?: string;
-  verified?: boolean;
-  timeAgo?: string;
-  musicTrack?: string;
-  is_my_story?: boolean;
-  slides: BackendSlide[];
-}
+import { storyService } from "@/services/Stories.service";
+import type { BackendStoryGroup } from "@/types/Stories";
 
 const mockFallbackStories: StoryUser[] = [
   {
@@ -87,86 +63,90 @@ const mockFallbackStories: StoryUser[] = [
 ];
 
 export default function TodayStories() {
-  const [isExpanded, setIsExpanded] = useState(false);
+ 
+  // ==========================================
+  // 🟢 1. VIEW VIEWPORT & VISIBILITY CONTROLS
+  // ==========================================
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [isAddStoryOpen, setIsAddStoryOpen] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [selectedUserIndex, setSelectedUserIndex] = useState(0);
+  const [isAddStoryOpen, setIsAddStoryOpen] = useState<boolean>(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
+  const [selectedUserIndex, setSelectedUserIndex] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
+  // ==========================================
+  // 🔵 2. ACCOUNT SESSION & DATA STACK
+  // ==========================================
   const { user: authUser } = useAuthuser();
-  const [allStoryUsers, setAllStoryUsers] = useState<StoryUser[]>(mockFallbackStories);
+  const [allStoryUsers, setAllStoryUsers] = useState<StoryUser[]>([]);
   const [myStoryUser, setMyStoryUser] = useState<StoryUser | null>(null);
+  
+  // FIX: User object layout dynamic runtime extract (displayAvatar dynamic fallback check)
   const currentUser = (authUser as any)?.user || authUser || null;
 
-  const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
-
-  // Fetch active stories feed from backend
+  // ==========================================
+  // ⚡ 3. UNIFIED DATA ACCESS LIFECYCLE
+  // ==========================================
   const fetchStories = useCallback(async () => {
-    const token = getAuthToken();
     try {
-      const res = await fetch(`${BASE_URL}/api/v1/stories`, {
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-
-      if (!res.ok) return;
-
-      const data: BackendStoryGroup[] = await res.json();
+      setLoading(true);
+      const data = await storyService.getStoriesFeed();
       if (!Array.isArray(data)) return;
 
-      let foundMyStory: StoryUser | null = null;
-      const otherUsers: StoryUser[] = [];
-
-      data.forEach((group) => {
-        const slides: StorySlide[] = (group.slides || []).map((s) => ({
-          id: s.id,
-          story_id: s.story_id || s.id,
+      const normalizeGroupToUser = (group: BackendStoryGroup): StoryUser => ({
+          id: Number(group.id), 
+        userName: group.userName,
+        avatar: group.avatar || avatar1,
+        verified: group.verified || false,
+        timeAgo: group.timeAgo || "Just now",
+        musicTrack: group.musicTrack,
+        is_my_story: Boolean(group.is_my_story),
+        slides: (group.slides || []).map((s) => ({
+         id: Number(s.id),                // 👈 FIX: Converts string slide ID to number safely
+    story_id: Number(s.story_id || s.id),
           imageUrl: s.imageUrl || s.media_url || "",
           media_type: s.media_type || "image",
           caption: s.caption,
           duration: s.duration || 5000,
-          liked: s.liked,
-          likes_count: s.likes_count,
-          views_count: s.views_count,
+          liked: s.liked || false,
+          likes_count: s.likes_count || 0,
+          views_count: s.views_count || 0,
           musicTrack: s.musicTrack || group.musicTrack,
-        }));
-
-        const storyUser: StoryUser = {
-          id: group.id,
-          userName: group.userName,
-          avatar: group.avatar || avatar1,
-          verified: group.verified,
-          timeAgo: group.timeAgo || "Just now",
-          slides: slides,
-          musicTrack: group.musicTrack,
-          is_my_story: Boolean(group.is_my_story),
-        };
-
-        if (group.is_my_story) {
-          foundMyStory = storyUser;
-        } else {
-          otherUsers.push(storyUser);
-        }
+        }))
       });
 
-      setMyStoryUser(foundMyStory);
+    // 3. MY STORY SEPARATION: Direct passing safely!
+const rawMyStory = data.find((group) => group.is_my_story === true);
+const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
+setMyStoryUser(myStoryParsed);
 
-      // If backend has other creators, use them; otherwise keep fallback mock creators
-      const mergedList = foundMyStory
-        ? [foundMyStory, ...(otherUsers.length > 0 ? otherUsers : mockFallbackStories)]
-        : [...(otherUsers.length > 0 ? otherUsers : mockFallbackStories)];
+// 4. OTHER STORIES SEPARATION: Direct passing handles inner files map automatically!
+const otherStoriesParsed = data
+  .filter((group) => group.is_my_story !== true)
+  .map(normalizeGroupToUser);
 
-      setAllStoryUsers(mergedList);
+
+      // const displayFeed = otherStoriesParsed.length > 0 ? otherStoriesParsed : mockFallbackStories;
+   const displayFeed =  otherStoriesParsed 
+      if (myStoryParsed) {
+        setAllStoryUsers([myStoryParsed, ...displayFeed]); 
+      } else {
+        setAllStoryUsers(displayFeed); 
+      }
     } catch (err) {
-      console.error("Failed to fetch stories:", err);
+      console.error("Story control layer fetch query error:", err);
+    } finally {
+      setLoading(false);
     }
-  }, [BASE_URL]);
+  }, []);
 
   useEffect(() => {
     fetchStories();
   }, [fetchStories]);
 
+  // ==========================================
+  // 🎯 4. ACTION INTERACTORS LOGIC METHODS
+  // ==========================================
   const hasMyActiveStory = Boolean(myStoryUser && myStoryUser.slides && myStoryUser.slides.length > 0);
 
   const openPreview = (userIndex: number) => {
@@ -176,7 +156,6 @@ export default function TodayStories() {
 
   const handleMyStoryClick = () => {
     if (hasMyActiveStory) {
-      // Find index of myStory in allStoryUsers (normally 0)
       const myIdx = allStoryUsers.findIndex((u) => u.is_my_story);
       openPreview(myIdx >= 0 ? myIdx : 0);
     } else {
@@ -184,6 +163,7 @@ export default function TodayStories() {
     }
   };
 
+  // Mobile gesture touch handler configurations
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientY);
   };
@@ -204,13 +184,11 @@ export default function TodayStories() {
     setTouchStart(null);
   };
 
-  const displayAvatar =
-    myStoryUser?.avatar ||
-    currentUser?.avatar_url ||
-    avatar1;
-
-  // List of other users to display in the feed
+  const displayAvatar = myStoryUser?.avatar || currentUser?.avatar_url || avatar1;
   const feedUsers = allStoryUsers.filter((u) => !u.is_my_story);
+
+
+
 
   return (
     <>

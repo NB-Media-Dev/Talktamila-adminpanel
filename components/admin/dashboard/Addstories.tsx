@@ -32,6 +32,7 @@ import { useContenthook } from "@/hooks/useContent";
 import defaultAvatar from "@/public/Images/profile1.jpg";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { getAuthToken } from "@/lib/cookies";
+import { storyService } from "@/services/Stories.service";
 
 interface AddstoriesProps {
   isOpen?: boolean;
@@ -204,86 +205,162 @@ export default function Addstories({
   };
 
 
-  const handleAddStory = async () => {
-    setIsPublishing(true);
-    try {
-      const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
-      const token = getAuthToken();
-      const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
+//   const handleAddStory = async () => {
+//     setIsPublishing(true);
+//     try {
+//       const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
+//       const token = getAuthToken();
+//       const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
 
-      if (rawFiles.length > 0) {
-        const formData = new FormData();
-        rawFiles.forEach((file) => {
-          formData.append("files", file);
-        });
-        if (caption) {
-          formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
-        }
-        formData.append("audience", audienceVal);
-        if (selectedMusic) {
-          formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
-        }
+//       if (rawFiles.length > 0) {
+//         const formData = new FormData();
+//         rawFiles.forEach((file) => {
+//           formData.append("files", file);
+//         });
+//         if (caption) {
+//           formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
+//         }
+//         formData.append("audience", audienceVal);
+//         if (selectedMusic) {
+//           formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
+//         }
 
-        const res = await fetch(`${BASE_URL}/api/v1/stories/upload-multiple`, {
-          method: "POST",
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: formData,
-        });
-        console.log(formData ,"line 234");
-        const responseData = await res.json();
-console.log("Backend-la irundhu vandha data:", responseData); 
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.detail || `Upload failed with status ${res.status}`);
-        }
-      } else if (caption.trim()) {
-        const res = await fetch(`${BASE_URL}/api/v1/stories`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({
-            media_url: "text-story",
-            media_type: "text",
-            caption: caption,
-            audience: audienceVal,
-            music_title: selectedMusic,
-          }),
-        });
+//         const res = await fetch(`${BASE_URL}/api/v1/stories/upload-multiple`, {
+//           method: "POST",
+//           headers: {
+//             ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//           },
+//           body: formData,
+//         });
+//         console.log(formData ,"line 234");
+//         const responseData = await res.json();
+// console.log("Backend-la irundhu vandha data:", responseData); 
+//         if (!res.ok) {
+//           const errData = await res.json().catch(() => ({}));
+//           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
+//         }
+//       } else if (caption.trim()) {
+//         const res = await fetch(`${BASE_URL}/api/v1/stories`, {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//             ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//           },
+//           body: JSON.stringify({
+//             media_url: "text-story",
+//             media_type: "text",
+//             caption: caption,
+//             audience: audienceVal,
+//             music_title: selectedMusic,
+//           }),
+//         });
 
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.detail || `Upload failed with status ${res.status}`);
-        }
-      } else {
-        throw new Error("Please upload a photo/video or enter caption text for your story.");
+//         if (!res.ok) {
+//           const errData = await res.json().catch(() => ({}));
+//           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
+//         }
+//       } else {
+//         throw new Error("Please upload a photo/video or enter caption text for your story.");
+//       }
+
+//       setIsPublishing(false);
+//       setPublishSuccess(true);
+
+//       if (onStoryAdded) {
+//         onStoryAdded({
+//           imageUrl: mediaList[0] || "default-text-story",
+//           imageUrls: mediaList,
+//           caption,
+//           audience: selectedAudience,
+//           musicTrack: selectedMusic,
+//         });
+//       }
+
+//       setTimeout(() => {
+//         handleCancel();
+//       }, 1000);
+//     } catch (err: any) {
+//       console.error("Story upload failed:", err);
+//       setIsPublishing(false);
+//       alert(err.message || "Failed to upload story. Please check your connection and try again.");
+//     }
+//   };
+
+
+
+const handleAddStory = async () => {
+  setIsPublishing(true);
+  try {
+    const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
+    let responseData;
+
+    // CASE A: Processing files array objects structural handling variables configuration array
+    if (rawFiles.length > 0) {
+      const formData = new FormData();
+      
+      rawFiles.forEach((file) => {
+        formData.append("files", file);
+      });
+      
+      if (caption) {
+        formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
+      }
+      
+      formData.append("audience", audienceVal);
+      
+      if (selectedMusic) {
+        formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
       }
 
-      setIsPublishing(false);
-      setPublishSuccess(true);
+      // Invoking ungal custom wrapper function execution configuration methods patterns
+      responseData = await storyService.uploadMultipleFiles(formData);
+      console.log("Backend response for files upload object payload data details:", responseData);
 
-      if (onStoryAdded) {
-        onStoryAdded({
-          imageUrl: mediaList[0] || "default-text-story",
-          imageUrls: mediaList,
-          caption,
-          audience: selectedAudience,
-          musicTrack: selectedMusic,
-        });
-      }
+    // CASE B: Handling pure text contexts base configuration layouts schema logic triggers
+    } else if (caption.trim()) {
+      const textPayload = {
+        media_url: "text-story",
+        media_type: "text",
+        caption: caption,
+        audience: audienceVal,
+        music_title: selectedMusic,
+      };
 
-      setTimeout(() => {
-        handleCancel();
-      }, 1000);
-    } catch (err: any) {
-      console.error("Story upload failed:", err);
-      setIsPublishing(false);
-      alert(err.message || "Failed to upload story. Please check your connection and try again.");
+      // Direct service module tracking call integration
+      responseData = await storyService.addTextStory(textPayload);
+      console.log("Backend response for text story instance data details:", responseData);
+
+    } else {
+      throw new Error("Please upload a photo/video or enter caption text for your story.");
     }
-  };
+
+    // Process interface runtime states setting operations
+    setIsPublishing(false);
+    setPublishSuccess(true);
+
+    if (onStoryAdded) {
+      onStoryAdded({
+        imageUrl: mediaList[0] || "default-text-story",
+        imageUrls: mediaList,
+        caption,
+        audience: selectedAudience,
+        musicTrack: selectedMusic,
+      });
+    }
+
+    setTimeout(() => {
+      handleCancel();
+    }, 1000);
+
+  } catch (err: any) {
+    console.error("Story management system workflow processing failure logs trace info:", err);
+    setIsPublishing(false);
+    
+    // Processing exact dynamic backend detail strings maps tracking parameters
+    const errorMessage = err.message || "Failed to upload story. Please check your connection and try again.";
+    alert(errorMessage);
+  }
+};
 
 
   const totalBars = mediaList.length > 0 ? mediaList.length : 1;

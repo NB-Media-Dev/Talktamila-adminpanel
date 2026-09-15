@@ -27,7 +27,7 @@ export function AuthProvider({
   initialUser: AuthUserData | null;
 }) {
   const [user, setUser] = useState<AuthUserData | null>(initialUser);
-
+console.log(user)
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       {children}
