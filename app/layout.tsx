@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UseContentProvider } from "@/hooks/useContent";
+import { AuthProvider }  from "@/hooks/useAuthuser";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,10 +27,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
     >
       <body className="min-h-full  flex flex-col">
+        <AuthProvider initialUser={null}>
         <UseContentProvider>
 
 {children}
         </UseContentProvider>
+        </AuthProvider>
         </body>
     </html>
   );

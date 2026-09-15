@@ -7,12 +7,16 @@ import { buttonVariants } from "../ui/Button";
 import Image from "next/image";
 import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { useAuthuser } from "@/hooks/useAuthuser";
+import { authService } from "@/services/auth.service";
 import avatar2 from "@/public/Images/profile2.jpg";
+
 
 export default function Navbar() {
   const context = useContext(useContenthook);
   const router = useRouter();
   const { isInfluencer, isFreelancer, isAdmin } = useAuthRole();
+  const {user, setUser } = useAuthuser();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -21,6 +25,7 @@ export default function Navbar() {
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
 
+  
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -74,11 +79,7 @@ export default function Navbar() {
     }
   };
 
-  const getUserRoleLabel = () => {
-    if (isAdmin) return "Admin User";
-    if (isFreelancer) return "Freelancer Creator";
-    return "Influencer Profile";
-  };
+
 
   const renderDropdownMenu = () => (
     <div className="absolute right-0 top-full mt-2 w-56 sm:w-60 bg-white rounded-2xl shadow-xl border border-orange-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
@@ -89,9 +90,9 @@ export default function Navbar() {
         </div>
         <div className="flex flex-col min-w-0 flex-1">
           <span className="text-xs font-bold text-gray-900 truncate">
-            {getUserRoleLabel()}
+            {user?.user.role}
           </span>
-          <span className="text-[11px] text-gray-500 truncate">user@talktamila.com</span>
+          <span className="text-[11px] text-gray-500 truncate">{user?.user.email}</span>
         </div>
       </div>
 
@@ -133,10 +134,8 @@ export default function Navbar() {
         type="button"
         onClick={() => {
           setIsProfileOpen(false);
-          try {
-            localStorage.removeItem("user");
-          } catch { }
-       
+          setUser(null);
+          authService.signOut();
           router.push("/login");
         }}
         className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors w-full text-left cursor-pointer"

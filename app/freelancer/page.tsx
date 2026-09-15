@@ -26,6 +26,7 @@ export default function FreelancerPage() {
         <div className="hidden sm:flex sm:col-span-5 lg:col-span-3 flex-col gap-4 sm:gap-5 w-full">
           <Insights />
           <ShareThoughtCard />
+          <TodayStories />
           
      
           <div className="flex lg:hidden flex-col gap-4 sm:gap-5">

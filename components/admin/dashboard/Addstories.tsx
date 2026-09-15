@@ -31,6 +31,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useContenthook } from "@/hooks/useContent";
 import defaultAvatar from "@/public/Images/profile1.jpg";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { getAuthToken } from "@/lib/cookies";
 
 interface AddstoriesProps {
   isOpen?: boolean;
@@ -85,6 +86,7 @@ export default function Addstories({
   
 
   const [mediaList, setMediaList] = useState<string[]>([]);
+  const [rawFiles, setRawFiles] = useState<File[]>([]);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
   
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
@@ -106,7 +108,9 @@ export default function Addstories({
 
 
   const processFiles = (files: FileList | File[]) => {
-    const fileArray = Array.from(files).filter(f => f.type.startsWith("image/"));
+    const fileArray = Array.from(files).filter(
+      (f) => f.type.startsWith("image/") || f.type.startsWith("video/")
+    );
     if (fileArray.length === 0) return;
 
     setIsPreviewLoading(true);
@@ -126,10 +130,10 @@ export default function Addstories({
       setTimeout(() => {
         setMediaList((prev) => {
           const updated = [...prev, ...newImages];
-  
           setActiveSlideIndex(prev.length);
           return updated;
         });
+        setRawFiles((prev) => [...prev, ...fileArray]);
         setIsPreviewLoading(false);
       }, 400);
     });
@@ -174,11 +178,13 @@ export default function Addstories({
       }
       return updated;
     });
+    setRawFiles((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
 
   const handleClearAll = () => {
     setMediaList([]);
+    setRawFiles([]);
     setActiveSlideIndex(0);
   };
 
@@ -198,9 +204,64 @@ export default function Addstories({
   };
 
 
-  const handleAddStory = () => {
+  const handleAddStory = async () => {
     setIsPublishing(true);
-    setTimeout(() => {
+    try {
+      const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
+      const token = getAuthToken();
+      const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
+
+      if (rawFiles.length > 0) {
+        const formData = new FormData();
+        rawFiles.forEach((file) => {
+          formData.append("files", file);
+        });
+        if (caption) {
+          formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
+        }
+        formData.append("audience", audienceVal);
+        if (selectedMusic) {
+          formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
+        }
+
+        const res = await fetch(`${BASE_URL}/api/v1/stories/upload-multiple`, {
+          method: "POST",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: formData,
+        });
+        console.log(formData ,"line 234");
+        const responseData = await res.json();
+console.log("Backend-la irundhu vandha data:", responseData); 
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || `Upload failed with status ${res.status}`);
+        }
+      } else if (caption.trim()) {
+        const res = await fetch(`${BASE_URL}/api/v1/stories`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            media_url: "text-story",
+            media_type: "text",
+            caption: caption,
+            audience: audienceVal,
+            music_title: selectedMusic,
+          }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || `Upload failed with status ${res.status}`);
+        }
+      } else {
+        throw new Error("Please upload a photo/video or enter caption text for your story.");
+      }
+
       setIsPublishing(false);
       setPublishSuccess(true);
 
@@ -216,8 +277,12 @@ export default function Addstories({
 
       setTimeout(() => {
         handleCancel();
-      }, 1200);
-    }, 1500);
+      }, 1000);
+    } catch (err: any) {
+      console.error("Story upload failed:", err);
+      setIsPublishing(false);
+      alert(err.message || "Failed to upload story. Please check your connection and try again.");
+    }
   };
 
 
@@ -773,4 +838,3 @@ export default function Addstories({
     </div>
   );
 }
-

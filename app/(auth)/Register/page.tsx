@@ -3,8 +3,9 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import { authService } from '@/services/auth.service'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -41,62 +42,49 @@ export default function RegisterPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+  e.preventDefault();
+  setError('');
 
-    if (!formData.fullName.trim()) return setError('Please enter your full name.')
-    if (!formData.birthMonth || !formData.birthDay || !formData.birthYear)
-      return setError('Please select your complete date of birth.')
-    if (!formData.email.trim()) return setError('Please enter your email.')
-    if (!formData.mobile.trim()) return setError('Please enter your mobile number.')
-    if (!formData.password) return setError('Please enter a password.')
-    if (!formData.username.trim()) return setError('Please choose a username.')
-      if (!formData.role.trim()) return setError('Please choose a Role.')
-    
-    setIsSubmitting(true)
+  if (!formData.fullName.trim()) return setError('Please enter your full name.');
+  if (!formData.birthMonth || !formData.birthDay || !formData.birthYear)
+    return setError('Please select your complete date of birth.');
+  if (!formData.email.trim()) return setError('Please enter your email.');
+  if (!formData.mobile.trim()) return setError('Please enter your mobile number.');
+  if (!formData.password) return setError('Please enter a password.');
+  if (!formData.username.trim()) return setError('Please choose a username.');
+  if (!formData.role.trim()) return setError('Please choose a Role.');
+  
+  setIsSubmitting(true);
 
-    const nameParts = formData.fullName.trim().split(' ')
-    const first_name = nameParts[0]
-    const last_name = nameParts.slice(1).join(' ') || first_name
+  const nameParts = formData.fullName.trim().split(' ');
+  const first_name = nameParts[0];
+  const last_name = nameParts.slice(1).join(' ') || first_name;
 
-    const monthIndex = months.indexOf(formData.birthMonth) + 1
-    const dob = `${formData.birthYear}-${String(monthIndex).padStart(2, '0')}-${String(formData.birthDay).padStart(2, '0')}`
+  const monthIndex = months.indexOf(formData.birthMonth) + 1;
+  const dob = `${formData.birthYear}-${String(monthIndex).padStart(2, '0')}-${String(formData.birthDay).padStart(2, '0')}`;
 
-    try {
-      const res = await fetch(`${API_BASE}/api/v1/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: formData.username,
-          first_name,
-          last_name,
-          email: formData.email,
-          mobile_no: formData.mobile,
-          password: formData.password,
-          dob,
-          role:formData.role
-        }),
-      })
+  try {
 
-      if (!res.ok) {
-         const errData = await res.json().catch(() => ({}))
-         let message = 'Registration failed. Please try again.'
-         if (typeof errData.detail === 'string') {
-            message = errData.detail
-          } else if (Array.isArray(errData.detail)) {
-            message = errData.detail.map((e: any) => `${e.loc?.[1] || 'field'}: ${e.msg}`).join(', ')
-          }
-          throw new Error(message)
-        }
-      setIsSubmitting(false)
-      setSuccess(true)
-      setTimeout(() => router.push('/login'), 1500)
-    } catch (err: any) {
-      setIsSubmitting(false)
-      setError(err.message || 'Something went wrong. Please try again.')
-    }
+     await authService.signUp({
+      username: formData.username,
+      first_name,
+      last_name,
+      email: formData.email,
+      mobile_no: formData.mobile,
+      password: formData.password,
+      dob,
+      role: formData.role
+    });
+
+    setIsSubmitting(false);
+    setSuccess(true);
+    setTimeout(() => router.push('/login'), 1500);
+  } catch (err) {
+    setIsSubmitting(false);
+    const errorInstance = err as Error;
+    setError(errorInstance.message || 'Something went wrong. Please try again.');
   }
-
+};
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FFEAE2] py-8 px-4 font-sans">
       <div className="w-full max-w-4xl rounded-[32px] bg-white p-6 sm:p-8 shadow-xl shadow-orange-900/5 border border-orange-100/60">
@@ -195,8 +183,8 @@ export default function RegisterPage() {
     required
   >
     <option value="" disabled>Select your account type</option>
-    <option value="user">Influencer</option>
-    <option value="creator">freelancer</option>
+    <option value="influencer">Influencer</option>
+    <option value="freelancer">Freelancer</option>
   </select>
 </div>
 
