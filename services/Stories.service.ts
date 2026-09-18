@@ -1,4 +1,4 @@
-import { BackendStoryGroup, StoryResponse, TextStoryPayload, MultipleUploadResponse } from '@/types/stories';
+import { BackendStoryGroup, StoryResponse, TextStoryPayload, MultipleUploadResponse } from '@/types/Stories';
 import { apiClient } from './api-client';
 
 export const storyService = {
@@ -26,4 +26,4 @@ export const storyService = {
   },
 };
 
-export const StoryService = storyService;
+export const StoryService = storyService;

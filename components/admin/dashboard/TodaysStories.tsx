@@ -4,120 +4,107 @@ import React, { useState, useEffect, useCallback } from "react";
 import Image, { type StaticImageData } from "next/image";
 import { Zap, ChevronDown, ChevronUp, Plus, Sparkles } from "lucide-react";
 import defaultAvatar from "@/public/Images/profile1.jpg";
+import avatar1 from "@/public/Images/avatar1.png";
+import avatar2 from "@/public/Images/avatar2.png";
+import avatar3 from "@/public/Images/avatar3.png";
+import avatar4 from "@/public/Images/avatar4.png";
+import beach from "@/public/Images/beach.jpg";
+import food from "@/public/Images/food.jpg";
+import waterfall from "@/public/Images/waterfall.jpg";
+import rain from "@/public/Images/rain.jpg";
 import Addstories from "./Addstories";
-import PreviewStories, { StoryUser } from "./Previewstories";
+import PreviewStories, { type StoryUser } from "./Previewstories";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { storyService } from "@/services/Stories.service";
+import type { BackendStoryGroup } from "@/types/Stories";
 
-
-interface StoryAvatarProps {
-  avatar: StaticImageData | string;
-  hasActiveStory: boolean;
-  isMyStory?: boolean;
-  showPlus?: boolean;
-  showLiveBadge?: boolean;
-  sizeClass?: string;
-  onClick: () => void;
-  onPlusClick?: (e: React.MouseEvent) => void;
-}
-
-function StoryAvatar({
-  avatar,
-  hasActiveStory,
-  isMyStory,
-  showPlus,
-  showLiveBadge,
-  sizeClass = "w-[55px] h-[65px]",
-  onClick,
-  onPlusClick,
-}: StoryAvatarProps) {
-  return (
-    <div
-      onClick={onClick}
-      className="relative shrink-0 group cursor-pointer hover:scale-105 transition-all duration-200"
-    >
-      <div
-        className={`${sizeClass} p-[2.5px] rounded-[28px] ${
-          hasActiveStory
-            ? "bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35] shadow-md shadow-orange-500/20"
-            : isMyStory
-            ? "bg-gradient-to-tr from-gray-200 via-gray-300 to-gray-200"
-            : "bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]"
-        }`}
-      >
-        <div className="w-full h-full rounded-[26px] border-2 border-white overflow-hidden relative bg-[#fff0e7] flex items-center justify-center">
-          {typeof avatar === "string" ? (
-            <img
-              src={avatar}
-              alt="Story Profile"
-              className={`w-full h-full object-cover ${!hasActiveStory && isMyStory ? "opacity-85" : ""}`}
-            />
-          ) : (
-            <Image
-              src={avatar}
-              alt="Story Profile"
-              fill
-              sizes="55px"
-              className={`object-cover ${!hasActiveStory && isMyStory ? "opacity-85" : ""}`}
-            />
-          )}
-        </div>
-      </div>
-
-      {showPlus && (
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            onPlusClick?.(e);
-          }}
-          className="absolute bottom-[2px] right-[2px] w-[18px] h-[18px] bg-[#FF3B30] text-white rounded-full border-2 border-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform cursor-pointer"
-          title="Add New Story"
-        >
-          <Plus size={10} strokeWidth={3} />
-        </span>
-      )}
-
-      {showLiveBadge && hasActiveStory && (
-        <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-extrabold px-1 rounded-full border border-white flex items-center gap-0.5">
-          <Sparkles size={7} />
-          Live
-        </span>
-      )}
-    </div>
-  );
-}
+const mockFallbackStories: StoryUser[] = [
+  {
+    id: 991,
+    userName: "Amrita",
+    avatar: avatar1,
+    verified: true,
+    timeAgo: "1h ago",
+    musicTrack: "Anirudh – Trend Beat 🎵",
+    slides: [
+      { id: 9911, imageUrl: beach, duration: 5000, caption: "Chennai coastal evening vibe ✨" },
+      { id: 9912, imageUrl: food, duration: 5000, caption: "Authentic South Indian feast 🍛" },
+    ],
+  },
+  {
+    id: 992,
+    userName: "Priya",
+    avatar: avatar2,
+    verified: true,
+    timeAgo: "2h ago",
+    slides: [
+      { id: 9921, imageUrl: waterfall, duration: 5000, caption: "Courtallam waterfalls exploration 🌊" },
+    ],
+  },
+  {
+    id: 993,
+    userName: "Arjun",
+    avatar: avatar3,
+    verified: false,
+    timeAgo: "4h ago",
+    slides: [
+      { id: 9931, imageUrl: rain, duration: 5000, caption: "Monsoon showers in Ooty 🌧️" },
+    ],
+  },
+  {
+    id: 994,
+    userName: "Karthik",
+    avatar: avatar4,
+    verified: true,
+    timeAgo: "5h ago",
+    slides: [
+      { id: 9941, imageUrl: food, duration: 5000, caption: "Madurai street food crawl 🍲" },
+    ],
+  },
+];
 
 export default function TodayStories() {
-  const [isExpanded, setIsExpanded] = useState(false);
+ 
+  // ==========================================
+  // 🟢 1. VIEW VIEWPORT & VISIBILITY CONTROLS
+  // ==========================================
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [isAddStoryOpen, setIsAddStoryOpen] = useState(false);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [selectedUserIndex, setSelectedUserIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [isAddStoryOpen, setIsAddStoryOpen] = useState<boolean>(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
+  const [selectedUserIndex, setSelectedUserIndex] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
+  // ==========================================
+  // 🔵 2. ACCOUNT SESSION & DATA STACK
+  // ==========================================
   const { user: authUser } = useAuthuser();
   const [allStoryUsers, setAllStoryUsers] = useState<StoryUser[]>([]);
   const [myStoryUser, setMyStoryUser] = useState<StoryUser | null>(null);
-
+  
+  // FIX: User object layout dynamic runtime extract (displayAvatar dynamic fallback check)
   const currentUser = (authUser as any)?.user || authUser || null;
 
+  // ==========================================
+  // ⚡ 3. UNIFIED DATA ACCESS LIFECYCLE
+  // ==========================================
   const fetchStories = useCallback(async () => {
     try {
       setLoading(true);
       const data = await storyService.getStoriesFeed();
       if (!Array.isArray(data)) return;
 
-      const normalizeGroupToUser = (group: any): StoryUser => ({
-        id: Number(group.id),
+      const normalizeGroupToUser = (group: BackendStoryGroup): StoryUser => ({
+          id: Number(group.id), 
         userName: group.userName,
-        avatar: group.avatar || defaultAvatar,
+        avatar: group.avatar || avatar1,
         verified: group.verified || false,
         timeAgo: group.timeAgo || "Just now",
         musicTrack: group.musicTrack,
         is_my_story: Boolean(group.is_my_story),
-        slides: (group.slides || []).map((s: any) => ({
-          id: Number(s.id),
-          story_id: Number(s.story_id || s.id),
+        slides: (group.slides || []).map((s) => ({
+         id: Number(s.id),                // 👈 FIX: Converts string slide ID to number safely
+    story_id: Number(s.story_id || s.id),
           imageUrl: s.imageUrl || s.media_url || "",
           media_type: s.media_type || "image",
           caption: s.caption,
@@ -126,26 +113,29 @@ export default function TodayStories() {
           likes_count: s.likes_count || 0,
           views_count: s.views_count || 0,
           musicTrack: s.musicTrack || group.musicTrack,
-          music_url: s.music_url,
-          music_start_time: s.music_start_time,
-          music_title: s.music_title,
-          music_artist: s.music_artist,
-        })),
+        }))
       });
 
-      const rawMyStory = data.find((group: any) => group.is_my_story === true);
-      const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
-      setMyStoryUser(myStoryParsed);
+    // 3. MY STORY SEPARATION: Direct passing safely!
+const rawMyStory = data.find((group) => group.is_my_story === true);
+const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
+setMyStoryUser(myStoryParsed);
 
-      const otherStoriesParsed = data
-        .filter((group: any) => group.is_my_story !== true)
-        .map(normalizeGroupToUser);
+// 4. OTHER STORIES SEPARATION: Direct passing handles inner files map automatically!
+const otherStoriesParsed = data
+  .filter((group) => group.is_my_story !== true)
+  .map(normalizeGroupToUser);
 
-      setAllStoryUsers(
-        myStoryParsed ? [myStoryParsed, ...otherStoriesParsed] : otherStoriesParsed
-      );
+
+      // const displayFeed = otherStoriesParsed.length > 0 ? otherStoriesParsed : mockFallbackStories;
+   const displayFeed =  otherStoriesParsed 
+      if (myStoryParsed) {
+        setAllStoryUsers([myStoryParsed, ...displayFeed]); 
+      } else {
+        setAllStoryUsers(displayFeed); 
+      }
     } catch (err) {
-      console.error("Story fetch error:", err);
+      console.error("Story control layer fetch query error:", err);
     } finally {
       setLoading(false);
     }
@@ -155,7 +145,10 @@ export default function TodayStories() {
     fetchStories();
   }, [fetchStories]);
 
-  const hasMyActiveStory = Boolean(myStoryUser?.slides && myStoryUser.slides.length > 0);
+  // ==========================================
+  // 🎯 4. ACTION INTERACTORS LOGIC METHODS
+  // ==========================================
+  const hasMyActiveStory = Boolean(myStoryUser && myStoryUser.slides && myStoryUser.slides.length > 0);
 
   const openPreview = (userIndex: number) => {
     setSelectedUserIndex(userIndex);
@@ -171,8 +164,11 @@ export default function TodayStories() {
     }
   };
 
-  // Mobile swipe gestures
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientY);
+  // Mobile gesture touch handler configurations
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStart === null || e.currentTarget.scrollTop !== 0) return;
     if (e.targetTouches[0].clientY - touchStart > 50) {
@@ -182,8 +178,11 @@ export default function TodayStories() {
   };
   const handleTouchEnd = () => setTouchStart(null);
 
-  const displayAvatar = myStoryUser?.avatar || currentUser?.avatar_url || defaultAvatar;
+  const displayAvatar = myStoryUser?.avatar || currentUser?.avatar_url || avatar1;
   const feedUsers = allStoryUsers.filter((u) => !u.is_my_story);
+
+
+
 
   return (
     <>
@@ -328,5 +327,65 @@ export default function TodayStories() {
         />
       )}
     </>
+  );
+}
+
+interface StoryAvatarProps {
+  avatar: string | StaticImageData;
+  hasActiveStory?: boolean;
+  isMyStory?: boolean;
+  showPlus?: boolean;
+  showLiveBadge?: boolean;
+  sizeClass?: string;
+  onClick?: () => void;
+  onPlusClick?: () => void;
+}
+
+function StoryAvatar({
+  avatar,
+  hasActiveStory = false,
+  isMyStory = false,
+  showPlus = false,
+  showLiveBadge = false,
+  sizeClass = "w-14 h-14",
+  onClick,
+  onPlusClick,
+}: StoryAvatarProps) {
+  const avatarSrc = avatar || defaultAvatar;
+
+  return (
+    <div className="relative cursor-pointer select-none group" onClick={onClick}>
+      <div
+        className={`relative rounded-full p-[2.5px] transition-transform duration-200 group-hover:scale-105 flex items-center justify-center ${
+          hasActiveStory
+            ? "bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500"
+            : "bg-gray-200"
+        } ${sizeClass}`}
+      >
+        <div className="relative w-full h-full rounded-full overflow-hidden bg-white border-2 border-white">
+          <Image
+            src={avatarSrc}
+            alt="Story Avatar"
+            fill
+            className="object-cover"
+            sizes="64px"
+          />
+        </div>
+      </div>
+
+      {showPlus && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onPlusClick) onPlusClick();
+            else if (onClick) onClick();
+          }}
+          className="absolute bottom-0 right-0 w-4.5 h-4.5 bg-[#FF6B35] hover:bg-orange-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm transition-transform active:scale-90"
+        >
+          <Plus className="w-3 h-3 stroke-[3]" />
+        </button>
+      )}
+    </div>
   );
 }

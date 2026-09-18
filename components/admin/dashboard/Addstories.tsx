@@ -36,6 +36,7 @@ import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { getAuthToken } from "@/lib/cookies";
+import { storyService } from "@/services/Stories.service";
 import { getBackendUrl } from "@/services/api-client";
 
 interface AddstoriesProps {
@@ -385,6 +386,15 @@ export default function Addstories({
       const token = getAuthToken();
       const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
 
+      const musicPayload = selectedTrack ? {
+        music_id: selectedTrack.track_id,
+        music_title: selectedTrack.title,
+        music_artist: selectedTrack.artist,
+        music_url: selectedTrack.audio_url,
+        music_thumbnail: selectedTrack.cover_url,
+        music_duration: 60.0,
+      } : (selectedMusic ? { music_title: selectedMusic } : null);
+
       if (rawFiles.length > 0) {
         const formData = new FormData();
         rawFiles.forEach((file) => {
@@ -394,14 +404,6 @@ export default function Addstories({
           formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
         }
         formData.append("audience", audienceVal);
-        const musicPayload = selectedTrack ? {
-          music_id: selectedTrack.track_id,
-          music_title: selectedTrack.title,
-          music_artist: selectedTrack.artist,
-          music_url: selectedTrack.audio_url,
-          music_thumbnail: selectedTrack.cover_url,
-          music_duration: 60.0,
-        } : (selectedMusic ? { music_title: selectedMusic } : null);
 
         if (musicPayload) {
           formData.append("music_data", JSON.stringify(musicPayload));
@@ -416,20 +418,12 @@ export default function Addstories({
           },
           body: formData,
         });
+
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
         }
       } else if (caption.trim()) {
-        const musicPayload = selectedTrack ? {
-          music_id: selectedTrack.track_id,
-          music_title: selectedTrack.title,
-          music_artist: selectedTrack.artist,
-          music_url: selectedTrack.audio_url,
-          music_thumbnail: selectedTrack.cover_url,
-          music_duration: 60.0,
-        } : (selectedMusic ? { music_title: selectedMusic } : null);
-
         const res = await fetch(`${BASE_URL}/api/v1/stories`, {
           method: "POST",
           headers: {
@@ -478,7 +472,8 @@ export default function Addstories({
     } catch (err: any) {
       console.error("Story upload failed:", err);
       setIsPublishing(false);
-      alert(err.message || "Failed to upload story. Please check your connection and try again.");
+      const errorMessage = err.message || "Failed to upload story. Please check your connection and try again.";
+      alert(errorMessage);
     }
   };
 
