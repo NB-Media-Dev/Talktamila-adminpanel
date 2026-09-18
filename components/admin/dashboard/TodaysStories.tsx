@@ -64,10 +64,6 @@ const mockFallbackStories: StoryUser[] = [
 ];
 
 export default function TodayStories() {
- 
-  // ==========================================
-  // 🟢 1. VIEW VIEWPORT & VISIBILITY CONTROLS
-  // ==========================================
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [isAddStoryOpen, setIsAddStoryOpen] = useState<boolean>(false);
@@ -75,19 +71,12 @@ export default function TodayStories() {
   const [selectedUserIndex, setSelectedUserIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // ==========================================
-  // 🔵 2. ACCOUNT SESSION & DATA STACK
-  // ==========================================
   const { user: authUser } = useAuthuser();
   const [allStoryUsers, setAllStoryUsers] = useState<StoryUser[]>([]);
   const [myStoryUser, setMyStoryUser] = useState<StoryUser | null>(null);
-  
-  // FIX: User object layout dynamic runtime extract (displayAvatar dynamic fallback check)
+
   const currentUser = (authUser as any)?.user || authUser || null;
 
-  // ==========================================
-  // ⚡ 3. UNIFIED DATA ACCESS LIFECYCLE
-  // ==========================================
   const fetchStories = useCallback(async () => {
     try {
       setLoading(true);
@@ -95,7 +84,7 @@ export default function TodayStories() {
       if (!Array.isArray(data)) return;
 
       const normalizeGroupToUser = (group: BackendStoryGroup): StoryUser => ({
-          id: Number(group.id), 
+        id: Number(group.id),
         userName: group.userName,
         avatar: group.avatar || avatar1,
         verified: group.verified || false,
@@ -103,8 +92,8 @@ export default function TodayStories() {
         musicTrack: group.musicTrack,
         is_my_story: Boolean(group.is_my_story),
         slides: (group.slides || []).map((s) => ({
-         id: Number(s.id),                // 👈 FIX: Converts string slide ID to number safely
-    story_id: Number(s.story_id || s.id),
+          id: Number(s.id),
+          story_id: Number(s.story_id || s.id),
           imageUrl: s.imageUrl || s.media_url || "",
           media_type: s.media_type || "image",
           caption: s.caption,
@@ -113,29 +102,25 @@ export default function TodayStories() {
           likes_count: s.likes_count || 0,
           views_count: s.views_count || 0,
           musicTrack: s.musicTrack || group.musicTrack,
-        }))
+        })),
       });
 
-    // 3. MY STORY SEPARATION: Direct passing safely!
-const rawMyStory = data.find((group) => group.is_my_story === true);
-const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
-setMyStoryUser(myStoryParsed);
+      const rawMyStory = data.find((group) => group.is_my_story === true);
+      const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
+      setMyStoryUser(myStoryParsed);
 
-// 4. OTHER STORIES SEPARATION: Direct passing handles inner files map automatically!
-const otherStoriesParsed = data
-  .filter((group) => group.is_my_story !== true)
-  .map(normalizeGroupToUser);
+      const otherStoriesParsed = data
+        .filter((group) => group.is_my_story !== true)
+        .map(normalizeGroupToUser);
 
-
-      // const displayFeed = otherStoriesParsed.length > 0 ? otherStoriesParsed : mockFallbackStories;
-   const displayFeed =  otherStoriesParsed 
+      const displayFeed = otherStoriesParsed;
       if (myStoryParsed) {
-        setAllStoryUsers([myStoryParsed, ...displayFeed]); 
+        setAllStoryUsers([myStoryParsed, ...displayFeed]);
       } else {
-        setAllStoryUsers(displayFeed); 
+        setAllStoryUsers(displayFeed);
       }
     } catch (err) {
-      console.error("Story control layer fetch query error:", err);
+      console.error("Error fetching stories:", err);
     } finally {
       setLoading(false);
     }
@@ -145,9 +130,6 @@ const otherStoriesParsed = data
     fetchStories();
   }, [fetchStories]);
 
-  // ==========================================
-  // 🎯 4. ACTION INTERACTORS LOGIC METHODS
-  // ==========================================
   const hasMyActiveStory = Boolean(myStoryUser && myStoryUser.slides && myStoryUser.slides.length > 0);
 
   const openPreview = (userIndex: number) => {
