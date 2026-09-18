@@ -15,7 +15,7 @@ import avatar2 from "@/public/Images/profile2.jpg";
 export default function Navbar() {
   const context = useContext(useContenthook);
   const router = useRouter();
-  const { isInfluencer, isFreelancer, isAdmin } = useAuthRole();
+  const { isInfluencer, isFreelancer,} = useAuthRole();
   const {user, setUser } = useAuthuser();
 
   const [searchQuery, setSearchQuery] = useState<string>("");

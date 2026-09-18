@@ -20,7 +20,7 @@ export function getAuthToken(): string | null {
   return getCookie('Access_Token') || getCookie('tt_token');
 }
 
-export function setAuthToken(token: string, maxAgeSeconds: number = 7 * 24 * 60 * 60) {
+export function setAuthToken(token: string, maxAgeSeconds: number =30*60) {
   setCookie('Access_Token', token, maxAgeSeconds);
   setCookie('tt_token', token, maxAgeSeconds);
 }

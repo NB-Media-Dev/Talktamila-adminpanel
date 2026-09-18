@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { useAuthRole } from "@/hooks/useAuthRole";
 
 export default function AICreatorStudio() {
-  const { isInfluencer } = useAuthRole();
+  const { isInfluencer , isFreelancer ,userRole } = useAuthRole();
   const router = useRouter();
   const formats = [
     "Poster",
@@ -31,7 +31,22 @@ export default function AICreatorStudio() {
 
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const targetHref = isInfluencer ? "/influencer/content" : "/admin/content";
+ let targetHref = "/default/content"; // Fallback URL
+
+switch (userRole) {
+  case "influencer":
+    targetHref = "/influencer/content";
+    break;
+  case "admin":
+    targetHref = "/admin/content";
+    break;
+  case "freelancer": // Your third user type
+    targetHref = "/freelancer/content";
+    break;
+  default:
+    targetHref = "/login"; // Safe fallback for unauthenticated/unknown roles
+    break;
+}
 
 
 

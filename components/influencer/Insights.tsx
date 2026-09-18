@@ -35,7 +35,7 @@ export default function Insights({ totalEarnings = "₹86,200", reposts = "124",
         <div className="w-full  max-w-full select-none flex flex-col gap-3 font-sans">
           <button
             className={`w-full ${buttonVariants({ variant: "default" })} py-3 px-6 rounded-2xl shadow-[0_4px_14px_rgba(240,90,36,0.3)] transition-all duration-200 hover:brightness-105 cursor-pointer`}
-            onClick={() => router.push("/freelancer/content")}>
+            onClick={() => router.push("/freelancer/Insight")}>
             <h2 className="text-xl sm:text-2xl font-semibold tracking-wide">
               Insights
             </h2>

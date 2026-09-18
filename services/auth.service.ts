@@ -10,6 +10,7 @@ export const authService = {
     });
 
     if (response.access_token) {
+      
       setAuthToken(response.access_token, 30 * 60);
     }
 

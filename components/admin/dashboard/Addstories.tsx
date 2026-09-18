@@ -20,19 +20,20 @@ import {
   Music,
   Plus,
   Type,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
   Images as ImagesIcon,
-  Search
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContenthook } from "@/hooks/useContent";
 import defaultAvatar from "@/public/Images/profile1.jpg";
 import { useAuthRole } from "@/hooks/useAuthRole";
-import { getAuthToken } from "@/lib/cookies";
 import { storyService } from "@/services/Stories.service";
+import MusicsControl, {
+  type MusicTrack,
+  CLIP_DURATION,
+} from "./MusicsControl";
 
 interface AddstoriesProps {
   isOpen?: boolean;
@@ -57,10 +58,26 @@ const adminAudienceOptions = [
 ];
 
 const gradientThemes = [
-  { id: "insta", name: "Instagram Classic", bg: "bg-gradient-to-tr from-[#833ab4] via-[#fd1d1d] to-[#fcb045]" },
-  { id: "sunset", name: "Sunset Glow", bg: "bg-gradient-to-tr from-[#f12711] via-[#f5af19] to-[#ff5858]" },
-  { id: "cyber", name: "Cyber Neon", bg: "bg-gradient-to-br from-[#4158D0] via-[#C850C0] to-[#FFCC70]" },
-  { id: "midnight", name: "Midnight Vibe", bg: "bg-gradient-to-tr from-[#0f2027] via-[#203a43] to-[#2c5364]" },
+  {
+    id: "insta",
+    name: "Instagram Classic",
+    bg: "bg-gradient-to-tr from-[#833ab4] via-[#fd1d1d] to-[#fcb045]",
+  },
+  {
+    id: "sunset",
+    name: "Sunset Glow",
+    bg: "bg-gradient-to-tr from-[#f12711] via-[#f5af19] to-[#ff5858]",
+  },
+  {
+    id: "cyber",
+    name: "Cyber Neon",
+    bg: "bg-gradient-to-br from-[#4158D0] via-[#C850C0] to-[#FFCC70]",
+  },
+  {
+    id: "midnight",
+    name: "Midnight Vibe",
+    bg: "bg-gradient-to-tr from-[#0f2027] via-[#203a43] to-[#2c5364]",
+  },
 ];
 
 export default function Addstories({
@@ -76,7 +93,6 @@ export default function Addstories({
   const [step, setStep] = useState<"edit" | "loading" | "preview">("edit");
   const [caption, setCaption] = useState<string>("");
   const [selectedAudience, setSelectedAudience] = useState<string>("public");
-  const [selectedMusic, setSelectedMusic] = useState<string>("Anirudh - Trend Beat 🎵");
   const [selectedThemeIndex, setSelectedThemeIndex] = useState<number>(0);
 
   useEffect(() => {
@@ -84,29 +100,32 @@ export default function Addstories({
       setSelectedAudience("public");
     }
   }, [isAdmin, selectedAudience]);
-  
 
   const [mediaList, setMediaList] = useState<string[]>([]);
   const [rawFiles, setRawFiles] = useState<File[]>([]);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
-  
+
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [isPreviewLoading, setIsPreviewLoading] = useState<boolean>(false);
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
   const [publishSuccess, setPublishSuccess] = useState<boolean>(false);
 
+  // ─── Music state (delegated to MusicsControl) ──────────────────────────────
+  const [selectedTrack, setSelectedTrack] = useState<MusicTrack | null>(null);
+  const [musicStartTime, setMusicStartTime] = useState<number>(0);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMoreInputRef = useRef<HTMLInputElement>(null);
 
-
   const handleCancel = () => {
+    setSelectedTrack(null);
+    setMusicStartTime(0);
     if (onClose) {
       onClose();
     } else if (setHandlestate) {
       setHandlestate(false);
     }
   };
-
 
   const processFiles = (files: FileList | File[]) => {
     const fileArray = Array.from(files).filter(
@@ -140,16 +159,13 @@ export default function Addstories({
     });
   };
 
-  // Image Upload handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       processFiles(files);
     }
-
     e.target.value = "";
   };
-
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -170,7 +186,6 @@ export default function Addstories({
     }
   };
 
-
   const handleRemoveMedia = (indexToRemove: number) => {
     setMediaList((prev) => {
       const updated = prev.filter((_, idx) => idx !== indexToRemove);
@@ -182,13 +197,11 @@ export default function Addstories({
     setRawFiles((prev) => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
-
   const handleClearAll = () => {
     setMediaList([]);
     setRawFiles([]);
     setActiveSlideIndex(0);
   };
-
 
   const handlePrevSlide = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -204,176 +217,97 @@ export default function Addstories({
     }
   };
 
+  const handleAddStory = async () => {
+    setIsPublishing(true);
+    try {
+      const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
+      let responseData;
 
-//   const handleAddStory = async () => {
-//     setIsPublishing(true);
-//     try {
-//       const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
-//       const token = getAuthToken();
-//       const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
+      const musicDataPayload = selectedTrack
+        ? {
+            music_title: selectedTrack.trackName,
+            music_artist: selectedTrack.artistName,
+            music_url: selectedTrack.previewUrl || "",
+            music_thumbnail: selectedTrack.artworkUrl100,
+            music_duration: CLIP_DURATION,
+            music_start_time: musicStartTime,
+          }
+        : null;
 
-//       if (rawFiles.length > 0) {
-//         const formData = new FormData();
-//         rawFiles.forEach((file) => {
-//           formData.append("files", file);
-//         });
-//         if (caption) {
-//           formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
-//         }
-//         formData.append("audience", audienceVal);
-//         if (selectedMusic) {
-//           formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
-//         }
+      if (rawFiles.length > 0) {
+        const formData = new FormData();
+        rawFiles.forEach((file) => {
+          formData.append("files", file);
+        });
+        if (caption) {
+          formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
+        }
+        formData.append("audience", audienceVal);
+        if (musicDataPayload) {
+          formData.append("music_data", JSON.stringify(musicDataPayload));
+        }
+        if (musicStartTime > 0) {
+          formData.append("music_start_time", String(musicStartTime));
+        }
 
-//         const res = await fetch(`${BASE_URL}/api/v1/stories/upload-multiple`, {
-//           method: "POST",
-//           headers: {
-//             ...(token ? { Authorization: `Bearer ${token}` } : {}),
-//           },
-//           body: formData,
-//         });
-//         console.log(formData ,"line 234");
-//         const responseData = await res.json();
-// console.log("Backend-la irundhu vandha data:", responseData); 
-//         if (!res.ok) {
-//           const errData = await res.json().catch(() => ({}));
-//           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
-//         }
-//       } else if (caption.trim()) {
-//         const res = await fetch(`${BASE_URL}/api/v1/stories`, {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//             ...(token ? { Authorization: `Bearer ${token}` } : {}),
-//           },
-//           body: JSON.stringify({
-//             media_url: "text-story",
-//             media_type: "text",
-//             caption: caption,
-//             audience: audienceVal,
-//             music_title: selectedMusic,
-//           }),
-//         });
+        responseData = await storyService.uploadMultipleFiles(formData);
+        console.log("Backend response for files upload:", responseData);
+      } else if (caption.trim()) {
+        const textPayload = {
+          media_url: "text-story",
+          media_type: "text",
+          caption: caption,
+          audience: audienceVal,
+          music_title: selectedTrack?.trackName || "",
+          music_artist: selectedTrack?.artistName,
+          music_url: selectedTrack?.previewUrl,
+          music_thumbnail: selectedTrack?.artworkUrl100,
+          music_duration: selectedTrack ? CLIP_DURATION : undefined,
+          music_start_time: musicStartTime,
+        };
 
-//         if (!res.ok) {
-//           const errData = await res.json().catch(() => ({}));
-//           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
-//         }
-//       } else {
-//         throw new Error("Please upload a photo/video or enter caption text for your story.");
-//       }
-
-//       setIsPublishing(false);
-//       setPublishSuccess(true);
-
-//       if (onStoryAdded) {
-//         onStoryAdded({
-//           imageUrl: mediaList[0] || "default-text-story",
-//           imageUrls: mediaList,
-//           caption,
-//           audience: selectedAudience,
-//           musicTrack: selectedMusic,
-//         });
-//       }
-
-//       setTimeout(() => {
-//         handleCancel();
-//       }, 1000);
-//     } catch (err: any) {
-//       console.error("Story upload failed:", err);
-//       setIsPublishing(false);
-//       alert(err.message || "Failed to upload story. Please check your connection and try again.");
-//     }
-//   };
-
-
-
-const handleAddStory = async () => {
-  setIsPublishing(true);
-  try {
-    const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
-    let responseData;
-
-    // CASE A: Processing files array objects structural handling variables configuration array
-    if (rawFiles.length > 0) {
-      const formData = new FormData();
-      
-      rawFiles.forEach((file) => {
-        formData.append("files", file);
-      });
-      
-      if (caption) {
-        formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
-      }
-      
-      formData.append("audience", audienceVal);
-      
-      if (selectedMusic) {
-        formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
+        responseData = await storyService.addTextStory(textPayload);
+        console.log("Backend response for text story:", responseData);
+      } else {
+        throw new Error("Please upload a photo/video or enter caption text for your story.");
       }
 
-      // Invoking ungal custom wrapper function execution configuration methods patterns
-      responseData = await storyService.uploadMultipleFiles(formData);
-      console.log("Backend response for files upload object payload data details:", responseData);
+      setIsPublishing(false);
+      setPublishSuccess(true);
 
-    // CASE B: Handling pure text contexts base configuration layouts schema logic triggers
-    } else if (caption.trim()) {
-      const textPayload = {
-        media_url: "text-story",
-        media_type: "text",
-        caption: caption,
-        audience: audienceVal,
-        music_title: selectedMusic,
-      };
+      if (onStoryAdded) {
+        onStoryAdded({
+          imageUrl: mediaList[0] || "default-text-story",
+          imageUrls: mediaList,
+          caption,
+          audience: selectedAudience,
+          musicTrack: selectedTrack?.trackName,
+        });
+      }
 
-      // Direct service module tracking call integration
-      responseData = await storyService.addTextStory(textPayload);
-      console.log("Backend response for text story instance data details:", responseData);
-
-    } else {
-      throw new Error("Please upload a photo/video or enter caption text for your story.");
+      setTimeout(() => {
+        handleCancel();
+      }, 1000);
+    } catch (err: any) {
+      console.error("Story upload failed:", err);
+      setIsPublishing(false);
+      const errorMessage =
+        err.message || "Failed to upload story. Please check your connection and try again.";
+      alert(errorMessage);
     }
-
-    // Process interface runtime states setting operations
-    setIsPublishing(false);
-    setPublishSuccess(true);
-
-    if (onStoryAdded) {
-      onStoryAdded({
-        imageUrl: mediaList[0] || "default-text-story",
-        imageUrls: mediaList,
-        caption,
-        audience: selectedAudience,
-        musicTrack: selectedMusic,
-      });
-    }
-
-    setTimeout(() => {
-      handleCancel();
-    }, 1000);
-
-  } catch (err: any) {
-    console.error("Story management system workflow processing failure logs trace info:", err);
-    setIsPublishing(false);
-    
-    // Processing exact dynamic backend detail strings maps tracking parameters
-    const errorMessage = err.message || "Failed to upload story. Please check your connection and try again.";
-    alert(errorMessage);
-  }
-};
-
+  };
 
   const totalBars = mediaList.length > 0 ? mediaList.length : 1;
   const currentImage = mediaList[activeSlideIndex] || null;
+  const isVideo = (src: string) => src.startsWith("data:video/");
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/60 backdrop-blur-xs flex items-start  justify-center p-0 md:p-4 z-40 animate-in fade-in duration-200">
+    <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/60 backdrop-blur-xs flex items-start justify-center p-0 md:p-4 z-40 animate-in fade-in duration-200">
       <div className="w-full h-full xs:mt-4 md:h-auto md:max-h-[94vh] md:max-w-3xl min-[2560px]:max-w-[1250px] min-[3840px]:max-w-[1550px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-3 pb-24 md:px-6 md:py-5 min-[2560px]:p-6 min-[3840px]:p-8 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-hidden flex flex-col justify-start">
-        
-  
-        <div className="flex sm:hidden  mb-2">
+        {/* Mobile Back Button */}
+        <div className="flex sm:hidden mb-2">
           <button
             onClick={() => setStep("edit")}
             className="p-1 -ml-1 text-orange-700 hover:text-orange-900 transition-colors cursor-pointer flex items-center gap-1 font-bold text-sm"
@@ -384,7 +318,7 @@ const handleAddStory = async () => {
           </button>
         </div>
 
-  
+        {/* Desktop Close button */}
         <button
           onClick={handleCancel}
           className="hidden sm:flex absolute right-4 top-4 md:right-3 md:top-0 h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-700 shadow-sm transition-all duration-200 hover:scale-105 cursor-pointer z-20"
@@ -393,11 +327,13 @@ const handleAddStory = async () => {
           <X size={17} />
         </button>
 
-
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] min-[2560px]:grid-cols-[1fr_390px] min-[3840px]:grid-cols-[1fr_450px] gap-6 min-[3840px]:gap-8 items-start mt-1">
-          
- 
-          <div className={`flex flex-col gap-3 min-[3840px]:gap-4 ${step === "edit" ? "block" : "hidden lg:flex"}`}>
+          {/* Left Form Column */}
+          <div
+            className={`flex flex-col gap-3 min-[3840px]:gap-4 ${
+              step === "edit" ? "block" : "hidden lg:flex"
+            }`}
+          >
             <div>
               <div className="flex items-center gap-2">
                 <span className="p-1.5 rounded-xl bg-orange-500/10 text-orange-600">
@@ -412,12 +348,15 @@ const handleAddStory = async () => {
               </p>
             </div>
 
-
+            {/* Story Caption Input */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="storyCaption" className="text-[13px] font-bold text-gray-800 flex items-center gap-1.5">
+                <label
+                  htmlFor="storyCaption"
+                  className="text-[13px] font-bold text-gray-800 flex items-center gap-1.5"
+                >
                   <Type size={15} className="text-orange-600" />
-                  <span>Story Caption & Live Text</span>
+                  <span>Story Caption &amp; Live Text</span>
                 </label>
                 <span className="text-[11px] text-gray-400 font-medium">
                   Live updates in preview
@@ -438,7 +377,7 @@ const handleAddStory = async () => {
                 </div>
               </div>
 
-  
+              {/* Text gradient selector (when no media uploaded) */}
               {mediaList.length === 0 && (
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-[11px] font-semibold text-gray-600">Text Style:</span>
@@ -461,7 +400,7 @@ const handleAddStory = async () => {
               )}
             </div>
 
-  
+            {/* Media Upload Box */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-[13px] font-bold text-gray-800 flex items-center gap-1.5">
@@ -469,16 +408,15 @@ const handleAddStory = async () => {
                   <span>Story Media ({mediaList.length} Selected)</span>
                 </label>
                 <span className="text-[11px] text-orange-600 font-semibold">
-                  Multi-image supported
+                  Photos &amp; videos
                 </span>
               </div>
-
 
               <input
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept="image/png,image/jpeg,image/webp,image/gif"
+                accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/mov,video/quicktime,video/webm,video/x-msvideo"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -486,13 +424,12 @@ const handleAddStory = async () => {
                 ref={addMoreInputRef}
                 type="file"
                 multiple
-                accept="image/png,image/jpeg,image/webp,image/gif"
+                accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/mov,video/quicktime,video/webm,video/x-msvideo"
                 onChange={handleFileChange}
                 className="hidden"
               />
 
               {mediaList.length > 0 ? (
- 
                 <div className="bg-white border border-orange-200 rounded-2xl p-3 flex flex-col gap-2.5 shadow-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-800 flex items-center gap-1">
@@ -508,7 +445,6 @@ const handleAddStory = async () => {
                     </button>
                   </div>
 
-            
                   <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5">
                     {mediaList.map((img, idx) => (
                       <div
@@ -520,18 +456,33 @@ const handleAddStory = async () => {
                             : "border-gray-200 opacity-75 hover:opacity-100"
                         }`}
                       >
-                        <Image
-                          src={img}
-                          alt={`Slide ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                 
+                        {isVideo(img) ? (
+                          <video
+                            src={img}
+                            className="w-full h-full object-cover"
+                            muted
+                            playsInline
+                          />
+                        ) : (
+                          <Image
+                            src={img}
+                            alt={`Slide ${idx + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
+                        {isVideo(img) && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="w-5 h-5 rounded-full bg-black/50 flex items-center justify-center">
+                              <span className="text-white text-[8px]">▶</span>
+                            </div>
+                          </div>
+                        )}
+
                         <span className="absolute top-1 left-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-bold px-1 rounded-sm">
                           {idx + 1}
                         </span>
 
-              
                         <button
                           type="button"
                           onClick={(e) => {
@@ -546,7 +497,6 @@ const handleAddStory = async () => {
                       </div>
                     ))}
 
-               
                     <button
                       type="button"
                       onClick={() => addMoreInputRef.current?.click()}
@@ -562,7 +512,6 @@ const handleAddStory = async () => {
                   </p>
                 </div>
               ) : (
-
                 <div
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -580,10 +529,10 @@ const handleAddStory = async () => {
 
                   <div className="flex flex-col items-center">
                     <p className="text-xs sm:text-sm font-bold text-gray-800">
-                      Click to browse or drag & drop multiple images
+                      Click to browse or drag &amp; drop
                     </p>
                     <p className="text-[11px] text-gray-400 mt-0.5">
-                      Select multiple PNG, JPG, WEBP, or GIF files
+                      Photos (PNG, JPG, WEBP, GIF) &amp; Videos (MP4, MOV, WEBM)
                     </p>
                   </div>
 
@@ -595,13 +544,13 @@ const handleAddStory = async () => {
                     }}
                     className="mt-1 px-4 py-1.5 bg-[#ef8b54] text-white text-xs font-bold rounded-full hover:bg-[#d9723a] transition-all shadow-xs active:scale-95 cursor-pointer"
                   >
-                    Select Photos
+                    Select Photos &amp; Videos
                   </button>
                 </div>
               )}
             </div>
 
-
+            {/* Audience & Audio Track Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {/* Audience */}
               <div className="flex flex-col gap-1">
@@ -629,33 +578,16 @@ const handleAddStory = async () => {
                 </div>
               </div>
 
-
-             <div className="flex flex-col gap-1">
-  <label className="text-[12px] font-bold text-gray-700 flex items-center gap-1">
-    <Music size={12} className="text-orange-600" />
-    <span>Audio Track</span>
-  </label>
-  
-
-  <div className="relative w-full flex items-center">
-    <input
-      type="text"
-      value={selectedMusic}
-      onChange={(e) => setSelectedMusic(e.target.value)}
-      placeholder="Search background music..."
-
-      className="w-full h-8 sm:h-9 pl-3 pr-10 rounded-xl bg-white border border-transparent outline-none text-xs transition-all shadow-xs focus:border-[#ef8b54] placeholder:text-gray-400 text-gray-800"
-    />
-
-    <span className="absolute right-3 text-gray-400 pointer-events-none">
-      <Search size={14} />
-    </span>
-  </div>
-</div>
-
+              {/* Audio Track Component */}
+              <MusicsControl
+                selectedTrack={selectedTrack}
+                musicStartTime={musicStartTime}
+                onTrackChange={setSelectedTrack}
+                onStartTimeChange={setMusicStartTime}
+              />
             </div>
 
-
+            {/* Mobile preview toggle button */}
             <button
               type="button"
               onClick={() => setStep("preview")}
@@ -666,13 +598,16 @@ const handleAddStory = async () => {
             </button>
           </div>
 
-
-          <div className={`flex flex-col items-center gap-3 ${step !== "edit" ? "block" : "hidden lg:flex"}`}>
-            
-
+          {/* Right Live Preview Column */}
+          <div
+            className={`flex flex-col items-center gap-3 ${
+              step !== "edit" ? "block" : "hidden lg:flex"
+            }`}
+          >
             <div className="w-full flex items-center justify-between lg:hidden mb-1">
-            
-              <span className="text-xs font-extrabold text-gray-700 uppercase tracking-wider">Live Preview</span>
+              <span className="text-xs font-extrabold text-gray-700 uppercase tracking-wider">
+                Live Preview
+              </span>
             </div>
 
             <div className="hidden lg:flex items-center justify-between w-full px-1">
@@ -685,12 +620,13 @@ const handleAddStory = async () => {
               </span>
             </div>
 
-
-            <div className={`w-full max-w-[270px] sm:max-w-[290px] min-[2560px]:max-w-[320px] aspect-[9/16] rounded-[24px] overflow-hidden shadow-2xl border-4 border-white relative flex flex-col justify-between select-none ${
-              currentImage ? "bg-black" : gradientThemes[selectedThemeIndex].bg
-            }`}>
-              
-
+            {/* Story Device Container */}
+            <div
+              className={`w-full max-w-[270px] sm:max-w-[290px] min-[2560px]:max-w-[320px] aspect-[9/16] rounded-[24px] overflow-hidden shadow-2xl border-4 border-white relative flex flex-col justify-between select-none ${
+                currentImage ? "bg-black" : gradientThemes[selectedThemeIndex].bg
+              }`}
+            >
+              {/* Skeleton loading overlay */}
               {isPreviewLoading ? (
                 <div className="absolute inset-0 z-30 bg-slate-900 flex flex-col justify-between p-3 animate-pulse">
                   <div className="flex gap-1">
@@ -707,29 +643,43 @@ const handleAddStory = async () => {
                   </div>
                   <div className="flex-1 flex flex-col items-center justify-center gap-2">
                     <Loader2 className="w-8 h-8 text-orange-400 animate-spin" />
-                    <span className="text-[11px] font-bold text-orange-200">Adding Story Media...</span>
+                    <span className="text-[11px] font-bold text-orange-200">
+                      Adding Story Media...
+                    </span>
                   </div>
                   <Skeleton className="h-8 w-full bg-white/10 rounded-full" />
                 </div>
               ) : null}
 
+              {/* Background media */}
               {currentImage && (
                 <div className="absolute inset-0 w-full h-full">
-                  <Image
-                    src={currentImage}
-                    alt={`Story Preview Slide ${activeSlideIndex + 1}`}
-                    fill
-                    sizes="320px"
-                    className="object-cover transition-opacity duration-300"
-                    priority
-                  />
- 
+                  {isVideo(currentImage) ? (
+                    <video
+                      src={currentImage}
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <Image
+                      src={currentImage}
+                      alt={`Story Preview Slide ${activeSlideIndex + 1}`}
+                      fill
+                      sizes="320px"
+                      className="object-cover transition-opacity duration-300"
+                      priority
+                    />
+                  )}
+
                   <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 via-black/25 to-transparent pointer-events-none" />
                   <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none" />
                 </div>
               )}
 
- 
+              {/* Slide navigation buttons */}
               {mediaList.length > 1 && (
                 <>
                   <button
@@ -757,9 +707,9 @@ const handleAddStory = async () => {
                 </>
               )}
 
-
+              {/* Top Header Section */}
               <div className="relative z-10 p-3 pt-2.5 flex flex-col gap-2">
-        
+                {/* Progress bars */}
                 <div className="flex gap-1 w-full items-center">
                   {Array.from({ length: totalBars }).map((_, index) => {
                     const isActive = index === activeSlideIndex;
@@ -784,7 +734,7 @@ const handleAddStory = async () => {
                   })}
                 </div>
 
-     
+                {/* User avatar + name */}
                 <div className="flex items-center justify-between mt-0.5">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 p-[1.5px] rounded-full bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]">
@@ -808,21 +758,19 @@ const handleAddStory = async () => {
                     </div>
                   </div>
 
-                  {/* Audio badge */}
-                  {selectedMusic && (
+                  {selectedTrack && (
                     <div className="flex items-center gap-1 bg-black/40 backdrop-blur-xs px-2 py-0.5 rounded-full border border-white/20">
                       <Music size={8} className="text-orange-400 animate-bounce" />
                       <span className="text-[8px] text-white font-semibold truncate max-w-[70px]">
-                        {selectedMusic.split("-")[0] || "Audio"}
+                        {selectedTrack.trackName.split(" ")[0]}
                       </span>
                     </div>
                   )}
                 </div>
               </div>
 
-
+              {/* Middle Section: Caption */}
               {!currentImage ? (
-
                 <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-2 text-center my-auto">
                   {caption.trim() ? (
                     <div className="bg-black/30 backdrop-blur-xs px-4 py-3 rounded-2xl border border-white/20 shadow-lg max-w-full animate-in zoom-in-95 duration-150">
@@ -831,7 +779,6 @@ const handleAddStory = async () => {
                       </p>
                     </div>
                   ) : (
-
                     <div className="flex flex-col items-center justify-center text-white/90 gap-1.5 animate-in fade-in duration-200">
                       <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white shadow-sm border border-white/30">
                         <Type size={18} strokeWidth={2.5} />
@@ -840,13 +787,12 @@ const handleAddStory = async () => {
                         Type something to share...
                       </p>
                       <span className="text-[9.5px] text-white/70 font-medium bg-black/20 px-2.5 py-0.5 rounded-full backdrop-blur-xs">
-                        Aa · Live Instagram Text Mode
+                        Text Mode
                       </span>
                     </div>
                   )}
                 </div>
               ) : (
-
                 <div className="relative z-10 flex-1 flex flex-col justify-end p-3">
                   {caption.trim() ? (
                     <div className="bg-black/60 backdrop-blur-xs p-2.5 rounded-xl border border-white/20 shadow-md mb-1 animate-in fade-in">
@@ -858,7 +804,7 @@ const handleAddStory = async () => {
                 </div>
               )}
 
-  
+              {/* Bottom Dummy Interaction Bar */}
               <div className="relative z-10 p-3 pt-0 flex items-center gap-2">
                 <div className="flex-1 h-7 rounded-full bg-white/20 backdrop-blur-xs border border-white/30 px-2.5 flex items-center text-white/80 text-[9px]">
                   <span>Send a message...</span>
@@ -879,13 +825,15 @@ const handleAddStory = async () => {
               </div>
             )}
 
-
+            {/* Action Buttons */}
             <div className="flex items-center gap-2.5 w-full justify-center mt-1">
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={isPublishing}
-                className={`${buttonVariants({ variant: 'outline' })} px-4 py-1.5 text-xs font-bold min-w-[90px] shadow-xs cursor-pointer disabled:opacity-50`}
+                className={`${buttonVariants({
+                  variant: "outline",
+                })} px-4 py-1.5 text-xs font-bold min-w-[90px] shadow-xs cursor-pointer disabled:opacity-50`}
               >
                 Cancel
               </button>
@@ -894,7 +842,9 @@ const handleAddStory = async () => {
                 type="button"
                 onClick={handleAddStory}
                 disabled={isPublishing || isPreviewLoading}
-                className={`${buttonVariants({ variant: 'default' })} px-6 py-1.5 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all min-w-[120px] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5`}
+                className={`${buttonVariants({
+                  variant: "default",
+                })} px-6 py-1.5 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all min-w-[120px] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5`}
               >
                 {isPublishing ? (
                   <>
@@ -904,7 +854,7 @@ const handleAddStory = async () => {
                 ) : (
                   <>
                     <Plus size={14} strokeWidth={3} />
-                    <span>Add Story {mediaList.length > 1 ? `(${mediaList.length})` : ''}</span>
+                    <span>Add Story {mediaList.length > 1 ? `(${mediaList.length})` : ""}</span>
                   </>
                 )}
               </button>

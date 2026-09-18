@@ -103,6 +103,7 @@ export default function FeedImagePost({ isLoading: propIsLoading }: FeedImagePos
             fill
             onLoad={handleImageLoad}
             className="w-full h-full object-contain animate-fade-in rounded-[24px] max-h-[550px]"
+            loading="eager"
           />
 
           <input
@@ -111,6 +112,7 @@ export default function FeedImagePost({ isLoading: propIsLoading }: FeedImagePos
             onChange={handleImageUpload}
             accept="image/*"
             className="hidden"
+        
           />
 
           <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
