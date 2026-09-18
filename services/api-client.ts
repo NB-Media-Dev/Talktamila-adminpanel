@@ -1,13 +1,19 @@
 import { getAuthToken } from '@/lib/cookies';
 
+const PRODUCTION_BACKEND_URL = 'https://endearing-eagerness-production-9b9a.up.railway.app';
+
 export function getBackendUrl(): string {
   if (typeof window === 'undefined') {
-    return process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
+    return process.env.PYTHON_BACKEND_URL || process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || PRODUCTION_BACKEND_URL;
   }
   if (process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL) {
     return process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL;
   }
-  return `http://${window.location.hostname}:8000`;
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.')) {
+    return `http://${hostname}:8000`;
+  }
+  return PRODUCTION_BACKEND_URL;
 }
 
 export async function apiClient<T>(
