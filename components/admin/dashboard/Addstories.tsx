@@ -24,14 +24,19 @@ import {
   ChevronLeft,
   ChevronRight,
   Images as ImagesIcon,
-  Search
+  Search,
+  Play,
+  Pause,
+  Video,
+  Film
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContenthook } from "@/hooks/useContent";
-import defaultAvatar from "@/public/Images/profile1.jpg";
 import { useAuthRole } from "@/hooks/useAuthRole";
+import { useAuthuser } from "@/hooks/useAuthuser";
 import { getAuthToken } from "@/lib/cookies";
+import { getBackendUrl } from "@/services/api-client";
 
 interface AddstoriesProps {
   isOpen?: boolean;
@@ -70,13 +75,169 @@ export default function Addstories({
   const context = useContext(useContenthook);
   const setHandlestate = context?.setHandlestate;
   const { isAdmin } = useAuthRole();
+  const { user: authUser } = useAuthuser();
+  const currentUser = (authUser as any)?.user || authUser || null;
   const currentAudienceOptions = isAdmin ? adminAudienceOptions : allAudienceOptions;
+
+  interface MusicTrackItem {
+    track_id: number;
+    title: string;
+    artist: string;
+    cover_url?: string;
+    audio_url?: string;
+    duration_seconds?: number;
+    genre?: string;
+  }
 
   const [step, setStep] = useState<"edit" | "loading" | "preview">("edit");
   const [caption, setCaption] = useState<string>("");
   const [selectedAudience, setSelectedAudience] = useState<string>("public");
-  const [selectedMusic, setSelectedMusic] = useState<string>("Anirudh - Trend Beat 🎵");
+  const [selectedMusic, setSelectedMusic] = useState<string>("");
+  const [selectedTrack, setSelectedTrack] = useState<MusicTrackItem | null>(null);
   const [selectedThemeIndex, setSelectedThemeIndex] = useState<number>(0);
+
+  // Music Picker Modal States
+  const [isMusicModalOpen, setIsMusicModalOpen] = useState<boolean>(false);
+  const [musicSearchQuery, setMusicSearchQuery] = useState<string>("");
+  const [activeMusicCategory, setActiveMusicCategory] = useState<string>("trending");
+  const [musicTracks, setMusicTracks] = useState<MusicTrackItem[]>([]);
+  const [isMusicLoading, setIsMusicLoading] = useState<boolean>(false);
+  const [previewingAudioUrl, setPreviewingAudioUrl] = useState<string | null>(null);
+  const audioPreviewRef = useRef<HTMLAudioElement | null>(null);
+
+  // Clip Trimmer States
+  const CLIP_DURATION = 60; // fixed 60-second window
+  const [musicStartTime, setMusicStartTime] = useState<number>(0);
+  const [isTrimmerOpen, setIsTrimmerOpen] = useState<boolean>(false);
+  const [trimmerTrack, setTrimmerTrack] = useState<MusicTrackItem | null>(null);
+  const [isDraggingTrimmer, setIsDraggingTrimmer] = useState<boolean>(false);
+  const [isClipPreviewing, setIsClipPreviewing] = useState<boolean>(false);
+  const clipPreviewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const trimmerBarRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch songs for the music modal dynamically
+  useEffect(() => {
+    if (!isMusicModalOpen) return;
+    const BASE_URL = getBackendUrl();
+    const fetchMusic = async () => {
+      try {
+        setIsMusicLoading(true);
+        let searchTerm = musicSearchQuery.trim();
+        if (!searchTerm) {
+          if (activeMusicCategory === "anirudh") searchTerm = "Anirudh";
+          else if (activeMusicCategory === "vijay") searchTerm = "Thalapathy Vijay";
+          else if (activeMusicCategory === "arrahman") searchTerm = "A.R. Rahman";
+          else if (activeMusicCategory === "melody") searchTerm = "Tamil Melody";
+          else if (activeMusicCategory === "mass") searchTerm = "Tamil Mass";
+        }
+
+        const url = searchTerm
+          ? `${BASE_URL}/api/v1/stories/music/search?q=${encodeURIComponent(searchTerm)}&limit=30`
+          : `${BASE_URL}/api/v1/stories/music/trending?limit=30`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            setMusicTracks(data);
+          }
+        }
+      } catch (e) {
+        // silent catch
+      } finally {
+        setIsMusicLoading(false);
+      }
+    };
+    const debounce = setTimeout(fetchMusic, 250);
+    return () => clearTimeout(debounce);
+  }, [isMusicModalOpen, musicSearchQuery, activeMusicCategory]);
+
+  const handleToggleAudioPreview = (e: React.MouseEvent, url?: string) => {
+    e.stopPropagation();
+    if (!url) return;
+    if (previewingAudioUrl === url) {
+      if (audioPreviewRef.current) {
+        audioPreviewRef.current.pause();
+      }
+      setPreviewingAudioUrl(null);
+    } else {
+      setPreviewingAudioUrl(url);
+      if (audioPreviewRef.current) {
+        audioPreviewRef.current.src = url;
+        audioPreviewRef.current.play().catch(() => {});
+      }
+    }
+  };
+
+  const handleSelectTrack = (t: MusicTrackItem) => {
+    // Open trimmer step instead of immediately closing
+    setTrimmerTrack(t);
+    setMusicStartTime(0);
+    setIsTrimmerOpen(true);
+    if (audioPreviewRef.current) audioPreviewRef.current.pause();
+    setPreviewingAudioUrl(null);
+    setIsClipPreviewing(false);
+  };
+
+  const handleConfirmClip = () => {
+    if (!trimmerTrack) return;
+    setSelectedTrack(trimmerTrack);
+    setSelectedMusic(`${trimmerTrack.title} - ${trimmerTrack.artist} 🎵`);
+    if (audioPreviewRef.current) audioPreviewRef.current.pause();
+    setPreviewingAudioUrl(null);
+    setIsClipPreviewing(false);
+    if (clipPreviewTimerRef.current) clearTimeout(clipPreviewTimerRef.current);
+    setIsTrimmerOpen(false);
+    setIsMusicModalOpen(false);
+  };
+
+  const handleToggleClipPreview = () => {
+    if (!trimmerTrack?.audio_url || !audioPreviewRef.current) return;
+    if (isClipPreviewing) {
+      audioPreviewRef.current.pause();
+      setIsClipPreviewing(false);
+      if (clipPreviewTimerRef.current) clearTimeout(clipPreviewTimerRef.current);
+    } else {
+      audioPreviewRef.current.src = trimmerTrack.audio_url;
+      audioPreviewRef.current.currentTime = musicStartTime;
+      audioPreviewRef.current.play().catch(() => {});
+      setIsClipPreviewing(true);
+      // Auto-stop after CLIP_DURATION seconds
+      clipPreviewTimerRef.current = setTimeout(() => {
+        if (audioPreviewRef.current) audioPreviewRef.current.pause();
+        setIsClipPreviewing(false);
+      }, CLIP_DURATION * 1000);
+    }
+  };
+
+  const handleTrimmerDrag = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    if (!trimmerBarRef.current || !trimmerTrack) return;
+    const rect = trimmerBarRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const relX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const totalDuration = trimmerTrack.duration_seconds || 180;
+    const maxStart = Math.max(0, totalDuration - CLIP_DURATION);
+    const rawStart = (relX / rect.width) * totalDuration;
+    const newStart = Math.max(0, Math.min(rawStart, maxStart));
+    setMusicStartTime(Math.round(newStart * 10) / 10);
+    // Update clip preview position if playing
+    if (isClipPreviewing && audioPreviewRef.current) {
+      audioPreviewRef.current.currentTime = newStart;
+    }
+  };
+
+  const handleRemoveTrack = () => {
+    setSelectedTrack(null);
+    setSelectedMusic("");
+    setMusicStartTime(0);
+    setTrimmerTrack(null);
+    setIsTrimmerOpen(false);
+    setIsClipPreviewing(false);
+    if (clipPreviewTimerRef.current) clearTimeout(clipPreviewTimerRef.current);
+    if (audioPreviewRef.current) {
+      audioPreviewRef.current.pause();
+    }
+    setPreviewingAudioUrl(null);
+  };
 
   useEffect(() => {
     if (isAdmin && selectedAudience !== "public") {
@@ -107,6 +268,19 @@ export default function Addstories({
   };
 
 
+  const isVideoMedia = (mediaSrc: string | null | undefined, file?: File | null) => {
+    if (!mediaSrc) return false;
+    if (file && file.type) return file.type.startsWith("video/");
+    return (
+      mediaSrc.startsWith("data:video/") ||
+      mediaSrc.endsWith(".mp4") ||
+      mediaSrc.endsWith(".webm") ||
+      mediaSrc.endsWith(".mov") ||
+      mediaSrc.endsWith(".m4v") ||
+      mediaSrc.endsWith(".avi")
+    );
+  };
+
   const processFiles = (files: FileList | File[]) => {
     const fileArray = Array.from(files).filter(
       (f) => f.type.startsWith("image/") || f.type.startsWith("video/")
@@ -126,10 +300,10 @@ export default function Addstories({
       });
     });
 
-    Promise.all(readPromises).then((newImages) => {
+    Promise.all(readPromises).then((newMedia) => {
       setTimeout(() => {
         setMediaList((prev) => {
-          const updated = [...prev, ...newImages];
+          const updated = [...prev, ...newMedia];
           setActiveSlideIndex(prev.length);
           return updated;
         });
@@ -207,7 +381,7 @@ export default function Addstories({
   const handleAddStory = async () => {
     setIsPublishing(true);
     try {
-      const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
+      const BASE_URL = getBackendUrl();
       const token = getAuthToken();
       const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
 
@@ -220,9 +394,20 @@ export default function Addstories({
           formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
         }
         formData.append("audience", audienceVal);
-        if (selectedMusic) {
-          formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
+        const musicPayload = selectedTrack ? {
+          music_id: selectedTrack.track_id,
+          music_title: selectedTrack.title,
+          music_artist: selectedTrack.artist,
+          music_url: selectedTrack.audio_url,
+          music_thumbnail: selectedTrack.cover_url,
+          music_duration: 60.0,
+        } : (selectedMusic ? { music_title: selectedMusic } : null);
+
+        if (musicPayload) {
+          formData.append("music_data", JSON.stringify(musicPayload));
         }
+        // Send clip start time (seconds) for the 60-second window
+        formData.append("music_start_time", String(musicStartTime));
 
         const res = await fetch(`${BASE_URL}/api/v1/stories/upload-multiple`, {
           method: "POST",
@@ -231,14 +416,20 @@ export default function Addstories({
           },
           body: formData,
         });
-        console.log(formData ,"line 234");
-        const responseData = await res.json();
-console.log("Backend-la irundhu vandha data:", responseData); 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
         }
       } else if (caption.trim()) {
+        const musicPayload = selectedTrack ? {
+          music_id: selectedTrack.track_id,
+          music_title: selectedTrack.title,
+          music_artist: selectedTrack.artist,
+          music_url: selectedTrack.audio_url,
+          music_thumbnail: selectedTrack.cover_url,
+          music_duration: 60.0,
+        } : (selectedMusic ? { music_title: selectedMusic } : null);
+
         const res = await fetch(`${BASE_URL}/api/v1/stories`, {
           method: "POST",
           headers: {
@@ -250,7 +441,13 @@ console.log("Backend-la irundhu vandha data:", responseData);
             media_type: "text",
             caption: caption,
             audience: audienceVal,
-            music_title: selectedMusic,
+            music_id: musicPayload?.music_id,
+            music_title: musicPayload?.music_title,
+            music_artist: musicPayload?.music_artist,
+            music_url: musicPayload?.music_url,
+            music_thumbnail: musicPayload?.music_thumbnail,
+            music_duration: 60.0,
+            music_start_time: musicStartTime,
           }),
         });
 
@@ -292,8 +489,8 @@ console.log("Backend-la irundhu vandha data:", responseData);
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/60 backdrop-blur-xs flex items-start  justify-center p-0 md:p-4 z-40 animate-in fade-in duration-200">
-      <div className="w-full h-full xs:mt-4 md:h-auto md:max-h-[94vh] md:max-w-3xl min-[2560px]:max-w-[1250px] min-[3840px]:max-w-[1550px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-3 pb-24 md:px-6 md:py-5 min-[2560px]:p-6 min-[3840px]:p-8 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-hidden flex flex-col justify-start">
+    <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/60 backdrop-blur-xs flex items-start justify-center p-0 md:p-4 z-40 animate-in fade-in duration-200 overflow-y-auto">
+      <div className="w-full h-full xs:mt-4 md:h-auto md:max-h-[94vh] md:max-w-3xl min-[2560px]:max-w-[1250px] min-[3840px]:max-w-[1550px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-3 pb-24 md:px-6 md:py-5 min-[2560px]:p-6 min-[3840px]:p-8 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto flex flex-col justify-start">
         
   
         <div className="flex sm:hidden  mb-2">
@@ -331,7 +528,7 @@ console.log("Backend-la irundhu vandha data:", responseData);
                 </h1>
               </div>
               <p className="mt-1 text-xs sm:text-sm text-orange-900/70 font-medium">
-                Add multiple photos or type text to share with your audience for 24 hours.
+                Add photos, videos, or type text to share with your audience for 24 hours.
               </p>
             </div>
 
@@ -391,8 +588,9 @@ console.log("Backend-la irundhu vandha data:", responseData);
                   <ImagesIcon size={15} className="text-orange-600" />
                   <span>Story Media ({mediaList.length} Selected)</span>
                 </label>
-                <span className="text-[11px] text-orange-600 font-semibold">
-                  Multi-image supported
+                <span className="text-[11px] text-orange-600 font-semibold flex items-center gap-1">
+                  <Film size={12} />
+                  <span>Photos & Videos supported</span>
                 </span>
               </div>
 
@@ -401,7 +599,7 @@ console.log("Backend-la irundhu vandha data:", responseData);
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept="image/png,image/jpeg,image/webp,image/gif"
+                accept="image/*,video/*,video/mp4,video/webm,video/quicktime,video/mov,video/x-m4v"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -409,7 +607,7 @@ console.log("Backend-la irundhu vandha data:", responseData);
                 ref={addMoreInputRef}
                 type="file"
                 multiple
-                accept="image/png,image/jpeg,image/webp,image/gif"
+                accept="image/*,video/*,video/mp4,video/webm,video/quicktime,video/mov,video/x-m4v"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -433,48 +631,67 @@ console.log("Backend-la irundhu vandha data:", responseData);
 
             
                   <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5">
-                    {mediaList.map((img, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => setActiveSlideIndex(idx)}
-                        className={`relative w-14 h-18 rounded-xl overflow-hidden shrink-0 cursor-pointer border-2 transition-all group ${
-                          activeSlideIndex === idx
-                            ? "border-orange-500 ring-2 ring-orange-400/40 scale-105 shadow-md"
-                            : "border-gray-200 opacity-75 hover:opacity-100"
-                        }`}
-                      >
-                        <Image
-                          src={img}
-                          alt={`Slide ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                 
-                        <span className="absolute top-1 left-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-bold px-1 rounded-sm">
-                          {idx + 1}
-                        </span>
-
-              
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveMedia(idx);
-                          }}
-                          className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 cursor-pointer shadow-xs"
-                          title="Remove image"
+                    {mediaList.map((img, idx) => {
+                      const isVid = isVideoMedia(img, rawFiles[idx]);
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => setActiveSlideIndex(idx)}
+                          className={`relative w-14 h-18 rounded-xl overflow-hidden shrink-0 cursor-pointer border-2 transition-all group bg-black ${
+                            activeSlideIndex === idx
+                              ? "border-orange-500 ring-2 ring-orange-400/40 scale-105 shadow-md"
+                              : "border-gray-200 opacity-75 hover:opacity-100"
+                          }`}
                         >
-                          <Trash2 size={9} />
-                        </button>
-                      </div>
-                    ))}
+                          {isVid ? (
+                            <div className="relative w-full h-full bg-black flex items-center justify-center">
+                              <video
+                                src={img}
+                                muted
+                                playsInline
+                                className="w-full h-full object-cover pointer-events-none"
+                              />
+                              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                <div className="w-5 h-5 rounded-full bg-black/60 backdrop-blur-xs flex items-center justify-center text-white">
+                                  <Play size={9} className="fill-white ml-0.5" />
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <img
+                              src={img}
+                              alt={`Slide ${idx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                   
+                          <span className="absolute top-1 left-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-bold px-1 rounded-sm flex items-center gap-0.5">
+                            {isVid && <Video size={8} className="text-orange-400" />}
+                            {idx + 1}
+                          </span>
 
-               
+                
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveMedia(idx);
+                            }}
+                            className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 cursor-pointer shadow-xs z-10"
+                            title="Remove media"
+                          >
+                            <Trash2 size={9} />
+                          </button>
+                        </div>
+                      );
+                    })}
+
+                 
                     <button
                       type="button"
                       onClick={() => addMoreInputRef.current?.click()}
                       className="w-14 h-18 rounded-xl border-2 border-dashed border-orange-300 bg-orange-50/50 hover:bg-orange-100/70 text-orange-600 flex flex-col items-center justify-center gap-1 shrink-0 transition-all cursor-pointer hover:scale-102"
-                      title="Add more photos"
+                      title="Add more photos or videos"
                     >
                       <Plus size={16} strokeWidth={2.5} />
                       <span className="text-[9px] font-bold">Add</span>
@@ -503,10 +720,10 @@ console.log("Backend-la irundhu vandha data:", responseData);
 
                   <div className="flex flex-col items-center">
                     <p className="text-xs sm:text-sm font-bold text-gray-800">
-                      Click to browse or drag & drop multiple images
+                      Click to browse or drag & drop photos or videos
                     </p>
                     <p className="text-[11px] text-gray-400 mt-0.5">
-                      Select multiple PNG, JPG, WEBP, or GIF files
+                      Select PNG, JPG, WEBP, MP4, MOV, or WEBM files
                     </p>
                   </div>
 
@@ -518,7 +735,7 @@ console.log("Backend-la irundhu vandha data:", responseData);
                     }}
                     className="mt-1 px-4 py-1.5 bg-[#ef8b54] text-white text-xs font-bold rounded-full hover:bg-[#d9723a] transition-all shadow-xs active:scale-95 cursor-pointer"
                   >
-                    Select Photos
+                    Select Photos or Videos
                   </button>
                 </div>
               )}
@@ -553,28 +770,100 @@ console.log("Backend-la irundhu vandha data:", responseData);
               </div>
 
 
-             <div className="flex flex-col gap-1">
-  <label className="text-[12px] font-bold text-gray-700 flex items-center gap-1">
-    <Music size={12} className="text-orange-600" />
-    <span>Audio Track</span>
-  </label>
-  
+              {/* Audio Track */}
+              <div className="flex flex-col gap-1">
+                <label className="text-[12px] font-bold text-gray-700 flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <Music size={12} className="text-orange-600" />
+                    <span>Audio Track</span>
+                  </span>
+                  {selectedTrack || selectedMusic ? (
+                    <button
+                      type="button"
+                      onClick={handleRemoveTrack}
+                      className="text-[10px] text-red-500 hover:text-red-700 font-semibold cursor-pointer flex items-center gap-0.5"
+                    >
+                      <Trash2 size={10} />
+                      <span>Remove</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsMusicModalOpen(true)}
+                      className="text-[10px] text-orange-600 hover:text-orange-700 font-bold cursor-pointer"
+                    >
+                      + Browse Songs
+                    </button>
+                  )}
+                </label>
 
-  <div className="relative w-full flex items-center">
-    <input
-      type="text"
-      value={selectedMusic}
-      onChange={(e) => setSelectedMusic(e.target.value)}
-      placeholder="Search background music..."
-
-      className="w-full h-8 sm:h-9 pl-3 pr-10 rounded-xl bg-white border border-transparent outline-none text-xs transition-all shadow-xs focus:border-[#ef8b54] placeholder:text-gray-400 text-gray-800"
-    />
-
-    <span className="absolute right-3 text-gray-400 pointer-events-none">
-      <Search size={14} />
-    </span>
-  </div>
-</div>
+                {selectedTrack || selectedMusic ? (
+                  <div className="p-2 rounded-xl bg-white border border-orange-200 shadow-xs flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-2.5">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {selectedTrack?.cover_url ? (
+                          <img
+                            src={selectedTrack.cover_url}
+                            alt={selectedTrack.title}
+                            className="w-8 h-8 rounded-lg object-cover shrink-0 shadow-xs border border-orange-100"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center shrink-0 text-orange-600">
+                            <Music size={14} />
+                          </div>
+                        )}
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="font-bold text-gray-800 text-[11px] truncate">
+                            {selectedTrack ? selectedTrack.title : selectedMusic}
+                          </span>
+                          <span className="text-[10px] text-gray-500 truncate">
+                            {selectedTrack ? selectedTrack.artist : "Tamil Audio"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setIsMusicModalOpen(true)}
+                          className="px-2 py-1 text-[10px] font-bold bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-md border border-orange-200 cursor-pointer transition-colors"
+                        >
+                          Change
+                        </button>
+                      </div>
+                    </div>
+                    {/* Clip timing badge */}
+                    {selectedTrack && (
+                      <div className="flex items-center gap-2 bg-orange-50 rounded-lg px-2 py-1 border border-orange-100">
+                        <Music size={9} className="text-orange-500 shrink-0" />
+                        <span className="text-[10px] font-bold text-orange-700 flex-1">
+                          {`${Math.floor(musicStartTime / 60)}:${String(Math.round(musicStartTime % 60)).padStart(2, "0")} → ${Math.floor((musicStartTime + 60) / 60)}:${String(Math.round((musicStartTime + 60) % 60)).padStart(2, "0")} · 60s clip`}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => { setTrimmerTrack(selectedTrack); setIsTrimmerOpen(true); setIsMusicModalOpen(true); }}
+                          className="text-[9px] font-bold text-orange-600 hover:text-orange-800 underline cursor-pointer shrink-0"
+                        >
+                          Edit Timing
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsMusicModalOpen(true)}
+                    className="w-full h-9 px-3 rounded-xl bg-white border border-dashed border-orange-200 hover:border-orange-400 hover:bg-orange-50/50 transition-all shadow-xs flex items-center justify-between text-xs text-gray-600 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-2 text-gray-400 group-hover:text-orange-600 min-w-0">
+                      <Search size={13} className="shrink-0" />
+                      <span className="text-[11px] text-gray-500 font-medium truncate">Search Tamil & trending music...</span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-[9.5px] font-bold shrink-0">
+                      Open Library
+                    </span>
+                  </button>
+                )}
+              </div>
 
             </div>
 
@@ -637,15 +926,24 @@ console.log("Backend-la irundhu vandha data:", responseData);
               ) : null}
 
               {currentImage && (
-                <div className="absolute inset-0 w-full h-full">
-                  <Image
-                    src={currentImage}
-                    alt={`Story Preview Slide ${activeSlideIndex + 1}`}
-                    fill
-                    sizes="320px"
-                    className="object-cover transition-opacity duration-300"
-                    priority
-                  />
+                <div className="absolute inset-0 w-full h-full bg-black">
+                  {isVideoMedia(currentImage, rawFiles[activeSlideIndex]) ? (
+                    <video
+                      key={currentImage}
+                      src={currentImage}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={currentImage}
+                      alt={`Story Preview Slide ${activeSlideIndex + 1}`}
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                    />
+                  )}
  
                   <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 via-black/25 to-transparent pointer-events-none" />
                   <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none" />
@@ -711,18 +1009,23 @@ console.log("Backend-la irundhu vandha data:", responseData);
                 <div className="flex items-center justify-between mt-0.5">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 p-[1.5px] rounded-full bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]">
-                      <div className="w-full h-full rounded-full border border-white overflow-hidden relative bg-gray-100">
-                        <Image
-                          src={defaultAvatar}
-                          alt="Your Profile"
-                          fill
-                          className="object-cover"
-                        />
+                      <div className="w-full h-full rounded-full border border-white overflow-hidden relative bg-gray-100 flex items-center justify-center">
+                        {currentUser?.avatar_url || currentUser?.profile_pic_url ? (
+                          <img
+                            src={currentUser.avatar_url || currentUser.profile_pic_url}
+                            alt="Your Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-white text-[10px] font-bold bg-orange-500 w-full h-full flex items-center justify-center">
+                            {(currentUser?.username || "Y").charAt(0).toUpperCase()}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-white leading-tight drop-shadow-xs flex items-center gap-1">
-                        talktamila_official
+                        {currentUser?.username || "Your Story"}
                         <CheckCircle2 size={10} className="text-blue-400 fill-blue-400" />
                       </span>
                       <span className="text-[8px] text-white/80 font-medium">
@@ -835,6 +1138,362 @@ console.log("Backend-la irundhu vandha data:", responseData);
           </div>
         </div>
       </div>
+
+      {/* Hidden Audio element for track previewing */}
+      <audio ref={audioPreviewRef} onEnded={() => setPreviewingAudioUrl(null)} className="hidden" />
+
+      {/* Story Music Picker Modal */}
+      {isMusicModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-5 duration-200">
+
+            {/* ── STEP 2: CLIP TRIMMER ── */}
+            {isTrimmerOpen && trimmerTrack ? (
+              <>
+                {/* Trimmer Header */}
+                <div className="p-4 border-b border-orange-100 flex items-center gap-3 bg-gradient-to-r from-orange-50 to-amber-50">
+                  <button
+                    type="button"
+                    onClick={() => { setIsTrimmerOpen(false); setIsClipPreviewing(false); if (audioPreviewRef.current) audioPreviewRef.current.pause(); }}
+                    className="w-8 h-8 rounded-full bg-white border border-orange-200 text-orange-600 flex items-center justify-center cursor-pointer hover:bg-orange-50 shadow-xs"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-900 text-sm truncate">Choose Your 60s Clip</h3>
+                    <p className="text-[11px] text-gray-500 truncate">{trimmerTrack.title} · {trimmerTrack.artist}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setIsTrimmerOpen(false); setIsMusicModalOpen(false); setIsClipPreviewing(false); if (audioPreviewRef.current) audioPreviewRef.current.pause(); }}
+                    className="w-8 h-8 rounded-full bg-white text-gray-400 hover:text-gray-700 flex items-center justify-center cursor-pointer shadow-xs"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+
+                {/* Trimmer Body */}
+                <div className="flex-1 p-5 flex flex-col gap-5 overflow-y-auto">
+                  {/* Track card */}
+                  <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-2xl border border-orange-100">
+                    {trimmerTrack.cover_url ? (
+                      <img src={trimmerTrack.cover_url} alt={trimmerTrack.title} className="w-12 h-12 rounded-xl object-cover shadow-xs border border-orange-100 shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-xl bg-orange-200 flex items-center justify-center text-orange-700 shrink-0"><Music size={20} /></div>
+                    )}
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="font-extrabold text-gray-900 text-sm truncate">{trimmerTrack.title}</span>
+                      <span className="text-xs text-gray-500 truncate">{trimmerTrack.artist}</span>
+                      <span className="text-[10px] text-orange-600 font-semibold mt-0.5">
+                        Total: {Math.floor((trimmerTrack.duration_seconds || 180) / 60)}:{String(Math.round((trimmerTrack.duration_seconds || 180) % 60)).padStart(2, "0")} · Clip: 60s
+                      </span>
+                    </div>
+                    {/* Clip preview toggle */}
+                    <button
+                      type="button"
+                      onClick={handleToggleClipPreview}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all shadow-sm ${isClipPreviewing ? "bg-orange-500 text-white scale-110" : "bg-white border border-orange-200 text-orange-600 hover:bg-orange-50"}`}
+                      title={isClipPreviewing ? "Pause Clip" : "Preview 60s Clip"}
+                    >
+                      {isClipPreviewing ? <Pause size={16} className="fill-white" /> : <Play size={16} className="fill-orange-600 ml-0.5" />}
+                    </button>
+                  </div>
+
+                  {/* Timeline scrubber */}
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-gray-600">
+                      <span>Drag to set start position</span>
+                      <span className="bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full text-[10px]">
+                        {`${Math.floor(musicStartTime / 60)}:${String(Math.floor(musicStartTime % 60)).padStart(2, "0")} → ${Math.floor((musicStartTime + 60) / 60)}:${String(Math.floor((musicStartTime + 60) % 60)).padStart(2, "0")}`}
+                      </span>
+                    </div>
+
+                    {/* Timeline track */}
+                    <div className="relative select-none">
+                      {/* Full track background */}
+                      <div
+                        ref={trimmerBarRef}
+                        className="relative h-12 bg-gray-100 rounded-xl overflow-hidden cursor-pointer border border-gray-200"
+                        onMouseDown={(e) => { setIsDraggingTrimmer(true); handleTrimmerDrag(e); }}
+                        onMouseMove={(e) => { if (isDraggingTrimmer) handleTrimmerDrag(e); }}
+                        onMouseUp={() => setIsDraggingTrimmer(false)}
+                        onMouseLeave={() => setIsDraggingTrimmer(false)}
+                        onTouchStart={(e) => { setIsDraggingTrimmer(true); handleTrimmerDrag(e); }}
+                        onTouchMove={(e) => { if (isDraggingTrimmer) handleTrimmerDrag(e); }}
+                        onTouchEnd={() => setIsDraggingTrimmer(false)}
+                      >
+                        {/* Waveform bars (decorative) */}
+                        <div className="absolute inset-0 flex items-center gap-[2px] px-2 pointer-events-none">
+                          {Array.from({ length: 60 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className="flex-1 rounded-full bg-gray-300"
+                              style={{ height: `${20 + Math.sin(i * 0.8) * 14 + Math.sin(i * 2.1) * 8}%` }}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Selected 60s orange window */}
+                        {(() => {
+                          const total = trimmerTrack.duration_seconds || 180;
+                          const leftPct = (musicStartTime / total) * 100;
+                          const widthPct = Math.min((60 / total) * 100, 100 - leftPct);
+                          return (
+                            <div
+                              className="absolute top-0 bottom-0 bg-orange-500/30 border-l-2 border-r-2 border-orange-500 flex items-center justify-center pointer-events-none"
+                              style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
+                            >
+                              <div className="w-1 h-5 bg-orange-500 rounded-full opacity-80" />
+                              <span className="text-[8px] font-bold text-orange-800 bg-orange-100/90 px-1 rounded ml-1">60s</span>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Playhead indicator */}
+                        <div
+                          className="absolute top-0 bottom-0 w-0.5 bg-orange-600 pointer-events-none"
+                          style={{ left: `${(musicStartTime / (trimmerTrack.duration_seconds || 180)) * 100}%` }}
+                        />
+                      </div>
+
+                      {/* Time labels */}
+                      <div className="flex items-center justify-between mt-1 px-1 text-[10px] text-gray-400 font-medium">
+                        <span>0:00</span>
+                        <span>{Math.floor((trimmerTrack.duration_seconds || 180) / 60)}:{String(Math.round((trimmerTrack.duration_seconds || 180) % 60)).padStart(2, "0")}</span>
+                      </div>
+                    </div>
+
+                    {/* Quick jump buttons */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] text-gray-500 font-semibold">Quick jump:</span>
+                      {[0, 15, 30, 45, 60, 90].filter(t => t + 60 <= (trimmerTrack.duration_seconds || 180)).map(t => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => { setMusicStartTime(t); if (isClipPreviewing && audioPreviewRef.current) audioPreviewRef.current.currentTime = t; }}
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${musicStartTime === t ? "bg-orange-500 text-white" : "bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-700"}`}
+                        >
+                          {`${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`}
+                        </button>
+                      ))}
+                    </div>
+
+                    <p className="text-[10px] text-gray-400 text-center">
+                      🎵 Drag the orange window or tap a quick-jump to set where your clip starts. The story will play exactly 60 seconds of this song.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Trimmer Footer */}
+                <div className="p-4 border-t border-orange-100 bg-orange-50 flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => { setIsTrimmerOpen(false); setIsClipPreviewing(false); if (audioPreviewRef.current) audioPreviewRef.current.pause(); }}
+                    className="flex-1 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-bold text-sm rounded-xl border border-gray-200 cursor-pointer transition-colors"
+                  >
+                    ← Back to Songs
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmClip}
+                    className="flex-1 py-2.5 bg-[#ef8b54] hover:bg-[#d9723a] text-white font-extrabold text-sm rounded-xl shadow-md shadow-orange-500/20 cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                  >
+                    <CheckCircle2 size={15} className="fill-white/20" />
+                    Use This Clip
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* ── STEP 1: SONG LIST ── */}
+                {/* Modal Header */}
+                <div className="p-4 border-b border-orange-100 flex items-center justify-between bg-gradient-to-r from-orange-50 to-orange-100/50">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-full bg-[#ef8b54] flex items-center justify-center text-white shadow-xs">
+                      <Music size={17} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-sm">Add Music to Story</h3>
+                      <p className="text-[11px] text-gray-500">Free Tamil & Global Songs · Pick & trim 60s</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (audioPreviewRef.current) audioPreviewRef.current.pause();
+                      setPreviewingAudioUrl(null);
+                      setIsMusicModalOpen(false);
+                    }}
+                    className="w-8 h-8 rounded-full bg-white text-gray-500 hover:text-gray-800 shadow-xs flex items-center justify-center cursor-pointer transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Search Input & Filter Chips */}
+                <div className="p-3 border-b border-gray-100 bg-white">
+                  <div className="relative flex items-center">
+                    <Search size={15} className="absolute left-3 text-gray-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={musicSearchQuery}
+                      onChange={(e) => setMusicSearchQuery(e.target.value)}
+                      placeholder="Search song, artist, movie or album..."
+                      className="w-full pl-9 pr-8 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-gray-900 placeholder:text-gray-400"
+                      autoFocus
+                    />
+                    {musicSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setMusicSearchQuery("")}
+                        className="absolute right-2.5 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Category filter chips */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pt-2.5 pb-1 text-[11px] no-scrollbar">
+                    {[
+                      { id: "trending", label: "🔥 All Trending" },
+                      { id: "melody", label: "🎶 Top Melody" },
+                      { id: "anirudh", label: "⚡ Anirudh Hits" },
+                      { id: "vijay", label: "👑 Thalapathy Vijay" },
+                      { id: "arrahman", label: "✨ A.R. Rahman" },
+                      { id: "mass", label: "💥 Mass / Kuthu" },
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveMusicCategory(cat.id);
+                          setMusicSearchQuery("");
+                        }}
+                        className={`px-3 py-1 rounded-full whitespace-nowrap font-medium transition-all cursor-pointer ${
+                          activeMusicCategory === cat.id && !musicSearchQuery
+                            ? "bg-[#ef8b54] text-white shadow-xs font-bold"
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Scrollable Song List */}
+                <div className="flex-1 overflow-y-auto overscroll-contain p-2 flex flex-col gap-1 divide-y divide-gray-50 max-h-[50vh]">
+                  {isMusicLoading ? (
+                    <div className="py-12 flex flex-col items-center justify-center gap-2 text-gray-400">
+                      <Loader2 size={24} className="animate-spin text-orange-500" />
+                      <span className="text-xs font-medium">Searching high-quality audio tracks...</span>
+                    </div>
+                  ) : musicTracks.length === 0 ? (
+                    <div className="py-12 flex flex-col items-center justify-center gap-1.5 text-gray-400 text-center px-4">
+                      <Music size={28} className="text-gray-300 mb-1" />
+                      <span className="text-xs font-bold text-gray-700">No songs found</span>
+                      <span className="text-[11px] text-gray-500">Try searching for another Tamil song, artist or movie name</span>
+                    </div>
+                  ) : (
+                    musicTracks.map((track) => {
+                      const isSelected = selectedTrack?.track_id === track.track_id;
+                      const isPreviewing = previewingAudioUrl === track.audio_url;
+
+                      return (
+                        <div
+                          key={track.track_id}
+                          onClick={() => handleSelectTrack(track)}
+                          className={`p-2 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-all hover:bg-orange-50/80 group ${
+                            isSelected ? "bg-orange-50 border border-orange-200" : ""
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-orange-100 shadow-xs">
+                              {track.cover_url ? (
+                                <img
+                                  src={track.cover_url}
+                                  alt={track.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-orange-500">
+                                  <Music size={18} />
+                                </div>
+                              )}
+                              {track.audio_url && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleToggleAudioPreview(e, track.audio_url)}
+                                  className={`absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center text-white transition-opacity cursor-pointer ${
+                                    isPreviewing ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                  }`}
+                                  title={isPreviewing ? "Pause" : "Quick preview"}
+                                >
+                                  {isPreviewing ? (
+                                    <Pause size={16} className="fill-white animate-pulse" />
+                                  ) : (
+                                    <Play size={16} className="fill-white ml-0.5" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+
+                            <div className="flex flex-col min-w-0 flex-1">
+                              <span className="font-bold text-gray-900 text-xs truncate group-hover:text-[#ef8b54] transition-colors">
+                                {track.title}
+                              </span>
+                              <span className="text-[11px] text-gray-500 truncate">{track.artist}</span>
+                              {track.duration_seconds && (
+                                <span className="text-[10px] text-orange-400 font-medium">
+                                  {Math.floor(track.duration_seconds / 60)}:{String(Math.round(track.duration_seconds % 60)).padStart(2, "0")}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectTrack(track);
+                              }}
+                              className={`px-3 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all flex items-center gap-1 ${
+                                isSelected
+                                  ? "bg-[#ef8b54] text-white shadow-xs"
+                                  : "bg-orange-50 hover:bg-[#ef8b54] text-orange-700 hover:text-white"
+                              }`}
+                            >
+                              {isSelected ? "✓ Selected" : "Use →"}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="p-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-[11px] text-gray-500">
+                  <span>🎵 Select a song to trim your 60-second clip</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (audioPreviewRef.current) audioPreviewRef.current.pause();
+                      setPreviewingAudioUrl(null);
+                      setIsMusicModalOpen(false);
+                    }}
+                    className="px-3 py-1 bg-white hover:bg-gray-100 text-gray-700 font-bold rounded-lg border border-gray-200 cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

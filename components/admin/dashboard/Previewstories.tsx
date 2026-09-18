@@ -18,6 +18,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { getAuthToken } from "@/lib/cookies";
+import { getBackendUrl } from "@/services/api-client";
 
 export interface StorySlide {
   id: number;
@@ -30,6 +31,7 @@ export interface StorySlide {
   likes_count?: number;
   views_count?: number;
   musicTrack?: string;
+  music_url?: string;
 }
 
 export interface StoryUser {
@@ -145,17 +147,21 @@ function StoryViewer({
   const [activityData, setActivityData] = useState<ActivityData | null>(null);
   const [loadingActivity, setLoadingActivity] = useState(false);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
+  const BASE_URL = getBackendUrl();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const TICK = 50; // ms per tick
+
+  const [customDuration, setCustomDuration] = useState<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     setSlides(user.slides);
     setSlideIndex(0);
+    setCustomDuration(null);
   }, [user]);
 
   const currentSlide = slides[slideIndex] || slides[0];
-  const slideDuration = currentSlide?.duration ?? 5000;
+  const slideDuration = customDuration ?? (currentSlide?.duration ?? 5000);
   const totalSlides = slides.length;
 
   useEffect(() => {
@@ -219,8 +225,19 @@ function StoryViewer({
     }
   }, [isPaused, showActivity, clearTimer, startTimer]);
 
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isPaused || showActivity) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  }, [isPaused, showActivity]);
+
   const goToSlide = (i: number) => {
     setSlideIndex(i);
+    setCustomDuration(null);
     setProgress(0);
   };
 
@@ -353,7 +370,10 @@ function StoryViewer({
     (typeof currentSlide.imageUrl === "string" &&
       (currentSlide.imageUrl.startsWith("data:video") ||
         currentSlide.imageUrl.endsWith(".mp4") ||
-        currentSlide.imageUrl.endsWith(".webm")));
+        currentSlide.imageUrl.endsWith(".webm") ||
+        currentSlide.imageUrl.endsWith(".mov") ||
+        currentSlide.imageUrl.endsWith(".m4v") ||
+        currentSlide.imageUrl.endsWith(".avi")));
 
   const isTextStory =
     currentSlide.imageUrl === "text-story" ||
@@ -372,11 +392,19 @@ function StoryViewer({
         {isVideo ? (
           <div className="absolute inset-0">
             <video
+              ref={videoRef}
+              key={typeof currentSlide.imageUrl === "string" ? currentSlide.imageUrl : currentSlide.id}
               src={currentSlide.imageUrl as string}
               autoPlay
               muted={isMuted}
               playsInline
-              loop
+              loop={false}
+              onLoadedMetadata={(e) => {
+                const dur = e.currentTarget.duration;
+                if (dur && !isNaN(dur) && isFinite(dur)) {
+                  setCustomDuration(Math.max(3000, Math.min(dur * 1000, 60000)));
+                }
+              }}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/80 via-black/30 to-transparent pointer-events-none" />
@@ -413,6 +441,24 @@ function StoryViewer({
           </div>
         )}
 
+        {/* Background audio track preview */}
+        {currentSlide.music_url && !isMuted && !isVideo && (
+          <audio
+            ref={(audio) => {
+              if (audio) {
+                if (isPaused) {
+                  audio.pause();
+                } else {
+                  audio.play().catch(() => {});
+                }
+              }
+            }}
+            src={currentSlide.music_url}
+            autoPlay
+            loop
+          />
+        )}
+
         {/* Top section */}
         <div className="relative z-10 flex flex-col gap-2">
           {/* Progress bars */}
@@ -428,11 +474,17 @@ function StoryViewer({
             <div className="flex items-center gap-2">
               {/* Avatar */}
               <div className="w-8 h-8 p-[2px] rounded-full bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35] shrink-0">
-                <div className="w-full h-full rounded-full overflow-hidden relative bg-gray-100">
-                  {typeof user.avatar === "string" ? (
-                    <img src={user.avatar} alt={user.userName} className="w-full h-full object-cover" />
+                <div className="w-full h-full rounded-full overflow-hidden relative bg-gray-100 flex items-center justify-center">
+                  {user.avatar ? (
+                    typeof user.avatar === "string" ? (
+                      <img src={user.avatar} alt={user.userName} className="w-full h-full object-cover" />
+                    ) : (
+                      <Image src={user.avatar} alt={user.userName} fill className="object-cover" />
+                    )
                   ) : (
-                    <Image src={user.avatar} alt={user.userName} fill className="object-cover" />
+                    <span className="text-white text-xs font-bold bg-orange-500 w-full h-full flex items-center justify-center">
+                      {user.userName ? user.userName.charAt(0).toUpperCase() : "U"}
+                    </span>
                   )}
                 </div>
               </div>
@@ -763,11 +815,17 @@ export default function PreviewStories({
                   : "bg-white/30"
               }`}
             >
-              <div className="w-8 h-8 rounded-full overflow-hidden relative bg-gray-100">
-                {typeof user.avatar === "string" ? (
-                  <img src={user.avatar} alt={user.userName} className="w-full h-full object-cover" />
+              <div className="w-8 h-8 rounded-full overflow-hidden relative bg-gray-100 flex items-center justify-center">
+                {user.avatar ? (
+                  typeof user.avatar === "string" ? (
+                    <img src={user.avatar} alt={user.userName} className="w-full h-full object-cover" />
+                  ) : (
+                    <Image src={user.avatar} alt={user.userName} fill className="object-cover" />
+                  )
                 ) : (
-                  <Image src={user.avatar} alt={user.userName} fill className="object-cover" />
+                  <span className="text-white text-xs font-bold bg-orange-500 w-full h-full flex items-center justify-center">
+                    {user.userName ? user.userName.charAt(0).toUpperCase() : "U"}
+                  </span>
                 )}
               </div>
             </div>

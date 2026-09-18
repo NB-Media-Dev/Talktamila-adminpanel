@@ -10,7 +10,7 @@ export const authService = {
     });
 
     if (response.access_token) {
-      setAuthToken(response.access_token, 30 * 60);
+      setAuthToken(response.access_token, 7 * 24 * 60 * 60);
     }
 
     return response;
