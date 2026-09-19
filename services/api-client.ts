@@ -1,24 +1,15 @@
 import { getAuthToken } from '@/lib/cookies';
 
-export function getBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `http://${hostname}:8000`;
-    }
-    if (process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL) {
-      return process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL;
-    }
-    return `http://${hostname}:8000`;
-  }
-  return process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
-}
+const IS_SERVER = typeof window === 'undefined';
+const BASE_URL = IS_SERVER
+  ? process.env.PYTHON_BACKEND_URL || 'http://127.0.0.1:8000'
+  : process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export async function apiClient<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${getBaseUrl()}${endpoint}`;
+  const url = `${BASE_URL}${endpoint}`;
 
   let token: string | null = null;
   if (typeof window !== 'undefined') {

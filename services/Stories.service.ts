@@ -1,3 +1,4 @@
+
 import {
   BackendMusicTrack,
   BackendStoryGroup,
@@ -6,6 +7,7 @@ import {
   StoryActivityData,
   LikeStoryResponse,
   ReplyStoryResponse,
+  MultipleUploadResponse,
 } from '@/types/Stories';
 import { apiClient } from './api-client';
 
@@ -18,8 +20,8 @@ export const storyService = {
   },
 
   // Upload & Create
-  uploadMultipleFiles: async (formData: FormData): Promise<StoryResponse[]> => {
-    return apiClient<StoryResponse[]>('/api/v1/stories/upload-multiple', {
+  uploadMultipleFiles: async (formData: FormData): Promise<StoryResponse[] | MultipleUploadResponse> => {
+    return apiClient<StoryResponse[] | MultipleUploadResponse>('/api/v1/stories/upload-multiple', {
       method: 'POST',
       body: formData,
     });
@@ -33,40 +35,40 @@ export const storyService = {
   },
 
   // Views & Likes
-  recordView: async (storyId: number): Promise<{ success: boolean; views_count: number }> => {
+  recordView: async (storyId: number | string): Promise<{ success: boolean; views_count: number }> => {
     return apiClient<{ success: boolean; views_count: number }>(`/api/v1/stories/${storyId}/view`, {
       method: 'POST',
     });
   },
 
-  likeStory: async (storyId: number): Promise<LikeStoryResponse> => {
+  likeStory: async (storyId: number | string): Promise<LikeStoryResponse> => {
     return apiClient<LikeStoryResponse>(`/api/v1/stories/${storyId}/like`, {
       method: 'POST',
     });
   },
 
-  unlikeStory: async (storyId: number): Promise<LikeStoryResponse> => {
+  unlikeStory: async (storyId: number | string): Promise<LikeStoryResponse> => {
     return apiClient<LikeStoryResponse>(`/api/v1/stories/${storyId}/like`, {
       method: 'DELETE',
     });
   },
 
   // Replies & Activity
-  replyStory: async (storyId: number, text: string): Promise<ReplyStoryResponse> => {
+  replyStory: async (storyId: number | string, text: string): Promise<ReplyStoryResponse> => {
     return apiClient<ReplyStoryResponse>(`/api/v1/stories/${storyId}/reply`, {
       method: 'POST',
       body: JSON.stringify({ text }),
     });
   },
 
-  getActivity: async (storyId: number): Promise<StoryActivityData> => {
+  getActivity: async (storyId: number | string): Promise<StoryActivityData> => {
     return apiClient<StoryActivityData>(`/api/v1/stories/${storyId}/activity`, {
       method: 'GET',
     });
   },
 
   // Delete
-  deleteStory: async (storyId: number): Promise<void> => {
+  deleteStory: async (storyId: number | string): Promise<void> => {
     return apiClient<void>(`/api/v1/stories/${storyId}`, {
       method: 'DELETE',
     });
@@ -85,3 +87,5 @@ export const storyService = {
     });
   },
 };
+
+export const StoryService = storyService;
