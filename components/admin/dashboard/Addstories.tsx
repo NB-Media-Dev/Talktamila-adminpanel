@@ -23,17 +23,16 @@ import {
   ChevronLeft,
   ChevronRight,
   Images as ImagesIcon,
-  Search,
-  Play,
-  Pause
+  Video,
+  Film,
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
-import { getAuthToken } from "@/lib/cookies";
 import { storyService } from "@/services/Stories.service";
 import { useAuthuser } from "@/hooks/useAuthuser";
+import MusicsControl, { MusicTrack } from "./MusicsControl";
 
 interface AddstoriesProps {
   isOpen?: boolean;
@@ -92,161 +91,15 @@ export default function Addstories({
   const currentUser = (authUser as any)?.user || authUser || null;
   const currentAudienceOptions = isAdmin ? adminAudienceOptions : allAudienceOptions;
 
-  interface MusicTrackItem {
-    track_id: number;
-    title: string;
-    artist: string;
-    cover_url?: string;
-    audio_url?: string;
-    duration_seconds?: number;
-    genre?: string;
-  }
-
   const [step, setStep] = useState<"edit" | "loading" | "preview">("edit");
   const [caption, setCaption] = useState<string>("");
   const [selectedAudience, setSelectedAudience] = useState<string>("public");
-  const [selectedMusic, setSelectedMusic] = useState<string>("Anirudh - Trend Beat 🎵");
+  const [selectedMusic, setSelectedMusic] = useState<string>("");
   const [selectedThemeIndex, setSelectedThemeIndex] = useState<number>(0);
 
-  // Music Picker Modal States
-  const [isMusicModalOpen, setIsMusicModalOpen] = useState<boolean>(false);
-  const [musicSearchQuery, setMusicSearchQuery] = useState<string>("");
-  const [activeMusicCategory, setActiveMusicCategory] = useState<string>("trending");
-  const [musicTracks, setMusicTracks] = useState<MusicTrackItem[]>([]);
-  const [isMusicLoading, setIsMusicLoading] = useState<boolean>(false);
-  const [previewingAudioUrl, setPreviewingAudioUrl] = useState<string | null>(null);
-  const audioPreviewRef = useRef<HTMLAudioElement | null>(null);
-
-  // Clip Trimmer States
-  const CLIP_DURATION = 60; // fixed 60-second window
-  const [selectedTrack, setSelectedTrack] = useState<MusicTrackItem | null>(null);
+  // Music & Clip Trimmer States handled via MusicsControl
+  const [selectedTrack, setSelectedTrack] = useState<MusicTrack | null>(null);
   const [musicStartTime, setMusicStartTime] = useState<number>(0);
-  const [isTrimmerOpen, setIsTrimmerOpen] = useState<boolean>(false);
-  const [trimmerTrack, setTrimmerTrack] = useState<MusicTrackItem | null>(null);
-  const [isDraggingTrimmer, setIsDraggingTrimmer] = useState<boolean>(false);
-  const [isClipPreviewing, setIsClipPreviewing] = useState<boolean>(false);
-  const clipPreviewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const trimmerBarRef = useRef<HTMLDivElement | null>(null);
-
-  // Fetch songs for the music modal dynamically
-  useEffect(() => {
-    if (!isMusicModalOpen) return;
-    const fetchMusic = async () => {
-      try {
-        setIsMusicLoading(true);
-        let searchTerm = musicSearchQuery.trim();
-        if (!searchTerm) {
-          if (activeMusicCategory === "anirudh") searchTerm = "Anirudh";
-          else if (activeMusicCategory === "vijay") searchTerm = "Thalapathy Vijay";
-          else if (activeMusicCategory === "arrahman") searchTerm = "A.R. Rahman";
-          else if (activeMusicCategory === "melody") searchTerm = "Tamil Melody";
-          else if (activeMusicCategory === "mass") searchTerm = "Tamil Mass";
-        }
-
-        const data = searchTerm
-          ? await storyService.searchMusic(searchTerm, 30)
-          : await storyService.getTrendingMusic(30);
-
-        if (Array.isArray(data)) {
-          setMusicTracks(data as any);
-        }
-      } catch (e) {
-        // silent catch
-      } finally {
-        setIsMusicLoading(false);
-      }
-    };
-    const debounce = setTimeout(fetchMusic, 250);
-    return () => clearTimeout(debounce);
-  }, [isMusicModalOpen, musicSearchQuery, activeMusicCategory]);
-
-  const handleToggleAudioPreview = (e: React.MouseEvent, url?: string) => {
-    e.stopPropagation();
-    if (!url) return;
-    if (previewingAudioUrl === url) {
-      if (audioPreviewRef.current) {
-        audioPreviewRef.current.pause();
-      }
-      setPreviewingAudioUrl(null);
-    } else {
-      setPreviewingAudioUrl(url);
-      if (audioPreviewRef.current) {
-        audioPreviewRef.current.src = url;
-        audioPreviewRef.current.play().catch(() => {});
-      }
-    }
-  };
-
-  const handleSelectTrack = (t: MusicTrackItem) => {
-    // Open trimmer step instead of immediately closing
-    setTrimmerTrack(t);
-    setMusicStartTime(0);
-    setIsTrimmerOpen(true);
-    if (audioPreviewRef.current) audioPreviewRef.current.pause();
-    setPreviewingAudioUrl(null);
-    setIsClipPreviewing(false);
-  };
-
-  const handleConfirmClip = () => {
-    if (!trimmerTrack) return;
-    setSelectedTrack(trimmerTrack);
-    setSelectedMusic(`${trimmerTrack.title} - ${trimmerTrack.artist} 🎵`);
-    if (audioPreviewRef.current) audioPreviewRef.current.pause();
-    setPreviewingAudioUrl(null);
-    setIsClipPreviewing(false);
-    if (clipPreviewTimerRef.current) clearTimeout(clipPreviewTimerRef.current);
-    setIsTrimmerOpen(false);
-    setIsMusicModalOpen(false);
-  };
-
-  const handleToggleClipPreview = () => {
-    if (!trimmerTrack?.audio_url || !audioPreviewRef.current) return;
-    if (isClipPreviewing) {
-      audioPreviewRef.current.pause();
-      setIsClipPreviewing(false);
-      if (clipPreviewTimerRef.current) clearTimeout(clipPreviewTimerRef.current);
-    } else {
-      audioPreviewRef.current.src = trimmerTrack.audio_url;
-      audioPreviewRef.current.currentTime = musicStartTime;
-      audioPreviewRef.current.play().catch(() => {});
-      setIsClipPreviewing(true);
-      // Auto-stop after CLIP_DURATION seconds
-      clipPreviewTimerRef.current = setTimeout(() => {
-        if (audioPreviewRef.current) audioPreviewRef.current.pause();
-        setIsClipPreviewing(false);
-      }, CLIP_DURATION * 1000);
-    }
-  };
-
-  const handleTrimmerDrag = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-    if (!trimmerBarRef.current || !trimmerTrack) return;
-    const rect = trimmerBarRef.current.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const relX = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    const totalDuration = trimmerTrack.duration_seconds || 180;
-    const maxStart = Math.max(0, totalDuration - CLIP_DURATION);
-    const rawStart = (relX / rect.width) * totalDuration;
-    const newStart = Math.max(0, Math.min(rawStart, maxStart));
-    setMusicStartTime(Math.round(newStart * 10) / 10);
-    // Update clip preview position if playing
-    if (isClipPreviewing && audioPreviewRef.current) {
-      audioPreviewRef.current.currentTime = newStart;
-    }
-  };
-
-  const handleRemoveTrack = () => {
-    setSelectedTrack(null);
-    setSelectedMusic("");
-    setMusicStartTime(0);
-    setTrimmerTrack(null);
-    setIsTrimmerOpen(false);
-    setIsClipPreviewing(false);
-    if (clipPreviewTimerRef.current) clearTimeout(clipPreviewTimerRef.current);
-    if (audioPreviewRef.current) {
-      audioPreviewRef.current.pause();
-    }
-    setPreviewingAudioUrl(null);
-  };
 
   useEffect(() => {
     if (isAdmin && selectedAudience !== "public") {
@@ -264,18 +117,30 @@ export default function Addstories({
   const [publishSuccess, setPublishSuccess] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const addMoreInputRef = useRef<HTMLInputElement>(null);
+
+  const isVideo = (src?: string | null) => {
+    if (!src) return false;
+    return (
+      src.startsWith("data:video") ||
+      src.endsWith(".mp4") ||
+      src.endsWith(".webm") ||
+      src.endsWith(".mov") ||
+      src.endsWith(".m4v")
+    );
+  };
 
   const handleCancel = () => {
     setSelectedTrack(null);
     setMusicStartTime(0);
+    setSelectedMusic("");
     if (onClose) {
       onClose();
     } else if (setHandlestate) {
       setHandlestate(false);
     }
   };
-
 
   const processFiles = (files: FileList | File[]) => {
     const fileArray = Array.from(files).filter(
@@ -367,176 +232,108 @@ export default function Addstories({
     }
   };
 
+  const handleAddStory = async () => {
+    setIsPublishing(true);
+    try {
+      const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
+      let responseData;
 
-//   const handleAddStory = async () => {
-//     setIsPublishing(true);
-//     try {
-//       const BASE_URL = process.env.NEXT_PUBLIC_PYTHON_BACKEND_URL || "http://127.0.0.1:8000";
-//       const token = getAuthToken();
-//       const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
+      // CASE A: Processing multiple file uploads (images & videos)
+      if (rawFiles.length > 0) {
+        const formData = new FormData();
 
-//       if (rawFiles.length > 0) {
-//         const formData = new FormData();
-//         rawFiles.forEach((file) => {
-//           formData.append("files", file);
-//         });
-//         if (caption) {
-//           formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
-//         }
-//         formData.append("audience", audienceVal);
-//         if (selectedMusic) {
-//           formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
-//         }
+        rawFiles.forEach((file) => {
+          formData.append("files", file);
+        });
 
-//         const res = await fetch(`${BASE_URL}/api/v1/stories/upload-multiple`, {
-//           method: "POST",
-//           headers: {
-//             ...(token ? { Authorization: `Bearer ${token}` } : {}),
-//           },
-//           body: formData,
-//         });
-//         console.log(formData ,"line 234");
-//         const responseData = await res.json();
-// console.log("Backend-la irundhu vandha data:", responseData); 
-//         if (!res.ok) {
-//           const errData = await res.json().catch(() => ({}));
-//           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
-//         }
-//       } else if (caption.trim()) {
-//         const res = await fetch(`${BASE_URL}/api/v1/stories`, {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//             ...(token ? { Authorization: `Bearer ${token}` } : {}),
-//           },
-//           body: JSON.stringify({
-//             media_url: "text-story",
-//             media_type: "text",
-//             caption: caption,
-//             audience: audienceVal,
-//             music_title: selectedMusic,
-//           }),
-//         });
+        if (caption) {
+          formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
+        }
 
-//         if (!res.ok) {
-//           const errData = await res.json().catch(() => ({}));
-//           throw new Error(errData.detail || `Upload failed with status ${res.status}`);
-//         }
-//       } else {
-//         throw new Error("Please upload a photo/video or enter caption text for your story.");
-//       }
+        formData.append("audience", audienceVal);
 
-//       setIsPublishing(false);
-//       setPublishSuccess(true);
+        if (selectedTrack) {
+          formData.append(
+            "music_data",
+            JSON.stringify({
+              music_id: selectedTrack.trackId,
+              music_title: selectedTrack.trackName,
+              music_artist: selectedTrack.artistName,
+              music_url: selectedTrack.previewUrl,
+              music_thumbnail: selectedTrack.artworkUrl100,
+              music_duration: selectedTrack.trackTimeMillis
+                ? selectedTrack.trackTimeMillis / 1000
+                : 60,
+              music_start_time: musicStartTime,
+            })
+          );
+          formData.append("music_start_time", String(musicStartTime));
+        } else if (selectedMusic) {
+          formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
+        }
 
-//       if (onStoryAdded) {
-//         onStoryAdded({
-//           imageUrl: mediaList[0] || "default-text-story",
-//           imageUrls: mediaList,
-//           caption,
-//           audience: selectedAudience,
-//           musicTrack: selectedMusic,
-//         });
-//       }
+        responseData = await storyService.uploadMultipleFiles(formData);
+        console.log("Backend response for files upload:", responseData);
 
-//       setTimeout(() => {
-//         handleCancel();
-//       }, 1000);
-//     } catch (err: any) {
-//       console.error("Story upload failed:", err);
-//       setIsPublishing(false);
-//       alert(err.message || "Failed to upload story. Please check your connection and try again.");
-//     }
-//   };
+      // CASE B: Handling text stories
+      } else if (caption.trim()) {
+        const textPayload = {
+          media_url: "text-story",
+          media_type: "text",
+          caption: caption,
+          audience: audienceVal,
+          music_id: selectedTrack?.trackId,
+          music_title: selectedTrack?.trackName || (selectedMusic ? selectedMusic : undefined),
+          music_artist: selectedTrack?.artistName,
+          music_url: selectedTrack?.previewUrl,
+          music_thumbnail: selectedTrack?.artworkUrl100,
+          music_start_time: musicStartTime,
+        };
 
+        responseData = await storyService.addTextStory(textPayload);
+        console.log("Backend response for text story:", responseData);
 
-
-const handleAddStory = async () => {
-  setIsPublishing(true);
-  try {
-    const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
-    let responseData;
-
-    // CASE A: Processing files array objects structural handling variables configuration array
-    if (rawFiles.length > 0) {
-      const formData = new FormData();
-      
-      rawFiles.forEach((file) => {
-        formData.append("files", file);
-      });
-      
-      if (caption) {
-        formData.append("captions", JSON.stringify(rawFiles.map(() => caption)));
+      } else {
+        throw new Error("Please upload a photo/video or enter caption text for your story.");
       }
-      
-      formData.append("audience", audienceVal);
-      
-      if (selectedMusic) {
-        formData.append("music_data", JSON.stringify({ music_title: selectedMusic }));
-      }
-
-      // Invoking ungal custom wrapper function execution configuration methods patterns
-      responseData = await storyService.uploadMultipleFiles(formData);
-      console.log("Backend response for files upload object payload data details:", responseData);
-
-    // CASE B: Handling pure text contexts base configuration layouts schema logic triggers
-    } else if (caption.trim()) {
-      const textPayload = {
-        media_url: "text-story",
-        media_type: "text",
-        caption: caption,
-        audience: audienceVal,
-        music_title: selectedMusic,
-      };
-
-      // Direct service module tracking call integration
-      responseData = await storyService.addTextStory(textPayload);
-      console.log("Backend response for text story instance data details:", responseData);
-
-    } else {
-      throw new Error("Please upload a photo/video or enter caption text for your story.");
-    }
 
       setIsPublishing(false);
       setPublishSuccess(true);
 
-    if (onStoryAdded) {
-      onStoryAdded({
-        imageUrl: mediaList[0] || "default-text-story",
-        imageUrls: mediaList,
-        caption,
-        audience: selectedAudience,
-        musicTrack: selectedMusic,
-      });
+      if (onStoryAdded) {
+        onStoryAdded({
+          imageUrl: mediaList[0] || "default-text-story",
+          imageUrls: mediaList,
+          caption,
+          audience: selectedAudience,
+          musicTrack: selectedTrack
+            ? `${selectedTrack.trackName} - ${selectedTrack.artistName}`
+            : selectedMusic,
+        });
+      }
+
+      setTimeout(() => {
+        handleCancel();
+      }, 1000);
+
+    } catch (err: any) {
+      console.error("Story upload failed:", err);
+      setIsPublishing(false);
+      const errorMessage =
+        err.message || "Failed to upload story. Please check your connection and try again.";
+      alert(errorMessage);
     }
-
-    setTimeout(() => {
-      handleCancel();
-    }, 1000);
-
-  } catch (err: any) {
-    console.error("Story management system workflow processing failure logs trace info:", err);
-    setIsPublishing(false);
-    
-    // Processing exact dynamic backend detail strings maps tracking parameters
-    const errorMessage = err.message || "Failed to upload story. Please check your connection and try again.";
-    alert(errorMessage);
-  }
-};
-
+  };
 
   const totalBars = mediaList.length > 0 ? mediaList.length : 1;
   const currentImage = mediaList[activeSlideIndex] || null;
-  const isVideo = (src: string) => src.startsWith("data:video/");
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/60 backdrop-blur-xs flex items-start  justify-center p-0 md:p-4 z-40 animate-in fade-in duration-200">
+    <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/60 backdrop-blur-xs flex items-start justify-center p-0 md:p-4 z-40 animate-in fade-in duration-200">
       <div className="w-full h-full xs:mt-4 md:h-auto md:max-h-[94vh] md:max-w-3xl min-[2560px]:max-w-[1250px] min-[3840px]:max-w-[1550px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-3 pb-24 md:px-6 md:py-5 min-[2560px]:p-6 min-[3840px]:p-8 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-hidden flex flex-col justify-start">
-        
-  
-        <div className="flex sm:hidden  mb-2">
+        <div className="flex sm:hidden mb-2">
           <button
             onClick={() => setStep("edit")}
             className="p-1 -ml-1 text-orange-700 hover:text-orange-900 transition-colors cursor-pointer flex items-center gap-1 font-bold text-sm"
@@ -629,23 +426,33 @@ const handleAddStory = async () => {
               )}
             </div>
 
-            {/* Media Upload Box */}
+            {/* Media Upload Box (Supports Photos & Videos) */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-[13px] font-bold text-gray-800 flex items-center gap-1.5">
                   <ImagesIcon size={15} className="text-orange-600" />
                   <span>Story Media ({mediaList.length} Selected)</span>
                 </label>
-                <span className="text-[11px] text-orange-600 font-semibold">
-                  Multi-image supported
+                <span className="text-[11px] text-orange-600 font-semibold flex items-center gap-1">
+                  <Film size={12} />
+                  Photos &amp; Videos supported
                 </span>
               </div>
 
+              {/* Hidden file inputs with full image and video support */}
               <input
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept="image/png,image/jpeg,image/webp,image/gif"
+                accept="image/*,video/*,video/mp4,video/webm,video/quicktime"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <input
+                ref={videoInputRef}
+                type="file"
+                multiple
+                accept="video/*,video/mp4,video/webm,video/quicktime"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -653,7 +460,7 @@ const handleAddStory = async () => {
                 ref={addMoreInputRef}
                 type="file"
                 multiple
-                accept="image/png,image/jpeg,image/webp,image/gif"
+                accept="image/*,video/*,video/mp4,video/webm,video/quicktime"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -675,7 +482,7 @@ const handleAddStory = async () => {
                   </div>
 
                   <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5">
-                    {mediaList.map((img, idx) => (
+                    {mediaList.map((mediaSrc, idx) => (
                       <div
                         key={idx}
                         onClick={() => setActiveSlideIndex(idx)}
@@ -685,18 +492,32 @@ const handleAddStory = async () => {
                             : "border-gray-200 opacity-75 hover:opacity-100"
                         }`}
                       >
-                        <Image
-                          src={img}
-                          alt={`Slide ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                 
-                        <span className="absolute top-1 left-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-bold px-1 rounded-sm">
+                        {isVideo(mediaSrc) ? (
+                          <div className="relative w-full h-full bg-black flex items-center justify-center">
+                            <video
+                              src={mediaSrc}
+                              muted
+                              playsInline
+                              className="w-full h-full object-cover pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                              <Video size={14} className="text-white drop-shadow-md" />
+                            </div>
+                          </div>
+                        ) : (
+                          <Image
+                            src={mediaSrc}
+                            alt={`Slide ${idx + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
+
+                        <span className="absolute top-1 left-1 bg-black/70 backdrop-blur-xs text-white text-[9px] font-bold px-1 rounded-sm flex items-center gap-0.5">
+                          {isVideo(mediaSrc) && <Video size={8} />}
                           {idx + 1}
                         </span>
 
-              
                         <button
                           type="button"
                           onClick={(e) => {
@@ -704,14 +525,13 @@ const handleAddStory = async () => {
                             handleRemoveMedia(idx);
                           }}
                           className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 cursor-pointer shadow-xs"
-                          title="Remove image"
+                          title="Remove item"
                         >
                           <Trash2 size={9} />
                         </button>
                       </div>
                     ))}
 
-               
                     <button
                       type="button"
                       onClick={() => addMoreInputRef.current?.click()}
@@ -723,7 +543,7 @@ const handleAddStory = async () => {
                     </button>
                   </div>
                   <p className="text-[10px] text-gray-500">
-                    💡 Click thumbnails or preview arrows to switch active slide. Top progress bar updates automatically.
+                    💡 Click thumbnails to switch slide. Videos and photos play seamlessly in preview.
                   </p>
                 </div>
               ) : (
@@ -738,29 +558,48 @@ const handleAddStory = async () => {
                       : "border-orange-200 bg-white hover:border-orange-400 hover:bg-orange-50/30"
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-full bg-[#fff0e7] flex items-center justify-center text-[#ef8b54] shadow-xs">
-                    <UploadCloud className="w-5 h-5" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-[#fff0e7] flex items-center justify-center text-[#ef8b54] shadow-xs">
+                      <UploadCloud className="w-5 h-5" />
+                    </div>
+                    <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shadow-xs">
+                      <Video className="w-5 h-5" />
+                    </div>
                   </div>
 
                   <div className="flex flex-col items-center">
                     <p className="text-xs sm:text-sm font-bold text-gray-800">
-                      Click to browse or drag & drop multiple images
+                      Click to browse or drag &amp; drop photos &amp; videos
                     </p>
                     <p className="text-[11px] text-gray-400 mt-0.5">
-                      Select multiple PNG, JPG, WEBP, or GIF files
+                      Supports MP4, MOV, WEBP, PNG, JPG, or GIF files
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      fileInputRef.current?.click();
-                    }}
-                    className="mt-1 px-4 py-1.5 bg-[#ef8b54] text-white text-xs font-bold rounded-full hover:bg-[#d9723a] transition-all shadow-xs active:scale-95 cursor-pointer"
-                  >
-                    Select Photos
-                  </button>
+                  <div className="flex items-center gap-2 mt-1">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fileInputRef.current?.click();
+                      }}
+                      className="px-3.5 py-1.5 bg-[#ef8b54] text-white text-xs font-bold rounded-full hover:bg-[#d9723a] transition-all shadow-xs active:scale-95 cursor-pointer flex items-center gap-1"
+                    >
+                      <ImagesIcon size={13} />
+                      <span>Select Media</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        videoInputRef.current?.click();
+                      }}
+                      className="px-3.5 py-1.5 bg-orange-100 text-orange-800 text-xs font-bold rounded-full hover:bg-orange-200 transition-all shadow-xs active:scale-95 cursor-pointer flex items-center gap-1"
+                    >
+                      <Video size={13} />
+                      <span>Upload Video</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -793,29 +632,20 @@ const handleAddStory = async () => {
                 </div>
               </div>
 
-
-             <div className="flex flex-col gap-1">
-  <label className="text-[12px] font-bold text-gray-700 flex items-center gap-1">
-    <Music size={12} className="text-orange-600" />
-    <span>Audio Track</span>
-  </label>
-  
-
-  <div className="relative w-full flex items-center">
-    <input
-      type="text"
-      value={selectedMusic}
-      onChange={(e) => setSelectedMusic(e.target.value)}
-      placeholder="Search background music..."
-
-      className="w-full h-8 sm:h-9 pl-3 pr-10 rounded-xl bg-white border border-transparent outline-none text-xs transition-all shadow-xs focus:border-[#ef8b54] placeholder:text-gray-400 text-gray-800"
-    />
-
-    <span className="absolute right-3 text-gray-400 pointer-events-none">
-      <Search size={14} />
-    </span>
-  </div>
-</div>
+              {/* MusicsControl Component */}
+              <MusicsControl
+                selectedTrack={selectedTrack}
+                musicStartTime={musicStartTime}
+                onTrackChange={(track) => {
+                  setSelectedTrack(track);
+                  if (track) {
+                    setSelectedMusic(`${track.trackName} - ${track.artistName} 🎵`);
+                  } else {
+                    setSelectedMusic("");
+                  }
+                }}
+                onStartTimeChange={setMusicStartTime}
+              />
             </div>
 
             {/* Mobile preview toggle button */}
@@ -825,7 +655,7 @@ const handleAddStory = async () => {
               className="mt-2 w-full py-2.5 bg-[#ef8b54] hover:bg-[#d9723a] text-white text-xs font-extrabold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer lg:hidden uppercase tracking-wider flex items-center justify-center gap-1.5"
             >
               <Eye size={15} />
-              <span>Preview Story ({totalBars} {totalBars === 1 ? 'bar' : 'bars'})</span>
+              <span>Preview Story ({totalBars} {totalBars === 1 ? "bar" : "bars"})</span>
             </button>
           </div>
 
@@ -847,7 +677,7 @@ const handleAddStory = async () => {
                 Live Story Preview
               </span>
               <span className="text-[10px] bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">
-                {mediaList.length > 0 ? `${mediaList.length} Stories` : 'Text Story'}
+                {mediaList.length > 0 ? `${mediaList.length} Stories` : "Text Story"}
               </span>
             </div>
 
@@ -882,18 +712,30 @@ const handleAddStory = async () => {
                 </div>
               ) : null}
 
-              {/* Background media */}
+              {/* Background media (supports both images and videos) */}
               {currentImage && (
                 <div className="absolute inset-0 w-full h-full">
-                  <Image
-                    src={currentImage}
-                    alt={`Story Preview Slide ${activeSlideIndex + 1}`}
-                    fill
-                    sizes="320px"
-                    className="object-cover transition-opacity duration-300"
-                    priority
-                  />
- 
+                  {isVideo(currentImage) ? (
+                    <video
+                      key={currentImage}
+                      src={currentImage}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                    />
+                  ) : (
+                    <Image
+                      src={currentImage}
+                      alt={`Story Preview Slide ${activeSlideIndex + 1}`}
+                      fill
+                      sizes="320px"
+                      className="object-cover transition-opacity duration-300"
+                      priority
+                    />
+                  )}
+
                   <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 via-black/25 to-transparent pointer-events-none" />
                   <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none" />
                 </div>
@@ -978,7 +820,7 @@ const handleAddStory = async () => {
                         <CheckCircle2 size={10} className="text-blue-400 fill-blue-400" />
                       </span>
                       <span className="text-[8px] text-white/80 font-medium">
-                        {mediaList.length > 1 ? `Slide ${activeSlideIndex + 1} of ${mediaList.length}` : 'Just now'}
+                        {mediaList.length > 1 ? `Slide ${activeSlideIndex + 1} of ${mediaList.length}` : "Just now"}
                       </span>
                     </div>
                   </div>
@@ -987,7 +829,7 @@ const handleAddStory = async () => {
                     <div className="flex items-center gap-1 bg-black/40 backdrop-blur-xs px-2 py-0.5 rounded-full border border-white/20">
                       <Music size={8} className="text-orange-400 animate-bounce" />
                       <span className="text-[8px] text-white font-semibold truncate max-w-[70px]">
-                        {(selectedTrack.title || (selectedTrack as any).trackName || '').split(" ")[0]}
+                        {(selectedTrack.trackName || "").split(" ")[0]}
                       </span>
                     </div>
                   )}
@@ -1087,362 +929,6 @@ const handleAddStory = async () => {
           </div>
         </div>
       </div>
-
-      {/* Hidden Audio element for track previewing */}
-      <audio ref={audioPreviewRef} onEnded={() => setPreviewingAudioUrl(null)} className="hidden" />
-
-      {/* Story Music Picker Modal */}
-      {isMusicModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-5 duration-200">
-
-            {/* ── STEP 2: CLIP TRIMMER ── */}
-            {isTrimmerOpen && trimmerTrack ? (
-              <>
-                {/* Trimmer Header */}
-                <div className="p-4 border-b border-orange-100 flex items-center gap-3 bg-gradient-to-r from-orange-50 to-amber-50">
-                  <button
-                    type="button"
-                    onClick={() => { setIsTrimmerOpen(false); setIsClipPreviewing(false); if (audioPreviewRef.current) audioPreviewRef.current.pause(); }}
-                    className="w-8 h-8 rounded-full bg-white border border-orange-200 text-orange-600 flex items-center justify-center cursor-pointer hover:bg-orange-50 shadow-xs"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 text-sm truncate">Choose Your 60s Clip</h3>
-                    <p className="text-[11px] text-gray-500 truncate">{trimmerTrack.title} · {trimmerTrack.artist}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => { setIsTrimmerOpen(false); setIsMusicModalOpen(false); setIsClipPreviewing(false); if (audioPreviewRef.current) audioPreviewRef.current.pause(); }}
-                    className="w-8 h-8 rounded-full bg-white text-gray-400 hover:text-gray-700 flex items-center justify-center cursor-pointer shadow-xs"
-                  >
-                    <X size={15} />
-                  </button>
-                </div>
-
-                {/* Trimmer Body */}
-                <div className="flex-1 p-5 flex flex-col gap-5 overflow-y-auto">
-                  {/* Track card */}
-                  <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-2xl border border-orange-100">
-                    {trimmerTrack.cover_url ? (
-                      <img src={trimmerTrack.cover_url} alt={trimmerTrack.title} className="w-12 h-12 rounded-xl object-cover shadow-xs border border-orange-100 shrink-0" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-xl bg-orange-200 flex items-center justify-center text-orange-700 shrink-0"><Music size={20} /></div>
-                    )}
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <span className="font-extrabold text-gray-900 text-sm truncate">{trimmerTrack.title}</span>
-                      <span className="text-xs text-gray-500 truncate">{trimmerTrack.artist}</span>
-                      <span className="text-[10px] text-orange-600 font-semibold mt-0.5">
-                        Total: {Math.floor((trimmerTrack.duration_seconds || 180) / 60)}:{String(Math.round((trimmerTrack.duration_seconds || 180) % 60)).padStart(2, "0")} · Clip: 60s
-                      </span>
-                    </div>
-                    {/* Clip preview toggle */}
-                    <button
-                      type="button"
-                      onClick={handleToggleClipPreview}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-all shadow-sm ${isClipPreviewing ? "bg-orange-500 text-white scale-110" : "bg-white border border-orange-200 text-orange-600 hover:bg-orange-50"}`}
-                      title={isClipPreviewing ? "Pause Clip" : "Preview 60s Clip"}
-                    >
-                      {isClipPreviewing ? <Pause size={16} className="fill-white" /> : <Play size={16} className="fill-orange-600 ml-0.5" />}
-                    </button>
-                  </div>
-
-                  {/* Timeline scrubber */}
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-gray-600">
-                      <span>Drag to set start position</span>
-                      <span className="bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full text-[10px]">
-                        {`${Math.floor(musicStartTime / 60)}:${String(Math.floor(musicStartTime % 60)).padStart(2, "0")} → ${Math.floor((musicStartTime + 60) / 60)}:${String(Math.floor((musicStartTime + 60) % 60)).padStart(2, "0")}`}
-                      </span>
-                    </div>
-
-                    {/* Timeline track */}
-                    <div className="relative select-none">
-                      {/* Full track background */}
-                      <div
-                        ref={trimmerBarRef}
-                        className="relative h-12 bg-gray-100 rounded-xl overflow-hidden cursor-pointer border border-gray-200"
-                        onMouseDown={(e) => { setIsDraggingTrimmer(true); handleTrimmerDrag(e); }}
-                        onMouseMove={(e) => { if (isDraggingTrimmer) handleTrimmerDrag(e); }}
-                        onMouseUp={() => setIsDraggingTrimmer(false)}
-                        onMouseLeave={() => setIsDraggingTrimmer(false)}
-                        onTouchStart={(e) => { setIsDraggingTrimmer(true); handleTrimmerDrag(e); }}
-                        onTouchMove={(e) => { if (isDraggingTrimmer) handleTrimmerDrag(e); }}
-                        onTouchEnd={() => setIsDraggingTrimmer(false)}
-                      >
-                        {/* Waveform bars (decorative) */}
-                        <div className="absolute inset-0 flex items-center gap-[2px] px-2 pointer-events-none">
-                          {Array.from({ length: 60 }).map((_, i) => (
-                            <div
-                              key={i}
-                              className="flex-1 rounded-full bg-gray-300"
-                              style={{ height: `${20 + Math.sin(i * 0.8) * 14 + Math.sin(i * 2.1) * 8}%` }}
-                            />
-                          ))}
-                        </div>
-
-                        {/* Selected 60s orange window */}
-                        {(() => {
-                          const total = trimmerTrack.duration_seconds || 180;
-                          const leftPct = (musicStartTime / total) * 100;
-                          const widthPct = Math.min((60 / total) * 100, 100 - leftPct);
-                          return (
-                            <div
-                              className="absolute top-0 bottom-0 bg-orange-500/30 border-l-2 border-r-2 border-orange-500 flex items-center justify-center pointer-events-none"
-                              style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
-                            >
-                              <div className="w-1 h-5 bg-orange-500 rounded-full opacity-80" />
-                              <span className="text-[8px] font-bold text-orange-800 bg-orange-100/90 px-1 rounded ml-1">60s</span>
-                            </div>
-                          );
-                        })()}
-
-                        {/* Playhead indicator */}
-                        <div
-                          className="absolute top-0 bottom-0 w-0.5 bg-orange-600 pointer-events-none"
-                          style={{ left: `${(musicStartTime / (trimmerTrack.duration_seconds || 180)) * 100}%` }}
-                        />
-                      </div>
-
-                      {/* Time labels */}
-                      <div className="flex items-center justify-between mt-1 px-1 text-[10px] text-gray-400 font-medium">
-                        <span>0:00</span>
-                        <span>{Math.floor((trimmerTrack.duration_seconds || 180) / 60)}:{String(Math.round((trimmerTrack.duration_seconds || 180) % 60)).padStart(2, "0")}</span>
-                      </div>
-                    </div>
-
-                    {/* Quick jump buttons */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] text-gray-500 font-semibold">Quick jump:</span>
-                      {[0, 15, 30, 45, 60, 90].filter(t => t + 60 <= (trimmerTrack.duration_seconds || 180)).map(t => (
-                        <button
-                          key={t}
-                          type="button"
-                          onClick={() => { setMusicStartTime(t); if (isClipPreviewing && audioPreviewRef.current) audioPreviewRef.current.currentTime = t; }}
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${musicStartTime === t ? "bg-orange-500 text-white" : "bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-700"}`}
-                        >
-                          {`${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`}
-                        </button>
-                      ))}
-                    </div>
-
-                    <p className="text-[10px] text-gray-400 text-center">
-                      🎵 Drag the orange window or tap a quick-jump to set where your clip starts. The story will play exactly 60 seconds of this song.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Trimmer Footer */}
-                <div className="p-4 border-t border-orange-100 bg-orange-50 flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => { setIsTrimmerOpen(false); setIsClipPreviewing(false); if (audioPreviewRef.current) audioPreviewRef.current.pause(); }}
-                    className="flex-1 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-bold text-sm rounded-xl border border-gray-200 cursor-pointer transition-colors"
-                  >
-                    ← Back to Songs
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleConfirmClip}
-                    className="flex-1 py-2.5 bg-[#ef8b54] hover:bg-[#d9723a] text-white font-extrabold text-sm rounded-xl shadow-md shadow-orange-500/20 cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-1.5"
-                  >
-                    <CheckCircle2 size={15} className="fill-white/20" />
-                    Use This Clip
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* ── STEP 1: SONG LIST ── */}
-                {/* Modal Header */}
-                <div className="p-4 border-b border-orange-100 flex items-center justify-between bg-gradient-to-r from-orange-50 to-orange-100/50">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-[#ef8b54] flex items-center justify-center text-white shadow-xs">
-                      <Music size={17} />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-900 text-sm">Add Music to Story</h3>
-                      <p className="text-[11px] text-gray-500">Free Tamil & Global Songs · Pick & trim 60s</p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (audioPreviewRef.current) audioPreviewRef.current.pause();
-                      setPreviewingAudioUrl(null);
-                      setIsMusicModalOpen(false);
-                    }}
-                    className="w-8 h-8 rounded-full bg-white text-gray-500 hover:text-gray-800 shadow-xs flex items-center justify-center cursor-pointer transition-colors"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-
-                {/* Search Input & Filter Chips */}
-                <div className="p-3 border-b border-gray-100 bg-white">
-                  <div className="relative flex items-center">
-                    <Search size={15} className="absolute left-3 text-gray-400 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={musicSearchQuery}
-                      onChange={(e) => setMusicSearchQuery(e.target.value)}
-                      placeholder="Search song, artist, movie or album..."
-                      className="w-full pl-9 pr-8 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition-all text-gray-900 placeholder:text-gray-400"
-                      autoFocus
-                    />
-                    {musicSearchQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setMusicSearchQuery("")}
-                        className="absolute right-2.5 text-gray-400 hover:text-gray-600 cursor-pointer"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Category filter chips */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto pt-2.5 pb-1 text-[11px] no-scrollbar">
-                    {[
-                      { id: "trending", label: "🔥 All Trending" },
-                      { id: "melody", label: "🎶 Top Melody" },
-                      { id: "anirudh", label: "⚡ Anirudh Hits" },
-                      { id: "vijay", label: "👑 Thalapathy Vijay" },
-                      { id: "arrahman", label: "✨ A.R. Rahman" },
-                      { id: "mass", label: "💥 Mass / Kuthu" },
-                    ].map((cat) => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => {
-                          setActiveMusicCategory(cat.id);
-                          setMusicSearchQuery("");
-                        }}
-                        className={`px-3 py-1 rounded-full whitespace-nowrap font-medium transition-all cursor-pointer ${
-                          activeMusicCategory === cat.id && !musicSearchQuery
-                            ? "bg-[#ef8b54] text-white shadow-xs font-bold"
-                            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                        }`}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Scrollable Song List */}
-                <div className="flex-1 overflow-y-auto overscroll-contain p-2 flex flex-col gap-1 divide-y divide-gray-50 max-h-[50vh]">
-                  {isMusicLoading ? (
-                    <div className="py-12 flex flex-col items-center justify-center gap-2 text-gray-400">
-                      <Loader2 size={24} className="animate-spin text-orange-500" />
-                      <span className="text-xs font-medium">Searching high-quality audio tracks...</span>
-                    </div>
-                  ) : musicTracks.length === 0 ? (
-                    <div className="py-12 flex flex-col items-center justify-center gap-1.5 text-gray-400 text-center px-4">
-                      <Music size={28} className="text-gray-300 mb-1" />
-                      <span className="text-xs font-bold text-gray-700">No songs found</span>
-                      <span className="text-[11px] text-gray-500">Try searching for another Tamil song, artist or movie name</span>
-                    </div>
-                  ) : (
-                    musicTracks.map((track) => {
-                      const isSelected = selectedTrack?.track_id === track.track_id;
-                      const isPreviewing = previewingAudioUrl === track.audio_url;
-
-                      return (
-                        <div
-                          key={track.track_id}
-                          onClick={() => handleSelectTrack(track)}
-                          className={`p-2 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-all hover:bg-orange-50/80 group ${
-                            isSelected ? "bg-orange-50 border border-orange-200" : ""
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <div className="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 bg-orange-100 shadow-xs">
-                              {track.cover_url ? (
-                                <img
-                                  src={track.cover_url}
-                                  alt={track.title}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-orange-500">
-                                  <Music size={18} />
-                                </div>
-                              )}
-                              {track.audio_url && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => handleToggleAudioPreview(e, track.audio_url)}
-                                  className={`absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center text-white transition-opacity cursor-pointer ${
-                                    isPreviewing ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                                  }`}
-                                  title={isPreviewing ? "Pause" : "Quick preview"}
-                                >
-                                  {isPreviewing ? (
-                                    <Pause size={16} className="fill-white animate-pulse" />
-                                  ) : (
-                                    <Play size={16} className="fill-white ml-0.5" />
-                                  )}
-                                </button>
-                              )}
-                            </div>
-
-                            <div className="flex flex-col min-w-0 flex-1">
-                              <span className="font-bold text-gray-900 text-xs truncate group-hover:text-[#ef8b54] transition-colors">
-                                {track.title}
-                              </span>
-                              <span className="text-[11px] text-gray-500 truncate">{track.artist}</span>
-                              {track.duration_seconds && (
-                                <span className="text-[10px] text-orange-400 font-medium">
-                                  {Math.floor(track.duration_seconds / 60)}:{String(Math.round(track.duration_seconds % 60)).padStart(2, "0")}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSelectTrack(track);
-                              }}
-                              className={`px-3 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all flex items-center gap-1 ${
-                                isSelected
-                                  ? "bg-[#ef8b54] text-white shadow-xs"
-                                  : "bg-orange-50 hover:bg-[#ef8b54] text-orange-700 hover:text-white"
-                              }`}
-                            >
-                              {isSelected ? "✓ Selected" : "Use →"}
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-
-                {/* Footer */}
-                <div className="p-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between text-[11px] text-gray-500">
-                  <span>🎵 Select a song to trim your 60-second clip</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (audioPreviewRef.current) audioPreviewRef.current.pause();
-                      setPreviewingAudioUrl(null);
-                      setIsMusicModalOpen(false);
-                    }}
-                    className="px-3 py-1 bg-white hover:bg-gray-100 text-gray-700 font-bold rounded-lg border border-gray-200 cursor-pointer"
-                  >
-                    Done
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

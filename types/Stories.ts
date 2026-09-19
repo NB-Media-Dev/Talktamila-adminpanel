@@ -45,6 +45,7 @@ export interface StorySlide {
   liked?: boolean;
   likes_count?: number;
   views_count?: number;
+  created_at?: string;
   musicTrack?: string;
   music_url?: string;
   music_start_time?: number;
@@ -63,6 +64,7 @@ export interface BackendSlide {
   liked?: boolean;
   likes_count?: number;
   views_count?: number;
+  created_at?: string;
   musicTrack?: string;
   music_url?: string;
   music_start_time?: number;
@@ -88,6 +90,7 @@ export interface BackendStoryGroup {
   verified?: boolean;
   timeAgo?: string;
   slides: BackendSlide[];
+  stories?: any[];
   musicTrack?: string;
   is_my_story?: boolean;
 }

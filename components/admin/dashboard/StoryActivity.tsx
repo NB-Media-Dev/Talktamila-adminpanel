@@ -1,18 +1,10 @@
 import { StoryActivityData } from "@/types/Stories";
 import { Heart, X } from "lucide-react";
 import { useMemo } from "react";
-
+import { formatTimeAgo } from "./Previewstories";
 
 const formatSeenTime = (dateStr?: string | null): string => {
-  if (!dateStr) return "Seen";
-  try {
-    const d = new Date(dateStr);
-    return isNaN(d.getTime())
-      ? dateStr
-      : d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true });
-  } catch {
-    return dateStr;
-  }
+  return formatTimeAgo(dateStr, "Seen");
 };
 
 export function ActivitySheet({
