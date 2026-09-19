@@ -52,7 +52,23 @@ export interface StorySlide {
   music_artist?: string;
 }
 
-// export type BackendSlide = StorySlide;
+export interface BackendSlide {
+  id: string | number;
+  story_id?: string | number;
+  imageUrl?: string;
+  media_url?: string;
+  media_type?: string;
+  caption?: string;
+  duration?: number;
+  liked?: boolean;
+  likes_count?: number;
+  views_count?: number;
+  musicTrack?: string;
+  music_url?: string;
+  music_start_time?: number;
+  music_title?: string;
+  music_artist?: string;
+}
 
 export interface StoryUser {
   id: number;
@@ -65,8 +81,17 @@ export interface StoryUser {
   is_my_story?: boolean;
 }
 
-// export type BackendStoryGroup = StoryUser;
- 
+export interface BackendStoryGroup {
+  id: string | number;
+  userName: string;
+  avatar?: string;
+  verified?: boolean;
+  timeAgo?: string;
+  slides: BackendSlide[];
+  musicTrack?: string;
+  is_my_story?: boolean;
+}
+
 export interface BackendMusicTrack {
   track_id: number;
   title: string;

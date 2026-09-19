@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
 import { loginResponse } from "@/types/Auth";
-
+ 
 export type AuthUserData =
   | loginResponse
   | {
@@ -11,14 +11,14 @@ export type AuthUserData =
       role?: string;
       [key: string]: any;
     };
-
+ 
 interface AuthContextType {
   user: AuthUserData | null;
   setUser: (user: AuthUserData | null) => void;
 }
-
+ 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
+ 
 export function AuthProvider({
   children,
   initialUser,
@@ -34,7 +34,7 @@ console.log(user)
     </AuthContext.Provider>
   );
 }
-
+ 
 export function useAuthuser() {
   const context = useContext(AuthContext);
   if (!context) {
