@@ -43,7 +43,7 @@ function StoryAvatar({
   return (
     <div
       onClick={onClick}
-      className="relative shrink-0 group cursor-pointer hover:scale-105 transition-all duration-200"
+      className="relative shrink-0 group cursor-pointer  transition-all duration-200"
     >
       <div
         className={`${sizeClass} p-[2.5px] rounded-[28px] ${
@@ -282,25 +282,24 @@ export default function TodayStories() {
         )}
       </div>
 
-      {/* ── Desktop Horizontal View ── */}
+  
       <div className="hidden sm:flex sm:flex-col sm:relative sm:top-0 sm:right-0 sm:z-0 sm:w-full sm:max-w-full sm:bg-white sm:rounded-[32px] sm:p-5 sm:shadow-[0_4px_24px_rgba(0,0,0,0.03)] sm:border sm:border-[#FFEFE0] sm:overflow-hidden">
         <div className="flex items-center justify-between mb-2 py-2">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-orange-50 text-[#FF6B35]">
-              <Zap className="w-5 h-5 fill-orange-400 stroke-orange-200" />
-            </div>
-            <h2 className="text-lg font-bold text-gray-900 tracking-tight">
-              Today&apos;s Stories
-            </h2>
-          </div>
-          <button
-            onClick={() => setIsAddStoryOpen(true)}
-            className="text-xs text-[#FF6B35] hover:text-[#D9652B] font-bold transition-colors cursor-pointer shrink-0 flex items-center gap-1 bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-full"
-          >
-            <Plus size={14} strokeWidth={2.5} />
-            <span>Add Story</span>
-          </button>
-        </div>
+  <div className="flex items-center gap-2">
+    <div className="p-1.5 rounded-lg bg-orange-50 text-[#FF6B35]">
+      <Zap className="w-5 h-5 fill-orange-400 stroke-orange-200" />
+    </div>
+    <h2 className="text-lg font-bold text-gray-900 tracking-tight">
+      Today&apos;s Stories
+    </h2>
+  </div>
+  <a
+    className="text-sm text-[#FF6B35] hover:underline"
+  >
+    View all
+  </a>
+</div>
+
 
         <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-1 mb-3 w-full max-w-full">
           {/* Your Story */}
@@ -328,7 +327,7 @@ export default function TodayStories() {
                 onClick={() => openPreview(userIndexInAll >= 0 ? userIndexInAll : 0)}
                 className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
               >
-                <div className="relative shrink-0 hover:scale-105 transition-all duration-200">
+                <div className="relative shrink-0 ">
                   <div className="w-[55px] h-[65px] p-[2.5px] rounded-[28px] bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]">
                     <div className="w-full h-full rounded-[26px] border-2 border-white overflow-hidden relative bg-gray-50">
                       {typeof user.avatar === "string" ? (
