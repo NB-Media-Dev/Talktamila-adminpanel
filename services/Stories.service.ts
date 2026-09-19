@@ -1,18 +1,18 @@
 import {
   BackendMusicTrack,
-  BackendStoryGroup,
   StoryResponse,
   TextStoryPayload,
   StoryActivityData,
   LikeStoryResponse,
   ReplyStoryResponse,
+  StoryUser,
 } from '@/types/Stories';
 import { apiClient } from './api-client';
 
 export const storyService = {
   // Feed & Discovery
-  getStoriesFeed: async (): Promise<BackendStoryGroup[]> => {
-    return apiClient<BackendStoryGroup[]>('/api/v1/stories', {
+  getStoriesFeed: async (): Promise<StoryUser[]> => {
+    return apiClient<StoryUser[]>('/api/v1/stories', {
       method: 'GET',
     });
   },

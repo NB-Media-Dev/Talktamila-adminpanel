@@ -142,7 +142,7 @@ export function StoryViewer({
     }
   }, [slideIndex, user.id, user.is_my_story]);
 
-  // Advance progress percentage
+  
   useEffect(() => {
     if (isPaused || showActivity) return;
 
@@ -153,7 +153,7 @@ export function StoryViewer({
     return () => clearInterval(interval);
   }, [slideDuration, isPaused, showActivity]);
 
-  // Handle slide auto-advance when progress completes
+ 
   useEffect(() => {
     if (progress >= 100) {
       if (slideIndex < totalSlides - 1) {
@@ -166,7 +166,7 @@ export function StoryViewer({
     }
   }, [progress, slideIndex, totalSlides, onNext]);
 
-  // Reset progress on slide or user change
+  
   useEffect(() => {
     setProgress(0);
   }, [slideIndex, user.id]);
@@ -493,7 +493,12 @@ export function StoryViewer({
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   onFocus={() => setIsPaused(true)}
-                  onBlur={() => setIsPaused(false)}
+                  onBlur={() => {
+                    // Only unpause if reply text is empty, or keep paused while typing/focused
+                    if (!replyText.trim()) {
+                      setIsPaused(false);
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();

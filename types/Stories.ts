@@ -52,7 +52,7 @@ export interface StorySlide {
   music_artist?: string;
 }
 
-export type BackendSlide = StorySlide;
+// export type BackendSlide = StorySlide;
 
 export interface StoryUser {
   id: number;
@@ -65,8 +65,8 @@ export interface StoryUser {
   is_my_story?: boolean;
 }
 
-export type BackendStoryGroup = StoryUser;
-
+// export type BackendStoryGroup = StoryUser;
+ 
 export interface BackendMusicTrack {
   track_id: number;
   title: string;
