@@ -55,8 +55,8 @@ export interface StorySlide {
 }
 
 export interface UserStoryGroup {
-  story_id: number;        // The single common ID for the entire story post / group
-  id?: number;             // Alias for parental identifier
+  story_id?: number;       // The single common ID for the entire story post / group
+  id: number;              // The common parental story identifier
   userName: string;
   avatar: StaticImageData | string;
   verified?: boolean;
