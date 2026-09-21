@@ -133,7 +133,7 @@ export default function TodayStories() {
           };
         }),
       });
-console.log
+      // 3. MY STORY SEPARATION
       const rawMyStory = data.find((group) => group.is_my_story === true);
       const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
       setMyStoryUser(myStoryParsed);
