@@ -31,7 +31,7 @@
 - **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) with PostCSS
-- **Database & ORM**: [Prisma ORM](https://www.prisma.io/) with PostgreSQL
+- **Database & ORM**: [Prisma ORM](https://www.prisma.io/) with MySQL
 - **Icons**: [Lucide React](https://lucide.dev/)
 
 ---
@@ -66,7 +66,7 @@ talktamila/
 
 ### Prerequisites
 - Node.js (v18.x or later recommended)
-- PostgreSQL database instance
+- MySQL database instance
 
 ### 1. Clone the Repository
 ```bash
