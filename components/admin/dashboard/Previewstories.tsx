@@ -170,4 +170,3 @@ export default function PreviewStories({
   );
 }
 
-// AI Prompt: "Check my images in this file. Add the priority prop to images above the fold (visible instantly), and ensure loading="lazy" is handled properly for images below the fold."

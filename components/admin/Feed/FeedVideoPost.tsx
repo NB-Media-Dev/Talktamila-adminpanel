@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Play} from "lucide-react";
-import avatar4 from "@/public/Images/avatar4.png";
-import avatar3 from "@/public/Images/avatar3.png";
+const avatar4 = "/Images/avatar4.png";
+const avatar3 = "/Images/avatar3.png";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { YoutubeIcon } from "@/public/Svgicons/svgicons";
@@ -67,6 +67,7 @@ export default function FeedVideoPost({ isLoading: propIsLoading }: FeedVideoPos
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 550px"
+          priority
         />
 
         <div className="absolute inset-0 bg-black/15 group-hover:bg-black/25 transition-colors duration-300" />

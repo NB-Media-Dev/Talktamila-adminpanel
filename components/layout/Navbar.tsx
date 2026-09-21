@@ -9,7 +9,7 @@ import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { authService } from "@/services/auth.service";
-import avatar2 from "@/public/Images/profile2.jpg";
+const avatar2 = "/Images/profile2.jpg";
 
 
 export default function Navbar() {

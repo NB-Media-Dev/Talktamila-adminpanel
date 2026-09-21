@@ -4,7 +4,7 @@ import { useState } from "react";
 import {
   MoreHorizontal
 } from "lucide-react";
-import avatar3 from "@/public/Images/avatar3.png";
+const avatar3 = "/Images/avatar3.png";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { FeedCardfooter } from "./FeedCardfooter";

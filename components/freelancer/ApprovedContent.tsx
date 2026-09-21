@@ -16,7 +16,7 @@ import { buttonVariants } from "../ui/Button";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { ListSkeleton } from "@/components/ui/Skeletonloading";
 import Image, { StaticImageData } from "next/image";
-import avatar1 from "@/public/Images/avatar1.png";
+const avatar1 = "/Images/avatar1.png";
 
 export interface Creator {
   name: string;

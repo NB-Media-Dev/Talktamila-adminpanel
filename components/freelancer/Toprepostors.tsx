@@ -2,9 +2,9 @@
 
 import  { useState } from "react";
 import Image, { StaticImageData } from "next/image";
-import avatar1 from "@/public/Images/avatar1.png";
-import avatar2 from "@/public/Images/avatar2.png";
-import avatar3 from "@/public/Images/avatar3.png";
+const avatar1 = "/Images/avatar1.png";
+const avatar2 = "/Images/avatar2.png";
+const avatar3 = "/Images/avatar3.png";
 import { buttonVariants } from "../ui/Button";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Avatarloading } from "../ui/Skeletonloading";

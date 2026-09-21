@@ -8,7 +8,7 @@ import { InstagramIcon, FacebookIcon, TreadsIcon, YoutubeIcon } from "@/public/S
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { TableSkeleton } from "@/components/ui/Skeletonloading";
 import Image, { StaticImageData } from "next/image";
-import avatar1 from "@/public/Images/avatar1.png";
+const avatar1 = "/Images/avatar1.png";
 
 export interface RepostedItem {
   id: string;

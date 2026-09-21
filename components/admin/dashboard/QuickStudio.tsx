@@ -23,7 +23,7 @@ import { useContenthook } from "@/hooks/useContent";
 import { LivePreviewloading } from "@/components/ui/Skeletonloading";
 
 import { StaticImageData } from "next/image";
-import avatar1 from "@/public/Images/avatar1.png";
+const avatar1 = "/Images/avatar1.png";
 import { FacebookPostPreview } from "./FacebookPostPreview";
 
 interface FormatOption {

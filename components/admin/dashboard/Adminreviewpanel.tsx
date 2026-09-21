@@ -5,11 +5,11 @@ import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
 import { FacebookIcon } from "@/public/Svgicons/svgicons";
 import Image from "next/image";
-import avatar1 from "@/public/Images/avatar1.png";
-import ai from "@/public/Images/ai.png";
-import movie from "@/public/Images/movie.jpg";
-import news from "@/public/Images/news.png";
-import waterfall from "@/public/Images/waterfall.jpg";
+const avatar1 = "/Images/avatar1.png";
+const ai = "/Images/ai.png";
+const movie = "/Images/movie.jpg";
+const news = "/Images/news.png";
+const waterfall = "/Images/waterfall.jpg";
 
 type FilterType = "all" | "pending" | "approved" | "rejected";
 

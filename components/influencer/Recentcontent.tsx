@@ -7,7 +7,7 @@ import { buttonVariants } from "../ui/Button";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { TableSkeleton } from "@/components/ui/Skeletonloading";
 import Image, { StaticImageData } from "next/image";
-import avatar1 from "@/public/Images/avatar1.png";
+const avatar1 = "/Images/avatar1.png";
 
 export interface ContentItem {
   id: string;

@@ -5,7 +5,7 @@ import { Avatarloading } from "@/components/ui/Skeletonloading";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import Image, { StaticImageData } from "next/image";
 import React, { useState } from "react";
-import avatar1 from "@/public/Images/avatar1.png";
+const avatar1 = "/Images/avatar1.png";
 export interface TrendingItem {
   id: string;
   title: string;

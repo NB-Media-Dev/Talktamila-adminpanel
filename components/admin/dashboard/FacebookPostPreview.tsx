@@ -3,7 +3,7 @@
 import Image, { type StaticImageData } from "next/image";
 import { MoreHorizontal, Play, ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 import { FacebookIcon } from "@/public/Svgicons/svgicons";
-import avatar1 from "@/public/Images/avatar1.png";
+const avatar1 = "/Images/avatar1.png";
 
 interface FacebookPostPreviewProps {
   title?: string;

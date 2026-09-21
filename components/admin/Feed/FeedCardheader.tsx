@@ -11,6 +11,7 @@ export interface FeedCardheaderProps {
   location: string;
   time: string;
   rightElement?: React.ReactNode;
+  priority?: boolean;
 }
 
 export function FeedCardheader({
@@ -20,6 +21,7 @@ export function FeedCardheader({
   location,
   time,
   rightElement,
+  priority,
 }: FeedCardheaderProps) {
   return (
     <div className="flex items-center justify-between">
@@ -31,6 +33,7 @@ export function FeedCardheader({
             fill
             className="object-cover"
             sizes="44px"
+            priority={priority}
           />
         </div>
 

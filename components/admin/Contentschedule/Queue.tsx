@@ -6,13 +6,13 @@ import { InstagramIcon, YoutubeIcon } from "@/public/Svgicons/svgicons";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { MetricsSkeleton } from "@/components/ui/Skeletonloading";
 import Image, { StaticImageData } from "next/image";
-import metro from "@/public/Images/metro.jpg";
-import news from "@/public/Images/news.png";
-import ai from "@/public/Images/ai.png";
-import food from "@/public/Images/food.jpg";
-import nextjs from "@/public/Images/nextjs.jpg";
-import sport from "@/public/Images/sport.png";
-import tech from "@/public/Images/tech.png";
+const metro = "/Images/metro.jpg";
+const news = "/Images/news.png";
+const ai = "/Images/ai.png";
+const food = "/Images/food.jpg";
+const nextjs = "/Images/nextjs.jpg";
+const sport = "/Images/sport.png";
+const tech = "/Images/tech.png";
 
 // interface QueueItem {
 //   id: string;

@@ -13,7 +13,8 @@ export default function RegisterPage() {
   const router = useRouter()
 
   const [formData, setFormData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     mobile: '',
     password: '',
@@ -21,7 +22,7 @@ export default function RegisterPage() {
     birthDay: '',
     birthYear: '',
     username: '',
-    role:''
+    role: ''
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -146,56 +147,56 @@ export default function RegisterPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError('');
+    e.preventDefault()
+    setError('')
 
-  if (!formData.fullName.trim()) return setError('Please enter your full name.');
-  if (!formData.birthMonth || !formData.birthDay || !formData.birthYear)
-    return setError('Please select your complete date of birth.');
-  if (!formData.email.trim()) return setError('Please enter your email.');
-  if (!formData.mobile.trim()) return setError('Please enter your mobile number.');
-  if (!formData.password) return setError('Please enter a password.');
-  if (!formData.username.trim()) return setError('Please choose a username.');
-  if (!formData.role.trim()) return setError('Please choose a Role.');
+    if (!formData.firstName.trim()) return setError('Please enter your first name.')
+    if (!formData.lastName.trim()) return setError('Please enter your last name.')
+    if (!formData.birthMonth || !formData.birthDay || !formData.birthYear)
+      return setError('Please select your complete date of birth.')
+    if (!formData.email.trim()) return setError('Please enter your email.')
+    if (!formData.mobile.trim()) return setError('Please enter your mobile number.')
+    if (!formData.password) return setError('Please enter a password.')
+    if (!formData.username.trim()) return setError('Please choose a username.')
+    if (!formData.role.trim()) return setError('Please choose a Role.')
 
-  if (emailStatus === 'taken') return setError(emailCheckMsg || 'This email is already registered.');
-  if (mobileStatus === 'taken') return setError(mobileCheckMsg || 'This mobile number is already registered.');
-  if (usernameStatus === 'taken') return setError(usernameCheckMsg || 'This username is already taken.');
-  if (emailStatus === 'checking' || mobileStatus === 'checking' || usernameStatus === 'checking') {
-    return setError('Still checking your details, please wait a moment and try again.');
+    if (emailStatus === 'taken') return setError(emailCheckMsg || 'This email is already registered.')
+    if (mobileStatus === 'taken') return setError(mobileCheckMsg || 'This mobile number is already registered.')
+    if (usernameStatus === 'taken') return setError(usernameCheckMsg || 'This username is already taken.')
+    if (emailStatus === 'checking' || mobileStatus === 'checking' || usernameStatus === 'checking') {
+      return setError('Still checking your details, please wait a moment and try again.')
+    }
+
+    setIsSubmitting(true)
+
+    const first_name = formData.firstName.trim()
+    const last_name = formData.lastName.trim()
+
+    const monthIndex = months.indexOf(formData.birthMonth) + 1
+    const dob = `${formData.birthYear}-${String(monthIndex).padStart(2, '0')}-${String(formData.birthDay).padStart(2, '0')}`
+
+    try {
+      await authService.signUp({
+        username: formData.username,
+        first_name,
+        last_name,
+        email: formData.email,
+        mobile_no: formData.mobile,
+        password: formData.password,
+        dob,
+        role: formData.role
+      })
+
+      setIsSubmitting(false)
+      setSuccess(true)
+      setTimeout(() => router.push('/login'), 1500)
+    } catch (err) {
+      setIsSubmitting(false)
+      const errorInstance = err as Error
+      setError(errorInstance.message || 'Something went wrong. Please try again.')
+    }
   }
 
-  setIsSubmitting(true);
-
-  const nameParts = formData.fullName.trim().split(' ');
-  const first_name = nameParts[0];
-  const last_name = nameParts.slice(1).join(' ') || first_name;
-
-  const monthIndex = months.indexOf(formData.birthMonth) + 1;
-  const dob = `${formData.birthYear}-${String(monthIndex).padStart(2, '0')}-${String(formData.birthDay).padStart(2, '0')}`;
-
-  try {
-
-     await authService.signUp({
-      username: formData.username,
-      first_name,
-      last_name,
-      email: formData.email,
-      mobile_no: formData.mobile,
-      password: formData.password,
-      dob,
-      role: formData.role
-    });
-
-    setIsSubmitting(false);
-    setSuccess(true);
-    setTimeout(() => router.push('/login'), 1500);
-  } catch (err) {
-    setIsSubmitting(false);
-    const errorInstance = err as Error;
-    setError(errorInstance.message || 'Something went wrong. Please try again.');
-  }
-};
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FFEAE2] py-8 px-4 font-sans">
       <div className="w-full max-w-4xl rounded-[32px] bg-white p-6 sm:p-8 shadow-xl shadow-orange-900/5 border border-orange-100/60">
@@ -230,10 +231,18 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="fullName" className="block text-xs font-semibold text-gray-800 mb-1.5">Name</label>
-            <input type="text" name="fullName" id="fullName" placeholder="Full name" value={formData.fullName} onChange={handleChange}
-              className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 placeholder-gray-400 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition" />
+          {/* First Name & Last Name Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="firstName" className="block text-xs font-semibold text-gray-800 mb-1.5">First Name</label>
+              <input type="text" name="firstName" id="firstName" placeholder="First name" value={formData.firstName} onChange={handleChange}
+                className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 placeholder-gray-400 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition" />
+            </div>
+            <div>
+              <label htmlFor="lastName" className="block text-xs font-semibold text-gray-800 mb-1.5">Last Name</label>
+              <input type="text" name="lastName" id="lastName" placeholder="Last name" value={formData.lastName} onChange={handleChange}
+                className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 placeholder-gray-400 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition" />
+            </div>
           </div>
 
           <div>
@@ -306,23 +315,23 @@ export default function RegisterPage() {
               <p className="mt-1.5 text-xs text-red-600">{usernameCheckMsg}</p>
             )}
           </div>
-          {/* Role Dropdown Option */}
-<div>
-  <label htmlFor="role" className="block text-xs font-semibold text-gray-800 mb-1.5">Join as</label>
-  <select
-    name="role"
-    id="role"
-    value={formData.role}
-    onChange={handleChange}
-    className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition"
-    required
-  >
-    <option value="" disabled>Select your account type</option>
-    <option value="influencer">Influencer</option>
-    <option value="freelancer">Freelancer</option>
-  </select>
-</div>
 
+          {/* Role Dropdown Option */}
+          <div>
+            <label htmlFor="role" className="block text-xs font-semibold text-gray-800 mb-1.5">Join as</label>
+            <select
+              name="role"
+              id="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition"
+              required
+            >
+              <option value="" disabled>Select your account type</option>
+              <option value="influencer">Influencer</option>
+              <option value="freelancer">Freelancer</option>
+            </select>
+          </div>
 
           <button
             type="submit"

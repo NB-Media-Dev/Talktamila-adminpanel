@@ -3,8 +3,8 @@
 import  { useState } from "react";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import {  MetricsSkeleton } from "@/components/ui/Skeletonloading";
-import Image, { StaticImageData } from "next/image";
-import avatar1 from "@/public/Images/avatar1.png";
+import type { StaticImageData } from "next/image";
+const avatar1 = "/Images/avatar1.png";
 export interface CreatorItem {
   id: string;
   name: string;
@@ -86,8 +86,8 @@ export default function Creator({ limit = 2, isLoading: propIsLoading }: Creator
               
               <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full p-[2px] bg-gradient-to-tr from-[#FF6B35] via-[#FF8C42] to-[#FF4D8D] shrink-0 shadow-xs">
                 <div className="w-full h-full rounded-full overflow-hidden bg-white border border-white">
-                  <Image
-                    src={creator.avatar}
+                  <img
+                    src={typeof creator.avatar === "string" ? creator.avatar : "/Images/avatar1.png"}
                     alt={creator.name} 
                     className="w-full h-full object-cover"
                     onError={(e) => {

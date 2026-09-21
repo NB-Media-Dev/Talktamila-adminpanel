@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { MessageSquare} from "lucide-react";
-import avatar6 from "@/public/Images/avatar6.png";
+const avatar6 = "/Images/avatar6.png";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { FeedCardfooter } from "./FeedCardfooter";

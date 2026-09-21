@@ -5,7 +5,7 @@ import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { LivePreviewloading } from "@/components/ui/Skeletonloading";
-import avatar1 from "@/public/Images/avatar1.png";
+const avatar1 = "/Images/avatar1.png";
 import { FacebookPostPreview } from "./FacebookPostPreview";
 import { useAuthRole } from "@/hooks/useAuthRole";
 

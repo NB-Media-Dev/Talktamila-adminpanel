@@ -2,8 +2,8 @@
 
 import React, { useState, useRef } from "react";
 import { X} from "lucide-react";
-import avatar4 from "@/public/Images/avatar4.png";
-import movie from "@/public/Images/movie.jpg";
+const avatar4 = "/Images/avatar4.png";
+const movie = "/Images/movie.jpg";
 import InfluencerPostAnalytics from "@/components/influencer/InfluencerPostAnalytics";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import {  InstagramIcon } from "@/public/Svgicons/svgicons";
@@ -22,7 +22,7 @@ export default function FeedImagePost({ isLoading: propIsLoading }: FeedImagePos
   UsetimeoutLoader(setIsLoading);
   const { isInfluencer , isFreelancer } = useAuthRole();
 
-  const defaultImageSrc = typeof movie === "string" ? movie : movie.src;
+  const defaultImageSrc = movie;
   const [imageSrc, setImageSrc] = useState<string>(defaultImageSrc);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

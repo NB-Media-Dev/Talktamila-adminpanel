@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import avatar4 from "@/public/Images/avatar4.png";
-import avatar5 from "@/public/Images/avatar5.png";
+const avatar4 = "/Images/avatar4.png";
+const avatar5 = "/Images/avatar5.png";
 import { useState } from "react";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Avatarloading} from "@/components/ui/Skeletonloading";

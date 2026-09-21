@@ -79,6 +79,8 @@ export interface StoryUser {
   verified?: boolean;
   timeAgo?: string;
   slides: StorySlide[];
+   isViewed: boolean;        
+  hasUnseen: boolean
   musicTrack?: string;
   is_my_story?: boolean;
 }
@@ -89,6 +91,8 @@ export interface BackendStoryGroup {
   avatar?: string;
   verified?: boolean;
   timeAgo?: string;
+  all_viewed: boolean;        
+  has_unseen_stories: boolean
   slides: BackendSlide[];
   stories?: any[];
   musicTrack?: string;

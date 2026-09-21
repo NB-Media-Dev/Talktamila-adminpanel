@@ -4,11 +4,11 @@ import  { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { MetricsSkeleton } from "@/components/ui/Skeletonloading";
-import maduari from "@/public/Images/maduari.webp"
 import Image, { StaticImageData } from "next/image";
-import coimbatore from "@/public/Images/coimbatore.jpg";
-import kanchipuram from "@/public/Images/kanchipuram.webp";
-import thiru from "@/public/Images/thiru.jpg";
+const maduari = "/Images/maduari.webp";
+const coimbatore = "/Images/coimbatore.jpg";
+const kanchipuram = "/Images/kanchipuram.webp";
+const thiru = "/Images/thiru.jpg";
 
 interface HighlightItem {
   id: number;

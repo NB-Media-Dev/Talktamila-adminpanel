@@ -1,7 +1,7 @@
 "use client";
 
 import { Star, CheckCircle2 } from "lucide-react";
-import verified from "@/public/Images/verifiyedprofile.jpg";
+const verified = "/Images/verifiyedprofile.jpg";
 import { useState } from "react";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { ContentSkeleton } from "@/components/ui/Skeletonloading";
