@@ -419,12 +419,12 @@ export default function Addstories({
       >
         <Smile size={16} />
       </button> {showPicker && (
-        <div className="absolute right-0 z-50 top-full mt-2 shadow-xl rounded-xl overflow-hidden border border-gray-100">
+        <div className="absolute right-0 z-50 top-full  shadow-xl rounded-xl overflow-hidden border border-gray-100">
           <EmojiPicker
             onEmojiClick={onEmojiClick}
             autoFocusSearch={false}
             width={320}
-            height={380}
+            height={300}
             previewConfig={{ showPreview: false }} // Hides the bulky description footer bar
           />
         </div>

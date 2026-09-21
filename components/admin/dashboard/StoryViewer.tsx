@@ -78,6 +78,16 @@ export interface StoryViewerProps {
   hasNext: boolean;
 }
 
+const sortSlidesAscending = (rawSlides?: StorySlide[]): StorySlide[] => {
+  return [...(rawSlides || [])].sort((a, b) => {
+    const dateA = new Date(a.created_at || 0).getTime();
+    const dateB = new Date(b.created_at || 0).getTime();
+    if (dateA !== dateB) return dateA - dateB;
+    return Number(a.id || 0) - Number(b.id || 0);
+  });
+};
+
+
 export function StoryViewer({
   user,
   onNext,
@@ -87,7 +97,7 @@ export function StoryViewer({
   hasPrev,
   hasNext,
 }: StoryViewerProps) {
-  const [slides, setSlides] = useState<StorySlide[]>(user.slides);
+  const [slides, setSlides] = useState<StorySlide[]>(() => sortSlidesAscending(user.slides));
   const [slideIndex, setSlideIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -105,24 +115,20 @@ export function StoryViewer({
   const [resolvedAudioUrl, setResolvedAudioUrl] = useState<string | null>(null);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
+  const viewedSlideIdsRef = useRef<Set<number>>(new Set());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const TICK = 50; // ms per tick
 
- useEffect(() => {
-    
-    const sortedSlides = [...(user.slides || [])].sort((a, b) => {
-      const dateA = new Date(a.created_at || 0).getTime();
-      const dateB = new Date(b.created_at || 0).getTime();
-      return dateA - dateB; 
-    });
-
-    setSlides(sortedSlides);
+  useEffect(() => {
+    const sorted = sortSlidesAscending(user.slides);
+    setSlides(sorted);
     setSlideIndex(0);
     setIsTypingReply(false);
     setReplyText("");
   }, [user]);
+
 
   const currentSlide = slides[slideIndex] || slides[0];
   const slideDuration = currentSlide?.duration ?? 5000;
@@ -229,8 +235,9 @@ export function StoryViewer({
 
   useEffect(() => {
     if (!user.is_my_story && currentSlide) {
-      const storyId = currentSlide.story_id || currentSlide.id;
-      if (storyId) {
+      const storyId = Number(currentSlide.story_id || currentSlide.id);
+      if (storyId && !viewedSlideIdsRef.current.has(storyId)) {
+        viewedSlideIdsRef.current.add(storyId);
         storyService.recordView(storyId).catch(() => { });
       }
     }
