@@ -3,24 +3,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image, { type StaticImageData } from "next/image";
 import { StoryViewer } from "./StoryViewer";
+import type { StorySlide, UserStoryGroup, StoryUser } from "@/types/Stories";
 
-export interface StorySlide {
-  id: number;
-  story_id?: number;
-  imageUrl: StaticImageData | string;
-  media_type?: string;
-  caption?: string;
-  duration?: number; // ms, default 5000
-  liked?: boolean;
-  likes_count?: number;
-  views_count?: number;
-  created_at?: string;
-  musicTrack?: string;
-  music_url?: string;
-  music_start_time?: number;
-  music_title?: string;
-  music_artist?: string;
-}
+export type { StorySlide, UserStoryGroup, StoryUser };
 
 export function formatTimeAgo(timestamp?: string | null, fallback?: string): string {
   if (!timestamp) return fallback || "Just now";
@@ -62,17 +47,6 @@ export function formatTimeAgo(timestamp?: string | null, fallback?: string): str
   } catch {
     return fallback || "Just now";
   }
-}
-
-export interface StoryUser {
-  id: number;
-  userName: string;
-  avatar: StaticImageData | string;
-  verified?: boolean;
-  timeAgo?: string;
-  slides: StorySlide[];
-  musicTrack?: string;
-  is_my_story?: boolean;
 }
 
 interface PreviewStoriesProps {

@@ -35,8 +35,9 @@ export interface MultipleUploadResponse {
 }
 
 export interface StorySlide {
-  id: number;
-  story_id?: number;
+  id: number;              // The unique ID for this single slide instance
+  story_group_id?: number; // The shared parental story identifier
+  story_id?: number;       // Reference to backend story identifier
   imageUrl: StaticImageData | string;
   media_url?: string;
   media_type?: string;
@@ -53,9 +54,24 @@ export interface StorySlide {
   music_artist?: string;
 }
 
+export interface UserStoryGroup {
+  story_id: number;        // The single common ID for the entire story post / group
+  id?: number;             // Alias for parental identifier
+  userName: string;
+  avatar: StaticImageData | string;
+  verified?: boolean;
+  timeAgo?: string;
+  slides: StorySlide[];    // Array containing the individual unique slides
+  isViewed?: boolean;
+  hasUnseen?: boolean;
+  musicTrack?: string;
+  is_my_story?: boolean;
+}
+
 export interface BackendSlide {
   id: string | number;
   story_id?: string | number;
+  story_group_id?: string | number;
   imageUrl?: string;
   media_url?: string;
   media_type?: string;
@@ -72,27 +88,21 @@ export interface BackendSlide {
   music_artist?: string;
 }
 
-export interface StoryUser {
+export interface StoryUser extends UserStoryGroup {
   id: number;
-  userName: string;
-  avatar: StaticImageData | string;
-  verified?: boolean;
-  timeAgo?: string;
-  slides: StorySlide[];
-   isViewed: boolean;        
-  hasUnseen: boolean
-  musicTrack?: string;
-  is_my_story?: boolean;
+  isViewed: boolean;        
+  hasUnseen: boolean;
 }
 
 export interface BackendStoryGroup {
   id: string | number;
+  story_id?: string | number;
   userName: string;
   avatar?: string;
   verified?: boolean;
   timeAgo?: string;
   all_viewed: boolean;        
-  has_unseen_stories: boolean
+  has_unseen_stories: boolean;
   slides: BackendSlide[];
   stories?: any[];
   musicTrack?: string;

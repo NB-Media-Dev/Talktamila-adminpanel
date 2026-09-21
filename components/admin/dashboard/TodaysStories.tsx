@@ -102,38 +102,44 @@ export default function TodayStories() {
       const data = await storyService.getStoriesFeed();
       if (!Array.isArray(data)) return;
 
-      const normalizeGroupToUser = (group: BackendStoryGroup): StoryUser => ({
-        id: Number(group.id),
-        userName: group.userName,
-        avatar: group.avatar || defaultAvatar,
-        verified: group.verified || false,
-        timeAgo: group.timeAgo || "Just now",
-        musicTrack: group.musicTrack,
-        is_my_story: Boolean(group.is_my_story),
-        isViewed: group.all_viewed ?? false,
-        hasUnseen: group.has_unseen_stories ?? true,
-        slides: (group.slides || []).map((s, idx) => {
-          const correspondingStory = (group.stories || [])[idx];
-          return {
-            id: Number(s.id),
-            story_id: Number(s.story_id || s.id),
-            imageUrl: s.imageUrl || s.media_url || correspondingStory?.media_url || "",
-            media_type: s.media_type || correspondingStory?.media_type || "image",
-            caption: s.caption || correspondingStory?.caption,
-            duration: s.duration || 5000,
-            liked: s.liked || correspondingStory?.liked_by_me || false,
-            likes_count: s.likes_count || correspondingStory?.likes_count || 0,
-            views_count: s.views_count || correspondingStory?.views_count || 0,
-            created_at: s.created_at || correspondingStory?.created_at,
-            musicTrack: s.musicTrack || (correspondingStory?.music_title ? `${correspondingStory.music_title}${correspondingStory.music_artist ? ` – ${correspondingStory.music_artist}` : ''} 🎵` : undefined),
-            music_url: s.music_url || correspondingStory?.music_url,
-            music_start_time: s.music_start_time ?? correspondingStory?.music_start_time ?? 0,
-            music_title: s.music_title || correspondingStory?.music_title,
-            music_artist: s.music_artist || correspondingStory?.music_artist,
-          };
-        }),
-      });
-console.log
+      const normalizeGroupToUser = (group: BackendStoryGroup): StoryUser => {
+        const parentStoryId = Number(group.story_id || group.id);
+        return {
+          id: parentStoryId,
+          story_id: parentStoryId,
+          userName: group.userName,
+          avatar: group.avatar || defaultAvatar,
+          verified: group.verified || false,
+          timeAgo: group.timeAgo || "Just now",
+          musicTrack: group.musicTrack,
+          is_my_story: Boolean(group.is_my_story),
+          isViewed: group.all_viewed ?? false,
+          hasUnseen: group.has_unseen_stories ?? true,
+          slides: (group.slides || []).map((s, idx) => {
+            const correspondingStory = (group.stories || [])[idx];
+            const slideId = Number(s.id ?? (correspondingStory?.id || idx + 1));
+            const backendStoryId = Number(s.story_id ?? correspondingStory?.id ?? s.id);
+            return {
+              id: slideId,
+              story_group_id: parentStoryId,
+              story_id: backendStoryId,
+              imageUrl: s.imageUrl || s.media_url || correspondingStory?.media_url || "",
+              media_type: s.media_type || correspondingStory?.media_type || "image",
+              caption: s.caption || correspondingStory?.caption,
+              duration: s.duration || 5000,
+              liked: s.liked || correspondingStory?.liked_by_me || false,
+              likes_count: s.likes_count || correspondingStory?.likes_count || 0,
+              views_count: s.views_count || correspondingStory?.views_count || 0,
+              created_at: s.created_at || correspondingStory?.created_at,
+              musicTrack: s.musicTrack || (correspondingStory?.music_title ? `${correspondingStory.music_title}${correspondingStory.music_artist ? ` – ${correspondingStory.music_artist}` : ''} 🎵` : undefined),
+              music_url: s.music_url || correspondingStory?.music_url,
+              music_start_time: s.music_start_time ?? correspondingStory?.music_start_time ?? 0,
+              music_title: s.music_title || correspondingStory?.music_title,
+              music_artist: s.music_artist || correspondingStory?.music_artist,
+            };
+          }),
+        };
+      };
       const rawMyStory = data.find((group) => group.is_my_story === true);
       const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
       setMyStoryUser(myStoryParsed);

@@ -33,6 +33,7 @@ import { useAuthRole } from "@/hooks/useAuthRole";
 import { storyService } from "@/services/Stories.service";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import MusicsControl, { MusicTrack } from "./MusicsControl";
+import EmojiPicker from "emoji-picker-react";
 
 interface AddstoriesProps {
   isOpen?: boolean;
@@ -93,6 +94,13 @@ export default function Addstories({
 
   const [step, setStep] = useState<"edit" | "loading" | "preview">("edit");
   const [caption, setCaption] = useState<string>("");
+   const [showPicker, setShowPicker] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+
+  const onEmojiClick = (emojiData: { emoji: string }) => {
+    setCaption((prevText) => prevText + emojiData.emoji);
+  };
   const [selectedAudience, setSelectedAudience] = useState<string>("public");
   const [selectedMusic, setSelectedMusic] = useState<string>("");
   const [selectedThemeIndex, setSelectedThemeIndex] = useState<number>(0);
@@ -106,6 +114,16 @@ export default function Addstories({
       setSelectedAudience("public");
     }
   }, [isAdmin, selectedAudience]);
+
+   useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setShowPicker(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const [mediaList, setMediaList] = useState<string[]>([]);
   const [rawFiles, setRawFiles] = useState<File[]>([]);
@@ -394,9 +412,23 @@ export default function Addstories({
                   placeholder="Type your story text or caption here..."
                   className="w-full p-2.5 rounded-xl bg-white border border-orange-100 outline-none text-xs sm:text-sm resize-none transition-all shadow-xs focus:border-[#ef8b54] focus:ring-1 focus:ring-[#ef8b54]/30 placeholder:text-gray-400 text-gray-800 leading-relaxed"
                 />
-                <div className="absolute right-2.5 bottom-2.5 text-gray-400 hover:text-gray-600 cursor-pointer">
-                  <Smile size={16} />
-                </div>
+                 <button
+        type="button"
+        onClick={() => setShowPicker(!showPicker)}
+        className="absolute right-2.5 bottom-2.5 text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none"
+      >
+        <Smile size={16} />
+      </button> {showPicker && (
+        <div className="absolute right-0 z-50 top-full mt-2 shadow-xl rounded-xl overflow-hidden border border-gray-100">
+          <EmojiPicker
+            onEmojiClick={onEmojiClick}
+            autoFocusSearch={false}
+            width={320}
+            height={380}
+            previewConfig={{ showPreview: false }} // Hides the bulky description footer bar
+          />
+        </div>
+      )}
               </div>
 
               {mediaList.length === 0 && (
@@ -582,17 +614,6 @@ export default function Addstories({
                       <ImagesIcon size={13} />
                       <span>Select Media</span>
                     </button>
-                    {/* <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        videoInputRef.current?.click();
-                      }}
-                      className="px-3.5 py-1.5 bg-orange-100 text-orange-800 text-xs font-bold rounded-full hover:bg-orange-200 transition-all shadow-xs active:scale-95 cursor-pointer flex items-center gap-1"
-                    >
-                      <Video size={13} />
-                      <span>Upload Video</span>
-                    </button> */}
                   </div>
                 </div>
               )}
@@ -646,7 +667,7 @@ export default function Addstories({
               className="mt-2 w-full py-2.5 bg-[#ef8b54] hover:bg-[#d9723a] text-white text-xs font-extrabold rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer lg:hidden uppercase tracking-wider flex items-center justify-center gap-1.5"
             >
               <Eye size={15} />
-              <span>Preview Story ({totalBars} {totalBars === 1 ? "bar" : "bars"})</span>
+              <span>Preview Story</span>
             </button>
           </div>
 
@@ -905,7 +926,7 @@ export default function Addstories({
                   </>
                 ) : (
                   <>
-                    <Plus size={14} strokeWidth={3} />
+                 
                     <span>Add Story {mediaList.length > 1 ? `(${mediaList.length})` : ""}</span>
                   </>
                 )}

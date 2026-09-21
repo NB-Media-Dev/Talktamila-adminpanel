@@ -23,13 +23,14 @@ import {
   MoreVertical,
 } from "lucide-react";
 import { storyService } from "@/services/Stories.service";
-import { StoryActivityData } from "@/types/Stories";
-import { StorySlide, StoryUser, formatTimeAgo } from "./Previewstories";
+import type { StoryActivityData, StorySlide, StoryUser, UserStoryGroup } from "@/types/Stories";
+import { formatTimeAgo } from "./Previewstories";
 import { ActivitySheet } from "./StoryActivity";
 
 // ─── Progress Bars ───────────────────────────────────────────────────────────
 
 interface ProgressBarProps {
+  slides?: StorySlide[];
   total: number;
   current: number;
   /** 0-100 progress of the active bar */
@@ -37,15 +38,17 @@ interface ProgressBarProps {
   onSeek: (index: number) => void;
 }
 
-export function ProgressBars({ total, current, progress, onSeek }: ProgressBarProps) {
+export function ProgressBars({ slides, total, current, progress, onSeek }: ProgressBarProps) {
+  const items = slides && slides.length > 0 ? slides : Array.from({ length: total });
   return (
     <div className="flex gap-1 w-full items-center px-3 pt-2.5">
-      {Array.from({ length: total }).map((_, i) => {
+      {items.map((item, i) => {
         const isPast = i < current;
         const isActive = i === current;
+        const key = (item as StorySlide)?.id ?? i;
         return (
           <div
-            key={i}
+            key={key}
             onClick={() => onSeek(i)}
             className="flex-1 h-[3px] rounded-full bg-white/30 overflow-hidden cursor-pointer"
             title={`Slide ${i + 1}`}
@@ -532,6 +535,7 @@ export function StoryViewer({
     <div className="relative z-30 flex flex-col gap-2 pointer-events-auto">
       {/* Progress bars */}
       <ProgressBars
+        slides={slides}
         total={totalSlides}
         current={slideIndex}
         progress={progress}
