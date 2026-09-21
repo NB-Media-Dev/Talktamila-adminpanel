@@ -9,6 +9,7 @@ import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { authService } from "@/services/auth.service";
+import LogoutConfirmDialog from "./LogoutConfirmDialog";
 import avatar2 from "@/public/Images/profile2.jpg";
 
 
@@ -21,6 +22,14 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState<boolean>(false);
+
+  const handleLogoutConfirm = () => {
+    setIsLogoutOpen(false);
+    setUser(null);
+    authService.signOut();
+    router.replace("/login");
+  };
 
   const mobileDropdownRef = useRef<HTMLDivElement>(null);
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
@@ -134,9 +143,7 @@ export default function Navbar() {
         type="button"
         onClick={() => {
           setIsProfileOpen(false);
-          setUser(null);
-          authService.signOut();
-          router.push("/login");
+          setIsLogoutOpen(true);
         }}
         className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors w-full text-left cursor-pointer"
       >
@@ -147,6 +154,7 @@ export default function Navbar() {
   );
 
   return (
+    <>
     <header className="sticky top-0 sm:z-40 z-50 w-full px-2 sm:px-4 py-2 backdrop-blur-md bg-[#FDEEE2]/90 transition-all duration-200">
       <div className="block md:hidden w-full bg-white rounded-2xl sm:rounded-3xl px-2.5 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-orange-100/60">
         <div className="flex items-center justify-between gap-1">
@@ -284,7 +292,11 @@ export default function Navbar() {
 
       </div>
     </header>
+    <LogoutConfirmDialog
+      open={isLogoutOpen}
+      onCancel={() => setIsLogoutOpen(false)}
+      onConfirm={handleLogoutConfirm}
+    />
+    </>
   );
 }
-
-

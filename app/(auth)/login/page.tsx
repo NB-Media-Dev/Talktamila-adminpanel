@@ -35,9 +35,10 @@ export default function LoginPage() {
       };
 
       const role = (data?.role || data?.user?.role || "admin").toLowerCase();
-      router.push(roleRoutes[role] || "/admin");
-    } catch (err: any) {
-      setError(err.message || "Login failed. Please try again.");
+      // replace (not push) so "Back" from the dashboard never returns to the login form
+      router.replace(roleRoutes[role] || "/admin");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

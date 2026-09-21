@@ -10,7 +10,7 @@ import {
   AvailabilityResponse,
 } from '@/types/Auth';
 import { apiClient } from './api-client';
-import { setAuthToken, clearAuthToken } from '@/lib/cookies';
+import { setAuthToken, setAuthRole, clearAuthToken } from '@/lib/cookies';
 
 export const authService = {
   signIn: async (payload: loginPayload): Promise<loginResponse> => {
@@ -21,6 +21,8 @@ export const authService = {
 
     if (response.access_token) {
       setAuthToken(response.access_token, 7 * 24 * 60 * 60);
+      const role = response.role || response.user?.role;
+      if (role) setAuthRole(String(role));
     }
 
     return response;
