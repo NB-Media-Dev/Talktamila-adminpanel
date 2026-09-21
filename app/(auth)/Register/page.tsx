@@ -149,12 +149,25 @@ export default function RegisterPage() {
   e.preventDefault();
   setError('');
 
-  if (!formData.fullName.trim()) return setError('Please enter your full name.');
+  const nameParts = formData.fullName.trim().split(/\s+/).filter(Boolean);
+  if (nameParts.length < 2) return setError('Please enter your first and last name.');
   if (!formData.birthMonth || !formData.birthDay || !formData.birthYear)
     return setError('Please select your complete date of birth.');
+  {
+    const y = Number(formData.birthYear);
+    const m = months.indexOf(formData.birthMonth);
+    const d = Number(formData.birthDay);
+    const picked = new Date(y, m, d);
+    if (picked.getFullYear() !== y || picked.getMonth() !== m || picked.getDate() !== d)
+      return setError('That date of birth does not exist. Please check the day.');
+    if (picked > new Date()) return setError('Date of birth cannot be in the future.');
+  }
   if (!formData.email.trim()) return setError('Please enter your email.');
   if (!formData.mobile.trim()) return setError('Please enter your mobile number.');
+  if (!/^\+?\d{10,15}$/.test(formData.mobile.trim()))
+    return setError('Enter a valid mobile number: 10-15 digits, no spaces or dashes.');
   if (!formData.password) return setError('Please enter a password.');
+  if (formData.password.length < 6) return setError('Password must be at least 6 characters.');
   if (!formData.username.trim()) return setError('Please choose a username.');
   if (!formData.role.trim()) return setError('Please choose a Role.');
 
@@ -167,9 +180,8 @@ export default function RegisterPage() {
 
   setIsSubmitting(true);
 
-  const nameParts = formData.fullName.trim().split(' ');
   const first_name = nameParts[0];
-  const last_name = nameParts.slice(1).join(' ') || first_name;
+  const last_name = nameParts.slice(1).join(' ');
 
   const monthIndex = months.indexOf(formData.birthMonth) + 1;
   const dob = `${formData.birthYear}-${String(monthIndex).padStart(2, '0')}-${String(formData.birthDay).padStart(2, '0')}`;
@@ -177,11 +189,11 @@ export default function RegisterPage() {
   try {
 
      await authService.signUp({
-      username: formData.username,
+      username: formData.username.trim(),
       first_name,
       last_name,
-      email: formData.email,
-      mobile_no: formData.mobile,
+      email: formData.email.trim(),
+      mobile_no: formData.mobile.trim(),
       password: formData.password,
       dob,
       role: formData.role
