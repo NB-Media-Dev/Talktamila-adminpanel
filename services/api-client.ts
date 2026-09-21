@@ -1,4 +1,4 @@
-import { getAuthToken } from '@/lib/cookies';
+import { getAuthToken, clearAuthToken } from '@/lib/cookies';
 
 export function getBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -51,14 +51,26 @@ export async function apiClient<T>(
         ...options.headers,
       },
     });
-  } catch (networkError: any) {
+  } catch (networkError) {
+    const reason = networkError instanceof Error ? networkError.message : String(networkError);
     console.error(`[apiClient] Network request failed for ${options.method || 'GET'} ${url}:`, networkError);
     throw new Error(
-      `Unable to connect to backend server at ${baseUrl}. Please ensure the backend is running. (${networkError?.message || networkError})`
+      `Unable to connect to backend server at ${baseUrl}. Please ensure the backend is running. (${reason})`
     );
   }
 
   if (!response.ok) {
+    // The backend no longer falls back to a default user, so an expired/invalid
+    // token now surfaces as 401. Drop the stale cookie and send the user to login.
+    const isPublicAuthCall = /\/auth\/(login|signin|register|signup|refresh|forgot-password|verify-otp|reset-password|check-availability)/.test(endpoint);
+    if (response.status === 401 && !isPublicAuthCall && typeof window !== 'undefined') {
+      clearAuthToken();
+      if (!window.location.pathname.startsWith('/login')) {
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- hard reload on purpose: resets client state
+        window.location.href = '/login';
+      }
+    }
+
     const errorBody = await response.json().catch(() => ({}));
 
     if (response.status === 422 && Array.isArray(errorBody.detail)) {
