@@ -1,11 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import { ChevronLeft, Eye, EyeOff, CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
 import { authService } from '@/services/auth.service'
 
+type FieldCheckStatus = 'idle' | 'checking' | 'available' | 'taken'
 
+const CHECK_DEBOUNCE_MS = 600
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -26,6 +28,108 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  // Live "already used" checks for email / mobile / username.
+  const [emailStatus, setEmailStatus] = useState<FieldCheckStatus>('idle')
+  const [mobileStatus, setMobileStatus] = useState<FieldCheckStatus>('idle')
+  const [usernameStatus, setUsernameStatus] = useState<FieldCheckStatus>('idle')
+  const [emailCheckMsg, setEmailCheckMsg] = useState('')
+  const [mobileCheckMsg, setMobileCheckMsg] = useState('')
+  const [usernameCheckMsg, setUsernameCheckMsg] = useState('')
+
+  const emailTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const mobileTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const usernameTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Debounced check whenever the email field settles.
+  useEffect(() => {
+    if (emailTimer.current) clearTimeout(emailTimer.current)
+    const value = formData.email.trim()
+    if (!value || !value.includes('@')) {
+      setEmailStatus('idle')
+      setEmailCheckMsg('')
+      return
+    }
+    setEmailStatus('checking')
+    emailTimer.current = setTimeout(async () => {
+      try {
+        const result = await authService.checkAvailability({ email: value })
+        if (result.email?.available === false) {
+          setEmailStatus('taken')
+          setEmailCheckMsg(result.email.message || 'This email is already registered.')
+        } else {
+          setEmailStatus('available')
+          setEmailCheckMsg('')
+        }
+      } catch {
+        setEmailStatus('idle')
+      }
+    }, CHECK_DEBOUNCE_MS)
+    return () => {
+      if (emailTimer.current) clearTimeout(emailTimer.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.email])
+
+  // Debounced check whenever the mobile number field settles.
+  useEffect(() => {
+    if (mobileTimer.current) clearTimeout(mobileTimer.current)
+    const value = formData.mobile.trim()
+    if (!value || value.length < 7) {
+      setMobileStatus('idle')
+      setMobileCheckMsg('')
+      return
+    }
+    setMobileStatus('checking')
+    mobileTimer.current = setTimeout(async () => {
+      try {
+        const result = await authService.checkAvailability({ mobile_no: value })
+        if (result.mobile_no?.available === false) {
+          setMobileStatus('taken')
+          setMobileCheckMsg(result.mobile_no.message || 'This mobile number is already registered.')
+        } else {
+          setMobileStatus('available')
+          setMobileCheckMsg('')
+        }
+      } catch {
+        setMobileStatus('idle')
+      }
+    }, CHECK_DEBOUNCE_MS)
+    return () => {
+      if (mobileTimer.current) clearTimeout(mobileTimer.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.mobile])
+
+  // Debounced check whenever the username field settles.
+  useEffect(() => {
+    if (usernameTimer.current) clearTimeout(usernameTimer.current)
+    const value = formData.username.trim()
+    if (!value) {
+      setUsernameStatus('idle')
+      setUsernameCheckMsg('')
+      return
+    }
+    setUsernameStatus('checking')
+    usernameTimer.current = setTimeout(async () => {
+      try {
+        const result = await authService.checkAvailability({ username: value })
+        if (result.username?.available === false) {
+          setUsernameStatus('taken')
+          setUsernameCheckMsg(result.username.message || 'This username is already taken.')
+        } else {
+          setUsernameStatus('available')
+          setUsernameCheckMsg('')
+        }
+      } catch {
+        setUsernameStatus('idle')
+      }
+    }, CHECK_DEBOUNCE_MS)
+    return () => {
+      if (usernameTimer.current) clearTimeout(usernameTimer.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.username])
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -53,7 +157,14 @@ export default function RegisterPage() {
   if (!formData.password) return setError('Please enter a password.');
   if (!formData.username.trim()) return setError('Please choose a username.');
   if (!formData.role.trim()) return setError('Please choose a Role.');
-  
+
+  if (emailStatus === 'taken') return setError(emailCheckMsg || 'This email is already registered.');
+  if (mobileStatus === 'taken') return setError(mobileCheckMsg || 'This mobile number is already registered.');
+  if (usernameStatus === 'taken') return setError(usernameCheckMsg || 'This username is already taken.');
+  if (emailStatus === 'checking' || mobileStatus === 'checking' || usernameStatus === 'checking') {
+    return setError('Still checking your details, please wait a moment and try again.');
+  }
+
   setIsSubmitting(true);
 
   const nameParts = formData.fullName.trim().split(' ');
@@ -145,14 +256,30 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="email" className="block text-xs font-semibold text-gray-800 mb-1.5">Email</label>
-            <input type="email" name="email" id="email" placeholder="you@example.com" value={formData.email} onChange={handleChange}
-              className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 placeholder-gray-400 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition" />
+            <div className="relative">
+              <input type="email" name="email" id="email" placeholder="you@example.com" value={formData.email} onChange={handleChange}
+                className={`w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 pr-10 text-sm text-gray-800 placeholder-gray-400 outline-none border transition focus:bg-white ${emailStatus === 'taken' ? 'border-red-300 focus:border-red-400' : 'border-transparent focus:border-[#FF6B35]/50'}`} />
+              {emailStatus === 'checking' && <Loader2 className="w-4 h-4 text-gray-400 animate-spin absolute right-3.5 top-1/2 -translate-y-1/2" />}
+              {emailStatus === 'taken' && <AlertCircle className="w-4 h-4 text-red-500 absolute right-3.5 top-1/2 -translate-y-1/2" />}
+              {emailStatus === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3.5 top-1/2 -translate-y-1/2" />}
+            </div>
+            {emailStatus === 'taken' && (
+              <p className="mt-1.5 text-xs text-red-600">{emailCheckMsg}</p>
+            )}
           </div>
 
           <div>
             <label htmlFor="mobile" className="block text-xs font-semibold text-gray-800 mb-1.5">Mobile number</label>
-            <input type="tel" name="mobile" id="mobile" placeholder="9876543210" value={formData.mobile} onChange={handleChange}
-              className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 placeholder-gray-400 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition" />
+            <div className="relative">
+              <input type="tel" name="mobile" id="mobile" placeholder="9876543210" value={formData.mobile} onChange={handleChange}
+                className={`w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 pr-10 text-sm text-gray-800 placeholder-gray-400 outline-none border transition focus:bg-white ${mobileStatus === 'taken' ? 'border-red-300 focus:border-red-400' : 'border-transparent focus:border-[#FF6B35]/50'}`} />
+              {mobileStatus === 'checking' && <Loader2 className="w-4 h-4 text-gray-400 animate-spin absolute right-3.5 top-1/2 -translate-y-1/2" />}
+              {mobileStatus === 'taken' && <AlertCircle className="w-4 h-4 text-red-500 absolute right-3.5 top-1/2 -translate-y-1/2" />}
+              {mobileStatus === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3.5 top-1/2 -translate-y-1/2" />}
+            </div>
+            {mobileStatus === 'taken' && (
+              <p className="mt-1.5 text-xs text-red-600">{mobileCheckMsg}</p>
+            )}
           </div>
 
           <div>
@@ -168,8 +295,16 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="username" className="block text-xs font-semibold text-gray-800 mb-1.5">Username</label>
-            <input type="text" name="username" id="username" placeholder="Choose a username" value={formData.username} onChange={handleChange}
-              className="w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-sm text-gray-800 placeholder-gray-400 outline-none border border-transparent focus:border-[#FF6B35]/50 focus:bg-white transition" />
+            <div className="relative">
+              <input type="text" name="username" id="username" placeholder="Choose a username" value={formData.username} onChange={handleChange}
+                className={`w-full rounded-2xl bg-[#F3F4F6] px-4 py-3.5 pr-10 text-sm text-gray-800 placeholder-gray-400 outline-none border transition focus:bg-white ${usernameStatus === 'taken' ? 'border-red-300 focus:border-red-400' : 'border-transparent focus:border-[#FF6B35]/50'}`} />
+              {usernameStatus === 'checking' && <Loader2 className="w-4 h-4 text-gray-400 animate-spin absolute right-3.5 top-1/2 -translate-y-1/2" />}
+              {usernameStatus === 'taken' && <AlertCircle className="w-4 h-4 text-red-500 absolute right-3.5 top-1/2 -translate-y-1/2" />}
+              {usernameStatus === 'available' && <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3.5 top-1/2 -translate-y-1/2" />}
+            </div>
+            {usernameStatus === 'taken' && (
+              <p className="mt-1.5 text-xs text-red-600">{usernameCheckMsg}</p>
+            )}
           </div>
           {/* Role Dropdown Option */}
 <div>
@@ -189,8 +324,16 @@ export default function RegisterPage() {
 </div>
 
 
-          <button type="submit" disabled={isSubmitting}
-            className="w-full rounded-full bg-[#FA7A22] py-3.5 font-bold text-white shadow-lg shadow-orange-500/30 hover:bg-[#E06412] transition disabled:opacity-60">
+          <button
+            type="submit"
+            disabled={
+              isSubmitting ||
+              emailStatus === 'taken' ||
+              mobileStatus === 'taken' ||
+              usernameStatus === 'taken'
+            }
+            className="w-full rounded-full bg-[#FA7A22] py-3.5 font-bold text-white shadow-lg shadow-orange-500/30 hover:bg-[#E06412] transition disabled:opacity-60"
+          >
             {isSubmitting ? 'Creating account...' : 'Submit'}
           </button>
 
