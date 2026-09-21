@@ -582,7 +582,7 @@ export default function Addstories({
                       <ImagesIcon size={13} />
                       <span>Select Media</span>
                     </button>
-                    <button
+                    {/* <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -592,7 +592,7 @@ export default function Addstories({
                     >
                       <Video size={13} />
                       <span>Upload Video</span>
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               )}
