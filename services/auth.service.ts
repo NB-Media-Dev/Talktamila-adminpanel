@@ -1,4 +1,14 @@
-import { loginPayload, loginResponse, RegisterPayload, RegisterResponse } from '@/types/Auth';
+import {
+  loginPayload,
+  loginResponse,
+  RegisterPayload,
+  RegisterResponse,
+  ForgotPasswordPayload,
+  VerifyOtpPayload,
+  ResetPasswordPayload,
+  SimpleSuccessResponse,
+  AvailabilityResponse,
+} from '@/types/Auth';
 import { apiClient } from './api-client';
 import { setAuthToken, clearAuthToken } from '@/lib/cookies';
 
@@ -10,7 +20,7 @@ export const authService = {
     });
 
     if (response.access_token) {
-      setAuthToken(response.access_token, 30 * 60);
+      setAuthToken(response.access_token, 7 * 24 * 60 * 60);
     }
 
     return response;
@@ -23,7 +33,38 @@ export const authService = {
   },
   signOut: () => {
     clearAuthToken();
-  }
+  },
+  forgotPassword: async (payload: ForgotPasswordPayload): Promise<SimpleSuccessResponse> => {
+    return apiClient<SimpleSuccessResponse>('/api/v1/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  verifyOtp: async (payload: VerifyOtpPayload): Promise<SimpleSuccessResponse> => {
+    return apiClient<SimpleSuccessResponse>('/api/v1/auth/verify-otp', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  resetPassword: async (payload: ResetPasswordPayload): Promise<SimpleSuccessResponse> => {
+    return apiClient<SimpleSuccessResponse>('/api/v1/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  checkAvailability: async (fields: {
+    email?: string;
+    mobile_no?: string;
+    username?: string;
+  }): Promise<AvailabilityResponse> => {
+    const params = new URLSearchParams();
+    if (fields.email) params.set('email', fields.email);
+    if (fields.mobile_no) params.set('mobile_no', fields.mobile_no);
+    if (fields.username) params.set('username', fields.username);
+
+    return apiClient<AvailabilityResponse>(
+      `/api/v1/auth/check-availability?${params.toString()}`,
+      { method: 'GET' }
+    );
+  },
 };
-
-
