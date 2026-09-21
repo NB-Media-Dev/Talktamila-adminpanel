@@ -101,6 +101,7 @@ export default function FeedImagePost({ isLoading: propIsLoading }: FeedImagePos
             src={imageSrc}
             alt="Post Image"
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             onLoad={handleImageLoad}
             className="w-full h-full object-contain animate-fade-in rounded-[24px] max-h-[550px]"
             loading="eager"

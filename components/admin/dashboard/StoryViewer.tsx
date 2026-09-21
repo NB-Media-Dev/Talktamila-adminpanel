@@ -531,7 +531,7 @@ export function StoryViewer({
                   {typeof user.avatar === "string" ? (
                     <img src={user.avatar} alt={user.userName} className="w-full h-full object-cover" />
                   ) : (
-                    <Image src={user.avatar} alt={user.userName} fill className="object-cover" />
+                    <Image src={user.avatar} alt={user.userName} fill sizes="32px" className="object-cover" />
                   )}
                 </div>
               </div>

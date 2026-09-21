@@ -143,7 +143,7 @@ export default function PreviewStories({
                 {typeof u.avatar === "string" ? (
                   <img src={u.avatar} alt={u.userName} className="w-full h-full object-cover" />
                 ) : (
-                  <Image src={u.avatar} alt={u.userName} fill className="object-cover" />
+                  <Image src={u.avatar} alt={u.userName} fill sizes="32px" className="object-cover" />
                 )}
               </div>
             </div>
@@ -169,3 +169,5 @@ export default function PreviewStories({
     </div>
   );
 }
+
+// AI Prompt: "Check my images in this file. Add the priority prop to images above the fold (visible instantly), and ensure loading="lazy" is handled properly for images below the fold."

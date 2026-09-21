@@ -238,7 +238,6 @@ export default function Addstories({
       const audienceVal = selectedAudience === "close" ? "close_friends" : selectedAudience;
       let responseData;
 
-      // CASE A: Processing multiple file uploads (images & videos)
       if (rawFiles.length > 0) {
         const formData = new FormData();
 
@@ -275,7 +274,6 @@ export default function Addstories({
         responseData = await storyService.uploadMultipleFiles(formData);
         console.log("Backend response for files upload:", responseData);
 
-      // CASE B: Handling text stories
       } else if (caption.trim()) {
         const textPayload = {
           media_url: "text-story",
@@ -344,7 +342,6 @@ export default function Addstories({
           </button>
         </div>
 
-        {/* Desktop Close button */}
         <button
           onClick={handleCancel}
           className="hidden sm:flex absolute right-4 top-4 md:right-3 md:top-0 h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-700 shadow-sm transition-all duration-200 hover:scale-105 cursor-pointer z-20"
@@ -354,7 +351,7 @@ export default function Addstories({
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] min-[2560px]:grid-cols-[1fr_390px] min-[3840px]:grid-cols-[1fr_450px] gap-6 min-[3840px]:gap-8 items-start mt-1">
-          {/* Left Form Column */}
+
           <div
             className={`flex flex-col gap-3 min-[3840px]:gap-4 ${
               step === "edit" ? "block" : "hidden lg:flex"
@@ -374,7 +371,6 @@ export default function Addstories({
               </p>
             </div>
 
-            {/* Story Caption Input */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label
@@ -403,7 +399,6 @@ export default function Addstories({
                 </div>
               </div>
 
-              {/* Text gradient selector (when no media uploaded) */}
               {mediaList.length === 0 && (
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-[11px] font-semibold text-gray-600">Text Style:</span>
@@ -426,7 +421,6 @@ export default function Addstories({
               )}
             </div>
 
-            {/* Media Upload Box (Supports Photos & Videos) */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-[13px] font-bold text-gray-800 flex items-center gap-1.5">
@@ -439,7 +433,6 @@ export default function Addstories({
                 </span>
               </div>
 
-              {/* Hidden file inputs with full image and video support */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -509,6 +502,7 @@ export default function Addstories({
                             src={mediaSrc}
                             alt={`Slide ${idx + 1}`}
                             fill
+                            sizes="56px"
                             className="object-cover"
                           />
                         )}
@@ -604,9 +598,8 @@ export default function Addstories({
               )}
             </div>
 
-            {/* Audience & Audio Track Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {/* Audience */}
+
               <div className="flex flex-col gap-1">
                 <label className="text-[12px] font-bold text-gray-700">Audience</label>
                 <div className="flex gap-1.5 bg-white p-1 rounded-xl shadow-xs border border-orange-50">
@@ -632,7 +625,6 @@ export default function Addstories({
                 </div>
               </div>
 
-              {/* MusicsControl Component */}
               <MusicsControl
                 selectedTrack={selectedTrack}
                 musicStartTime={musicStartTime}
@@ -648,7 +640,6 @@ export default function Addstories({
               />
             </div>
 
-            {/* Mobile preview toggle button */}
             <button
               type="button"
               onClick={() => setStep("preview")}
@@ -659,7 +650,6 @@ export default function Addstories({
             </button>
           </div>
 
-          {/* Right Live Preview Column */}
           <div
             className={`flex flex-col items-center gap-3 ${
               step !== "edit" ? "block" : "hidden lg:flex"
@@ -681,13 +671,12 @@ export default function Addstories({
               </span>
             </div>
 
-            {/* Story Device Container */}
             <div
               className={`w-full max-w-[270px] sm:max-w-[290px] min-[2560px]:max-w-[320px] aspect-[9/16] rounded-[24px] overflow-hidden shadow-2xl border-4 border-white relative flex flex-col justify-between select-none ${
                 currentImage ? "bg-black" : gradientThemes[selectedThemeIndex].bg
               }`}
             >
-              {/* Skeleton loading overlay */}
+
               {isPreviewLoading ? (
                 <div className="absolute inset-0 z-30 bg-slate-900 flex flex-col justify-between p-3 animate-pulse">
                   <div className="flex gap-1">
@@ -712,7 +701,6 @@ export default function Addstories({
                 </div>
               ) : null}
 
-              {/* Background media (supports both images and videos) */}
               {currentImage && (
                 <div className="absolute inset-0 w-full h-full">
                   {isVideo(currentImage) ? (
@@ -741,7 +729,6 @@ export default function Addstories({
                 </div>
               )}
 
-              {/* Slide navigation buttons */}
               {mediaList.length > 1 && (
                 <>
                   <button
@@ -769,9 +756,7 @@ export default function Addstories({
                 </>
               )}
 
-              {/* Top Header Section */}
               <div className="relative z-10 p-3 pt-2.5 flex flex-col gap-2">
-                {/* Progress bars */}
                 <div className="flex gap-1 w-full items-center">
                   {Array.from({ length: totalBars }).map((_, index) => {
                     const isActive = index === activeSlideIndex;

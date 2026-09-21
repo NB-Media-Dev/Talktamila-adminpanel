@@ -90,9 +90,7 @@ function StoryAvatar({
 }
 
 export default function TodayStories() {
-  // ==========================================
-  // 🟢 1. VIEW VIEWPORT & VISIBILITY CONTROLS
-  // ==========================================
+
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [isAddStoryOpen, setIsAddStoryOpen] = useState(false);
@@ -169,9 +167,6 @@ export default function TodayStories() {
     fetchStories();
   }, [fetchStories]);
 
-  // ==========================================
-  // 🎯 4. ACTION INTERACTORS LOGIC METHODS
-  // ==========================================
   const hasMyActiveStory = Boolean(myStoryUser && myStoryUser.slides && myStoryUser.slides.length > 0);
 
   const openPreview = (userIndex: number) => {
@@ -188,7 +183,7 @@ export default function TodayStories() {
     }
   };
 
-  // Mobile swipe gestures
+
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientY);
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStart === null || e.currentTarget.scrollTop !== 0) return;
@@ -248,7 +243,7 @@ export default function TodayStories() {
                 onPlusClick={() => setIsAddStoryOpen(true)}
               />
 
-              {/* Other Stories */}
+  
               {feedUsers.map((user) => {
                 const userIndexInAll = allStoryUsers.findIndex((u) => u.id === user.id);
                 return (
@@ -347,7 +342,7 @@ export default function TodayStories() {
         </div>
       </div>
 
-      {/* Add Story Modal */}
+    
       {isAddStoryOpen && (
         <Addstories
           isOpen={isAddStoryOpen}
@@ -359,7 +354,7 @@ export default function TodayStories() {
         />
       )}
 
-      {/* Preview Story Modal */}
+
       {isPreviewOpen && allStoryUsers.length > 0 && (
         <PreviewStories
           stories={allStoryUsers}
