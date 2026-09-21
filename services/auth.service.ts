@@ -28,7 +28,7 @@ export const authService = {
     return response;
   },
   signUp: async (payload: RegisterPayload): Promise<RegisterResponse> => {
-    return apiClient<RegisterResponse>('/api/v1/auth/register', {
+    return apiClient<RegisterResponse>('/api/v1/auth/signup', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
