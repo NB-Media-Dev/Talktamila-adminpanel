@@ -138,6 +138,8 @@ export default function TodayStories() {
           }),
         };
       };
+      console.log(data);
+      
       const rawMyStory = data.find((group) => group.is_my_story === true);
       const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
       setMyStoryUser(myStoryParsed);

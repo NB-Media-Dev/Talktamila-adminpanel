@@ -34,17 +34,26 @@ export interface MultipleUploadResponse {
   stories: StoryResponse[];
 }
 
+/**
+ * Represents a single slide frame within a story group.
+ * - `id`          : Globally unique per-slide identifier (used for per-slide view tracking).
+ * - `views_count` : View counter scoped strictly to this individual slide frame.
+ * - `content`     : Human-readable text content of the slide (e.g. "good", "vanakamk", "hi bro").
+ */
 export interface StorySlide {
-  id: number;              // The unique ID for this single slide instance
-  story_group_id?: number; // The shared parental story identifier
-  story_id?: number;       // Reference to backend story identifier
+  id: number;              // Unique ID for this individual slide frame
+  story_group_id?: number; // Shared parental story group identifier
+  story_id?: number;       // Backend story reference identifier
   imageUrl: StaticImageData | string;
   media_url?: string;
   media_type?: string;
+  /** Human-readable text content for this slide frame (e.g. "good", "vanakamk", "hi bro") */
+  content?: string;
   caption?: string;
   duration?: number;
   liked?: boolean;
   likes_count?: number;
+  /** View count scoped to this individual slide — NOT the parent story group */
   views_count?: number;
   created_at?: string;
   musicTrack?: string;
@@ -52,6 +61,18 @@ export interface StorySlide {
   music_start_time?: number;
   music_title?: string;
   music_artist?: string;
+}
+
+/**
+ * Represents a story group (parent container) that holds multiple individual slides.
+ * - `story_id` : Shared parent ID across all slides in this group.
+ * - `slides`   : Array of `StorySlide` elements, each with their own unique `id` and `views_count`.
+ */
+export interface StoryGroup {
+  /** Shared parent identifier for this story group (common across all slides) */
+  story_id: number;
+  userName: string;
+  slides: StorySlide[];
 }
 
 export interface UserStoryGroup {
