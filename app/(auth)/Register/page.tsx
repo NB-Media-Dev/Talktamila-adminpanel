@@ -46,7 +46,8 @@ export default function RegisterPage() {
   useEffect(() => {
     if (emailTimer.current) clearTimeout(emailTimer.current)
     const value = formData.email.trim()
-    if (!value || !value.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!value || !emailRegex.test(value)) {
       setEmailStatus('idle')
       setEmailCheckMsg('')
       return
