@@ -70,7 +70,7 @@ export default function RegisterPage() {
     return () => {
       if (emailTimer.current) clearTimeout(emailTimer.current)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [formData.email])
 
   // Debounced check whenever the mobile number field settles.

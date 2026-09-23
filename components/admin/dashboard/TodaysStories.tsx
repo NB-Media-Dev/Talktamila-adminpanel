@@ -3,14 +3,15 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image, { type StaticImageData } from "next/image";
 import { Zap, ChevronDown, ChevronUp, Plus } from "lucide-react";
-import avatar1 from "@/public/Images/profile1.jpg";
+
+const avatar1 = "/Images/profile4.jpg";
 import Addstories from "./Addstories";
 import PreviewStories from "./Previewstories";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { storyService } from "@/services/Stories.service";
 import type { StoryUser, BackendStoryGroup } from "@/types/Stories";
 
-const defaultAvatar = avatar1;
+
 
 interface StoryAvatarProps {
   avatar: StaticImageData | string;
@@ -108,7 +109,7 @@ export default function TodayStories() {
           id: parentId,
           story_id: parentId,
           userName: group.userName,
-          avatar: group.avatar || defaultAvatar,
+          avatar: group.avatar || avatar1,
           verified: group.verified || false,
           timeAgo: group.timeAgo || "Just now",
           musicTrack: group.musicTrack,
@@ -138,8 +139,6 @@ export default function TodayStories() {
           }),
         };
       };
-      console.log(data);
-      
       const rawMyStory = data.find((group) => group.is_my_story === true);
       const myStoryParsed = rawMyStory ? normalizeGroupToUser(rawMyStory) : null;
       setMyStoryUser(myStoryParsed);
@@ -206,7 +205,7 @@ export default function TodayStories() {
   const displayAvatar =
     typeof myStoryUser?.avatar === "string" || myStoryUser?.avatar
       ? myStoryUser.avatar
-      : (currentUser as { avatar_url?: StaticImageData | string })?.avatar_url || defaultAvatar;
+      : (currentUser as { avatar_url?: StaticImageData | string })?.avatar_url || avatar1;
 
   return (
     <>

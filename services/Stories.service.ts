@@ -38,19 +38,13 @@ export const storyService = {
 
   /**
    * Records a view for an individual slide frame.
-   * POSTs to: POST /api/stories/slides/${slideId}/view
-   * @param slideId - The unique `id` of the StorySlide being viewed (NOT the parent story_id / group id).
+   * POSTs to: POST /api/v1/stories/${slideId}/view
+   * @param slideId - The unique `id` of the StorySlide being viewed.
    */
   recordSlideView: async (slideId: number): Promise<{ success: boolean; views_count: number }> => {
-    const response = await fetch(`http://localhost:8000/api/stories/slides/${slideId}/view`, {
+    return apiClient<{ success: boolean; views_count: number }>(`/api/v1/stories/${slideId}/view`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
     });
-    if (!response.ok) {
-      throw new Error(`Slide view POST failed: ${response.status}`);
-    }
-    return response.json();
   },
 
   /** @deprecated Use recordSlideView(slide.id) for per-slide tracking. */
