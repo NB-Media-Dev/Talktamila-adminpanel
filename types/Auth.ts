@@ -1,12 +1,9 @@
-// src/types/auth.ts
-
 export interface UserProfile {
   id: string;
   email: string;
   name: string;
-  role?: string; 
+  role?: string;
 }
-
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -19,65 +16,30 @@ export interface RegisterPayload {
   first_name: string;
   last_name: string;
   email: string;
-  mobile_no: string; 
+  mobile_no: string;
   password: string;
   dob: string;
   role: string | UserRole;
 }
 
-
 export interface RegisterResponse {
   id?: string | number;
   username: string;
+}
+
+export interface ProfileData {
+  id: number;
+  user_id: number;
+  username: string;
+  email: string;
   first_name: string;
   last_name: string;
-  email: string;
-  mobile_no: string | number;
-  dob: string;
-  role: UserRole;
-}
-
-
-
-export interface loginResponse {
-  access_token: string;
-  token_type: string;    
-  user: UserProfile; 
-  role: UserRole;   
-}
-
-export interface loginPayload {
-  username: string;
-  password?: string;
-}
-
-export interface ForgotPasswordPayload {
-  identifier: string; // email or mobile number
-}
-
-export interface VerifyOtpPayload {
-  identifier: string;
-  otp: string;
-}
-
-export interface ResetPasswordPayload {
-  identifier: string;
-  otp: string;
-  new_password: string;
-}
-
-export interface SimpleSuccessResponse {
-  success: boolean;
-  message: string;
-}
-
-export interface AvailabilityField {
-  available: boolean;
-  message: string | null;
-}
-
-export interface AvailabilityResponse {
-  email?: AvailabilityField;
-  mobile_no?: AvailabilityField;
-  username?: AvailabilityField;
+  full_name: string;
+  mobile_no: string;
+  dob: string | null;
+  role: string;
+  avatar_url: string | null;
+  bio: string | null;
+  location: string | null;
+  followers_count: number;
 }

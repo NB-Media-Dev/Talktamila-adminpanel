@@ -1,1 +1,5 @@
-export default function Page() { return null; }
+import ProfileView from "@/components/profile/ProfileView";
+
+export default function Page() {
+  return <ProfileView />;
+}
