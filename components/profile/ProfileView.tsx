@@ -154,7 +154,7 @@ export default function ProfileView() {
       </div>
 
       {/* "Discover people" — follow suggestions, right after the profile card */}
-      <DiscoverPeople />
+      <DiscoverPeople onFollowChange={refreshProfile} />
 
       {listModalTab && (
         <FollowListModal

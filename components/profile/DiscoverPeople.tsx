@@ -17,7 +17,7 @@ import { buttonVariants } from "@/components/ui/Button";
  *   POST   /api/v1/stories/follow/{id}   <- exists (StoryService.follow_user)
  *   DELETE /api/v1/stories/follow/{id}   <- exists (StoryService.unfollow_user)
  */
-export default function DiscoverPeople() {
+export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: () => void }) {
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -63,6 +63,7 @@ export default function DiscoverPeople() {
             : s
         )
       );
+      onFollowChange?.();
     } catch (err) {
       console.error("Follow/unfollow failed", err);
     } finally {
