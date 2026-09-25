@@ -285,7 +285,6 @@ export default function EditProfile() {
         >
           <ArrowLeft size={16} />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Edit profile</h1>
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-orange-100 p-6 sm:p-8">
