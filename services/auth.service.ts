@@ -8,6 +8,7 @@ import {
   ResetPasswordPayload,
   SimpleSuccessResponse,
   AvailabilityResponse,
+  ChangePasswordPayload,
 } from '@/types/Auth';
 import { apiClient } from './api-client';
 import { setAuthToken, setAuthRole, clearAuthToken } from '@/lib/cookies';
@@ -50,6 +51,12 @@ export const authService = {
   },
   resetPassword: async (payload: ResetPasswordPayload): Promise<SimpleSuccessResponse> => {
     return apiClient<SimpleSuccessResponse>('/api/v1/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  changePassword: async (payload: ChangePasswordPayload): Promise<SimpleSuccessResponse> => {
+    return apiClient<SimpleSuccessResponse>('/api/v1/auth/change-password', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
