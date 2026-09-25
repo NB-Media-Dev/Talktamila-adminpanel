@@ -90,6 +90,7 @@ export default function Navbar() {
     }
   };
 
+  
   const getWalletPath = () => {
     if (isInfluencer) {
       return '/influencer';
@@ -100,6 +101,7 @@ export default function Navbar() {
     }
   };
 
+  
   const renderDropdownMenu = () => (
     <div className="absolute right-0 top-full mt-2 w-56 sm:w-60 bg-white rounded-2xl shadow-xl border border-orange-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
 

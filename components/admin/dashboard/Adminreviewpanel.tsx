@@ -249,6 +249,8 @@ export function Adminreviewpanel() {
                       <Image
                         src={review.avatar}
                         alt={review.creatorName}
+                       width={48}  
+  height={48} 
                         className="w-6.5 h-6.5 min-[2560px]:w-8 min-[2560px]:h-8 min-[3840px]:w-9 min-[3840px]:h-9 rounded-full object-cover border border-gray-100 shadow-inner shrink-0"
                       />
                       <div>
@@ -287,6 +289,7 @@ export function Adminreviewpanel() {
                     <Image
                       src={review.mediaImage}
                       alt={review.mediaTitle}
+                      fill
                       className="w-full h-full object-cover opacity-75 group-hover:scale-102 transition-transform duration-300"
                     />
                     <div className="absolute right-2.5 top-2.5 w-5 h-5 min-[3840px]:w-6 min-[3840px]:h-6 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center cursor-pointer transition-colors backdrop-blur-xs">

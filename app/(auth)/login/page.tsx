@@ -24,6 +24,7 @@ export default function LoginPage() {
 
     try {
       const data = await authService.signIn({ username, password });
+      
       if (data.user) {
         setUser(data);
       }
