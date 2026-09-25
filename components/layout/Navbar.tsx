@@ -9,6 +9,7 @@ import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { authService } from "@/services/auth.service";
+import { userService } from "@/services/user.service";
 import avatar2 from "@/public/Images/profile2.jpg";
 import LogoutConfirmDialog from "./LogoutConfirmDialog";
 import Bellnotification from "../admin/dashboard/Bellnotification";
@@ -20,6 +21,33 @@ export default function Navbar() {
   const router = useRouter();
   const { isInfluencer, isFreelancer,} = useAuthRole();
   const {user, setUser } = useAuthuser();
+
+  // The saved profile picture (falls back to the bundled default when none is set).
+  const authUser = user as any;
+  const avatarSrc: string | null = authUser?.user?.avatar_url || authUser?.avatar_url || null;
+
+  // After a page reload the auth context starts empty, so load the profile once.
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (user || hydratedRef.current) return;
+    hydratedRef.current = true;
+    userService
+      .getProfile()
+      .then((profile) => setUser({ user: profile }))
+      .catch(() => {});
+  }, [user, setUser]);
+
+  const renderAvatar = (sizes: string) =>
+    avatarSrc ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={avatarSrc}
+        alt="User Profile"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+    ) : (
+      <Image src={avatar2} alt="User Profile" fill sizes={sizes} className="object-cover" />
+    );
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -82,9 +110,9 @@ export default function Navbar() {
 
   const getUserPath = () => {
     if (isInfluencer) {
-      return '/influencer';
+      return '/influencer/profile';
     } else if (isFreelancer) {
-      return '/freelancer';
+      return '/freelancer/profile';
     } else {
       return '/admin/profile';
     }
@@ -105,7 +133,7 @@ export default function Navbar() {
 
       <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FDEEE2]/60 mb-1 border border-orange-100/40">
         <div className="w-9 h-9 rounded-full overflow-hidden relative border border-[#FF6B35]/30 shrink-0">
-          <Image src={avatar2} alt="User Profile" fill sizes="36px" className="object-cover" loading="lazy"/>
+          {renderAvatar("36px")}
         </div>
         <div className="flex flex-col min-w-0 flex-1">
           <span className="text-xs font-bold text-gray-900 truncate">
@@ -224,7 +252,7 @@ export default function Navbar() {
                 className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 rounded-full bg-[#1A3B5C] border border-[#102A45] cursor-pointer shrink-0 relative overflow-hidden shadow-inner focus:outline-none block"
                 aria-label="User Profile"
               >
-                <Image src={avatar2} alt="User Profile" fill sizes="32px" className="object-cover" priority />
+                {renderAvatar("32px")}
               </button>
               {isProfileOpen && renderDropdownMenu()}
             </div>
@@ -315,7 +343,7 @@ export default function Navbar() {
               aria-label="User Profile Menu"
             >
               <div className="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden relative border border-brand/20 group-hover:border-brand transition-colors">
-                <Image src={avatar2} alt="User Profile" fill sizes="(max-width: 768px) 32px, 36px" className="object-cover" />
+                {renderAvatar("(max-width: 768px) 32px, 36px")}
               </div>
               <ChevronDown className={`w-3.5 h-3.5 text-gray-500 group-hover:text-brand transition-transform duration-200 hidden lg:block ${isProfileOpen ? "rotate-180 text-brand" : ""}`} />
             </button>

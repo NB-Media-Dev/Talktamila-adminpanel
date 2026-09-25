@@ -1,40 +1,28 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { Camera, Loader2, Pencil, X, Check } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2, MapPin, Settings } from "lucide-react";
 import { userService } from "@/services/user.service";
-import { useAuthuser } from "@/hooks/useAuthuser";
-import { buttonVariants } from "@/components/ui/Button";
 import type { ProfileData } from "@/types/Auth";
+import { buttonVariants } from "@/components/ui/Button";
+import DiscoverPeople from "@/components/profile/DiscoverPeople";
+import FollowListModal from "@/components/profile/FollowListModal";
 
 export default function ProfileView() {
-  const { user, setUser } = useAuthuser();
-
+  const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [bio, setBio] = useState("");
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [listModalTab, setListModalTab] = useState<"followers" | "following" | null>(null);
 
   useEffect(() => {
     async function loadProfile() {
       try {
         const data = await userService.getProfile();
         setProfile(data);
-        setFirstName(data.first_name);
-        setLastName(data.last_name);
-        setBio(data.bio || "");
-        setAvatarPreview(data.avatar_url);
       } catch (err) {
-        setError("Failed to load profile.");
+        setError(err instanceof Error ? err.message : "Failed to load profile.");
       } finally {
         setIsLoading(false);
       }
@@ -42,42 +30,14 @@ export default function ProfileView() {
     loadProfile();
   }, []);
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setAvatarPreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    setError(null);
+  // Silent refresh (no spinner) so the counts update after follow/unfollow.
+  const refreshProfile = async () => {
     try {
-      const updated = await userService.updateProfile({
-        first_name: firstName,
-        last_name: lastName,
-        bio,
-        avatar: avatarFile,
-      });
-      setProfile(updated);
-      setIsEditing(false);
-    } catch (err) {
-      setError("Failed to save profile.");
-    } finally {
-      setIsSaving(false);
+      const data = await userService.getProfile();
+      setProfile(data);
+    } catch {
+      // keep showing the last known profile
     }
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setFirstName(profile?.first_name || "");
-    setLastName(profile?.last_name || "");
-    setBio(profile?.bio || "");
-    setAvatarFile(null);
-    setAvatarPreview(profile?.avatar_url || null);
   };
 
   if (isLoading) {
@@ -89,153 +49,121 @@ export default function ProfileView() {
   }
 
   if (!profile) {
-    return <div className="p-12 text-center text-gray-500">Profile not found.</div>;
+    return (
+      <div className="p-12 text-center text-gray-500">
+        {error || "Profile not found."}
+      </div>
+    );
   }
 
+  const initials =
+    `${profile.first_name?.[0] || ""}${profile.last_name?.[0] || ""}`.toUpperCase() ||
+    profile.username?.[0]?.toUpperCase() ||
+    "?";
+
+  const fullName = `${profile.first_name} ${profile.last_name}`.trim();
+
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
-      <div className="bg-white rounded-3xl shadow-sm border border-orange-100 overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-orange-100 to-orange-200" />
-        <div className="px-6 pb-6">
-          <div className="relative -mt-12 mb-6 flex flex-col sm:flex-row items-end gap-4">
-            <div className="relative group">
-              <div className="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100">
-                <img
-                  src={avatarPreview || "/images/default-avatar.png"}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {isEditing && (
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 p-2 bg-brand text-white rounded-full shadow-lg hover:scale-110 transition-transform"
-                >
-                  <Camera size={14} />
-                </button>
-              )}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleAvatarChange}
-                className="hidden"
-                accept="image/*"
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-5">
+      <div className="bg-white rounded-3xl shadow-sm border border-orange-100 p-6 sm:p-8">
+        {/* ── header: avatar left, username/stats/edit-button right ── */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-10">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full ring-2 ring-orange-200 ring-offset-4 overflow-hidden bg-orange-100 flex items-center justify-center shrink-0">
+            {profile.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={profile.avatar_url}
+                alt="Profile"
+                className="w-full h-full object-cover"
               />
-            </div>
-            <div className="flex-1 pb-2">
-              <h1 className="text-2xl font-bold text-gray-900">
-                {isEditing ? (
-                  <div className="flex gap-2">
-                    <input
-                      value={firstName}
-                      onChange={e => setFirstName(e.target.value)}
-                      className="border-b border-brand outline-none bg-transparent w-24"
-                    />
-                    <input
-                      value={lastName}
-                      onChange={e => setLastName(e.target.value)}
-                      className="border-b border-brand outline-none bg-transparent w-24"
-                    />
-                  </div>
-                ) : (
-                  `${profile.first_name} ${profile.last_name}`
-                )}
-              </h1>
-              <p className="text-sm text-gray-500">{profile.email}</p>
-            </div>
-            <div className="pb-2">
-              {isEditing ? (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    disabled={isSaving}
-                    className={`${buttonVariants({ variant: "outline" })} flex items-center gap-1 px-3 py-1.5 text-xs font-bold disabled:opacity-50`}
-                  >
-                    <X size={13} />
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className={`${buttonVariants({ variant: "default" })} flex items-center gap-1 px-3 py-1.5 text-xs font-bold disabled:opacity-50`}
-                  >
-                    {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
-                    Save
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  className={`${buttonVariants({ variant: "outline" })} flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold`}
-                >
-                  <Pencil size={13} />
-                  Edit Profile
-                </button>
-              )}
-            </div>
+            ) : (
+              <span className="text-3xl font-bold text-brand">{initials}</span>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2 space-y-6">
-              <div>
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wide block mb-2">
-                  Bio
-                </label>
-                {isEditing ? (
-                  <textarea
-                    value={bio}
-                    onChange={e => setBio(e.target.value)}
-                    className="w-full p-3 rounded-xl border border-orange-100 outline-none focus:border-brand transition-colors text-sm"
-                    rows={3}
-                  />
-                ) : (
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {profile.bio || "No bio added yet."}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wide block mb-2">
-                  Location
-                </label>
-                {isEditing ? (
-                  <input
-                    value={profile.location || ""}
-                    onChange={e => setBio(e.target.value)} // Logic simplified for a placeholder, ideally separate state
-                    className="w-full p-3 rounded-xl border border-orange-100 outline-none focus:border-brand transition-colors text-sm"
-                  />
-                ) : (
-                  <p className="text-gray-700 text-sm">{profile.location || "Not specified"}</p>
-                )}
+          <div className="flex-1 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+              <h1 className="text-xl font-semibold text-gray-900 text-center sm:text-left">
+                @{profile.username}
+              </h1>
+
+              <div className="flex items-center gap-2 justify-center sm:justify-start">
+                <button
+                  type="button"
+                  onClick={() => router.push(`/${profile.role}/profile/edit`)}
+                  className={`${buttonVariants({ variant: "outline" })} flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold`}
+                >
+                  Edit Profile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push(`/${profile.role}/profile/settings`)}
+                  aria-label="Settings"
+                  className={`${buttonVariants({ variant: "outline" })} p-1.5`}
+                >
+                  <Settings size={14} />
+                </button>
               </div>
             </div>
-            <div className="bg-orange-50/50 rounded-2xl p-5 space-y-4 border border-orange-100">
-              <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide block">
-                  Email
+
+            {/* Posts / Followers / Following — Instagram-style stat row */}
+            <div className="flex justify-center sm:justify-start gap-8 mt-4">
+              <div className="text-center sm:text-left">
+                <span className="block text-base font-bold text-gray-900">
+                  {profile.posts_count}
                 </span>
-                <span className="text-gray-800 font-semibold truncate block">{profile.email}</span>
+                <span className="text-xs text-gray-500">Posts</span>
               </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide block">
-                  Role
+              <button
+                type="button"
+                onClick={() => setListModalTab("followers")}
+                className="text-center sm:text-left cursor-pointer"
+              >
+                <span className="block text-base font-bold text-gray-900">
+                  {profile.followers_count}
                 </span>
-                <span className="text-gray-800 font-semibold capitalize">{profile.role}</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wide block">
-                  Followers
+                <span className="text-xs text-gray-500">Followers</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setListModalTab("following")}
+                className="text-center sm:text-left cursor-pointer"
+              >
+                <span className="block text-base font-bold text-gray-900">
+                  {profile.following_count}
                 </span>
-                <span className="text-gray-800 font-semibold">{profile.followers_count}</span>
-              </div>
+                <span className="text-xs text-gray-500">Following</span>
+              </button>
+            </div>
+
+            {/* Name + bio, Instagram bio-block style */}
+            <div className="mt-5 text-center sm:text-left">
+              <h2 className="font-bold text-gray-900">{fullName}</h2>
+              <p className="text-gray-700 text-sm leading-relaxed mt-1 whitespace-pre-line">
+                {profile.bio || "No bio added yet."}
+              </p>
+              {profile.location && (
+                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1 justify-center sm:justify-start">
+                  <MapPin size={12} />
+                  {profile.location}
+                </p>
+              )}
             </div>
           </div>
         </div>
       </div>
-      {error && <div className="p-3 bg-red-50 text-red-600 text-xs rounded-xl text-center border border-red-100">{error}</div>}
+
+      {/* "Discover people" — follow suggestions, right after the profile card */}
+      <DiscoverPeople />
+
+      {listModalTab && (
+        <FollowListModal
+          userId={profile.user_id}
+          initialTab={listModalTab}
+          onClose={() => setListModalTab(null)}
+          onChanged={refreshProfile}
+        />
+      )}
     </div>
   );
 }
