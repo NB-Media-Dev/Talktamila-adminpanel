@@ -90,13 +90,6 @@ export default function ProfileView() {
               <div className="flex items-center gap-2 justify-center sm:justify-start">
                 <button
                   type="button"
-                  onClick={() => router.push(`/${profile.role}/profile/edit`)}
-                  className={`${buttonVariants({ variant: "outline" })} flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold`}
-                >
-                  Edit Profile
-                </button>
-                <button
-                  type="button"
                   onClick={() => router.push(`/${profile.role}/profile/settings`)}
                   aria-label="Settings"
                   className={`${buttonVariants({ variant: "outline" })} p-1.5`}
