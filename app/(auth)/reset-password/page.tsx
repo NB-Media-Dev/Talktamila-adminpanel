@@ -6,56 +6,38 @@ import Link from "next/link";
 import { CheckCircle2, ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { authService } from "@/services/auth.service";
 
-const RESEND_SECONDS = 30;
-
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const identifier = searchParams.get("identifier") ?? "";
 
+  // The code was already verified on the forgot-password page.
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [cooldown, setCooldown] = useState(RESEND_SECONDS);
 
-  // Resend cooldown ticker.
+  // Read the verified code saved by the forgot-password page.
   useEffect(() => {
-    if (cooldown <= 0) return;
-    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [cooldown]);
-
-  const handleResend = async () => {
-    setError("");
-    setInfo("");
-    try {
-      await authService.forgotPassword({ identifier });
-      setInfo("A new code has been sent.");
-      setCooldown(RESEND_SECONDS);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not resend the code.");
-    }
-  };
+    setOtp(sessionStorage.getItem("reset_otp") ?? "");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setInfo("");
 
     if (!identifier) return setError("Missing email. Please start again from 'Forgot password'.");
-    if (!/^\d{6}$/.test(otp)) return setError("Enter the 6-digit code from your email.");
+    if (!/^\d{6}$/.test(otp)) return setError("Your code is missing. Please start again from 'Forgot password'.");
     if (newPassword.length < 6) return setError("Password must be at least 6 characters.");
     if (newPassword !== confirmPassword) return setError("Passwords do not match.");
 
     setIsSubmitting(true);
     try {
-      await authService.verifyOtp({ identifier, otp });
       await authService.resetPassword({ identifier, otp, new_password: newPassword });
+      sessionStorage.removeItem("reset_otp");
       setSuccess(true);
       setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
@@ -91,7 +73,7 @@ function ResetPasswordForm() {
           <p className="mt-1 text-xs text-gray-500">
             {identifier ? (
               <>
-                We sent a 6-digit code to <span className="font-medium text-gray-700">{identifier}</span>. It expires in 10 minutes.
+                Code verified for <span className="font-medium text-gray-700">{identifier}</span>. Choose a new password.
               </>
             ) : (
               <>
@@ -114,28 +96,7 @@ function ResetPasswordForm() {
           </div>
         )}
 
-        {info && !error && (
-          <div className="mt-4 rounded-xl bg-emerald-50 p-2.5 text-center text-xs text-emerald-700 border border-emerald-100">
-            {info}
-          </div>
-        )}
-
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            maxLength={6}
-            placeholder="6-digit code"
-            value={otp}
-            onChange={(e) => {
-              setOtp(e.target.value.replace(/\D/g, ""));
-              if (error) setError("");
-            }}
-            className={`${inputClass} tracking-[0.4em] text-center`}
-            required
-          />
-
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -181,19 +142,10 @@ function ResetPasswordForm() {
           </button>
 
           <p className="text-center text-xs text-gray-500">
-            Didn&apos;t get a code?{" "}
-            {cooldown > 0 ? (
-              <span className="text-gray-400">Resend in {cooldown}s</span>
-            ) : (
-              <button
-                type="button"
-                onClick={handleResend}
-                disabled={!identifier}
-                className="text-[#FA7A22] font-medium hover:underline disabled:opacity-50"
-              >
-                Resend code
-              </button>
-            )}
+            Need a new code?{" "}
+            <Link href="/forgot-password" className="text-[#FA7A22] font-medium hover:underline">
+              Start again
+            </Link>
           </p>
         </form>
       </div>
