@@ -19,6 +19,8 @@ const LOCATION_MAX = 100;
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const MOBILE_RE = /^\+?[0-9\s-]{7,20}$/;
 const PASSWORD_MIN = 6;
+const USERNAME_RE = /^[A-Za-z0-9_.]{3,30}$/;
+const OTP_RESEND_SECONDS = 30;
 
 /** Crops the picture to a centred square, shrinks it, and returns a small JPEG file. */
 async function shrinkAvatar(file: File): Promise<File> {
@@ -95,6 +97,7 @@ export default function EditProfile() {
   const [error, setError] = useState<string | null>(null);
 
   const [firstName, setFirstName] = useState("");
+  const [username, setUsername] = useState("");
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
@@ -113,10 +116,17 @@ export default function EditProfile() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
 
+  // One-time code emailed to the registered address before a password change.
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [otpCooldown, setOtpCooldown] = useState(0);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fillForm = (data: ProfileData) => {
     setFirstName(data.first_name || "");
+    setUsername(data.username || "");
     setLastName(data.last_name || "");
     setBio(data.bio || "");
     setLocation(data.location || "");
@@ -141,10 +151,18 @@ export default function EditProfile() {
     loadProfile();
   }, []);
 
+  // Resend cooldown ticker for the password-change code.
+  useEffect(() => {
+    if (otpCooldown <= 0) return;
+    const t = setTimeout(() => setOtpCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [otpCooldown]);
+
   // Push the saved values into the auth context so the navbar updates without a reload.
   const syncAuthUser = (updated: ProfileData) => {
     if (!user) return;
     const patch = {
+      username: updated.username,
       first_name: updated.first_name,
       last_name: updated.last_name,
       full_name: updated.full_name,
@@ -182,6 +200,23 @@ export default function EditProfile() {
     }
   };
 
+  const handleSendOtp = async () => {
+    setPasswordError(null);
+    setPasswordSuccess(null);
+    setIsSendingOtp(true);
+    try {
+      const res = await authService.requestChangePasswordOtp();
+      setOtpSent(true);
+      setOtp("");
+      setOtpCooldown(OTP_RESEND_SECONDS);
+      setPasswordSuccess(res.message || "We sent a 6-digit code to your registered email.");
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : "Could not send the code. Please try again.");
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
   const handleChangePassword = async () => {
     setPasswordError(null);
     setPasswordSuccess(null);
@@ -193,17 +228,23 @@ export default function EditProfile() {
       return setPasswordError("New password and confirmation don't match.");
     if (newPassword === oldPassword)
       return setPasswordError("New password must be different from the current one.");
+    if (!/^\d{6}$/.test(otp))
+      return setPasswordError("Enter the 6-digit code we emailed you. Use \"Send code\" to get one.");
 
     setIsChangingPassword(true);
     try {
       await authService.changePassword({
         old_password: oldPassword,
         new_password: newPassword,
+        otp,
       });
       setPasswordSuccess("Password changed successfully.");
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setOtp("");
+      setOtpSent(false);
+      setOtpCooldown(0);
     } catch (err) {
       setPasswordError(err instanceof Error ? err.message : "Failed to change password.");
     } finally {
@@ -221,10 +262,13 @@ export default function EditProfile() {
 
     const first = firstName.trim();
     const last = lastName.trim();
+    const trimmedUsername = username.trim();
     const trimmedEmail = email.trim();
     const trimmedMobile = mobileNo.trim();
 
     if (!first) return setError("First name is required.");
+    if (!USERNAME_RE.test(trimmedUsername))
+      return setError("Username must be 3-30 characters: letters, numbers, dots and underscores only.");
     if (first.length > NAME_MAX || last.length > NAME_MAX)
       return setError(`Names must be ${NAME_MAX} characters or less.`);
     if (bio.length > BIO_MAX) return setError(`Bio must be ${BIO_MAX} characters or less.`);
@@ -238,6 +282,8 @@ export default function EditProfile() {
       const updated = await userService.updateProfile({
         first_name: first,
         last_name: last,
+        // Only send the username when it actually changed.
+        username: trimmedUsername !== profile?.username ? trimmedUsername : undefined,
         bio: bio.trim(),
         location: location.trim(),
         email: trimmedEmail,
@@ -285,7 +331,6 @@ export default function EditProfile() {
         >
           <ArrowLeft size={16} />
         </button>
-        <h1 className="text-lg font-bold text-gray-900">Edit profile</h1>
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-orange-100 p-6 sm:p-8">
@@ -341,10 +386,20 @@ export default function EditProfile() {
 
         <EditRow label="Username">
           <input
-            value={profile.username}
-            disabled
-            className={`${inputClass} opacity-60 cursor-not-allowed`}
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value.replace(/\s/g, ""));
+              if (error) setError(null);
+            }}
+            maxLength={30}
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            className={inputClass}
           />
+          <p className="text-[11px] text-gray-400 mt-1">
+            3-30 characters: letters, numbers, dots and underscores.
+          </p>
         </EditRow>
 
         <EditRow label="Bio">
@@ -459,6 +514,39 @@ export default function EditProfile() {
             autoComplete="new-password"
             className={inputClass}
           />
+        </EditRow>
+
+        <EditRow label="Email code">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={6}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+              placeholder="6-digit code"
+              disabled={!otpSent}
+              className={`${inputClass} tracking-[0.3em] disabled:opacity-60`}
+            />
+            <button
+              type="button"
+              onClick={handleSendOtp}
+              disabled={isSendingOtp || otpCooldown > 0}
+              className={`${buttonVariants({ variant: "outline" })} shrink-0 px-4 py-2 text-sm font-bold disabled:opacity-50`}
+            >
+              {isSendingOtp
+                ? "Sending..."
+                : otpCooldown > 0
+                  ? `Resend in ${otpCooldown}s`
+                  : otpSent
+                    ? "Resend code"
+                    : "Send code"}
+            </button>
+          </div>
+          <p className="text-[11px] text-gray-400 mt-1">
+            We email a code to the address registered on your account.
+          </p>
         </EditRow>
 
         {passwordError && (

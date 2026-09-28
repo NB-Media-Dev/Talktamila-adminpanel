@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image, { type StaticImageData } from "next/image";
 import { Zap, ChevronDown, ChevronUp, Plus } from "lucide-react";
 
-const avatar1 = "/Images/profile4.jpg";
+import { getInitials, initialsAvatar } from "@/lib/avatar";
 import Addstories from "./Addstories";
 import PreviewStories from "./Previewstories";
 import { useAuthuser } from "@/hooks/useAuthuser";
@@ -109,7 +109,7 @@ export default function TodayStories() {
           id: parentId,
           story_id: parentId,
           username: group.username,
-          avatar: group.avatar || avatar1,
+          avatar: group.avatar || initialsAvatar(getInitials({ name: group.username })),
           verified: group.verified || false,
           timeAgo: group.timeAgo || "Just now",
           musicTrack: group.musicTrack,
@@ -203,10 +203,19 @@ export default function TodayStories() {
   };
   const handleTouchEnd = () => setTouchStart(null);
 
-  const displayAvatar =
-    typeof myStoryUser?.avatar === "string" || myStoryUser?.avatar
-      ? myStoryUser.avatar
-      : (currentUser as { avatar_url?: StaticImageData | string })?.avatar_url || avatar1;
+  // Your own circle: your photo, otherwise your initials (same as navbar and profile).
+  const me = currentUser as {
+    avatar_url?: string | null;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
+  } | null;
+  const displayAvatar: StaticImageData | string =
+    myStoryUser?.avatar ||
+    me?.avatar_url ||
+    initialsAvatar(
+      getInitials({ firstName: me?.first_name, lastName: me?.last_name, username: me?.username })
+    );
 
   return (
     <>

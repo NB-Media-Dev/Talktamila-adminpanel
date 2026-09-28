@@ -55,6 +55,11 @@ export const authService = {
       body: JSON.stringify(payload),
     });
   },
+  requestChangePasswordOtp: async (): Promise<SimpleSuccessResponse> => {
+    return apiClient<SimpleSuccessResponse>('/api/v1/auth/change-password/request-otp', {
+      method: 'POST',
+    });
+  },
   changePassword: async (payload: ChangePasswordPayload): Promise<SimpleSuccessResponse> => {
     return apiClient<SimpleSuccessResponse>('/api/v1/auth/change-password', {
       method: 'POST',

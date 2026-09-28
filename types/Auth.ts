@@ -97,6 +97,7 @@ export interface ResetPasswordPayload {
 export interface ChangePasswordPayload {
   old_password: string;
   new_password: string;
+  otp: string;
 }
 
 export interface SimpleSuccessResponse {

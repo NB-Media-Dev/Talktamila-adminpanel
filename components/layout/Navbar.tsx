@@ -4,13 +4,12 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { User, Wallet, Settings, LogOut, ChevronDown } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
-import Image from "next/image";
 import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { authService } from "@/services/auth.service";
 import { userService } from "@/services/user.service";
-import avatar2 from "@/public/Images/profile2.jpg";
+import { getInitials, initialsAvatar } from "@/lib/avatar";
 import LogoutConfirmDialog from "./LogoutConfirmDialog";
 import Bellnotification from "../admin/dashboard/Bellnotification";
 
@@ -22,9 +21,15 @@ export default function Navbar() {
   const { isInfluencer, isFreelancer,} = useAuthRole();
   const {user, setUser } = useAuthuser();
 
-  // The saved profile picture (falls back to the bundled default when none is set).
+  // The saved profile picture. With no photo, show the user's initials
+  // (the same default the profile page and stories use).
   const authUser = user as any;
-  const avatarSrc: string | null = authUser?.user?.avatar_url || authUser?.avatar_url || null;
+  const me = authUser?.user || authUser || null;
+  const avatarSrc: string =
+    me?.avatar_url ||
+    initialsAvatar(
+      getInitials({ firstName: me?.first_name, lastName: me?.last_name, username: me?.username })
+    );
 
   // After a page reload the auth context starts empty, so load the profile once.
   const hydratedRef = useRef(false);
@@ -37,17 +42,15 @@ export default function Navbar() {
       .catch(() => {});
   }, [user, setUser]);
 
-  const renderAvatar = (sizes: string) =>
-    avatarSrc ? (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={avatarSrc}
-        alt="User Profile"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-    ) : (
-      <Image src={avatar2} alt="User Profile" fill sizes={sizes} className="object-cover" />
-    );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const renderAvatar = (_sizes?: string) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={avatarSrc}
+      alt="User Profile"
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+  );
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
