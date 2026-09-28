@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Users } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { getInitials } from "@/lib/avatar";
 import { userService } from "@/services/user.service";
 import type { UserSuggestion } from "@/types/Auth";
 import { Cardlayout } from "@/components/ui/Cardlayout";
 import { buttonVariants } from "@/components/ui/Button";
+
+function formatRole(role?: string | null): string {
+  if (!role) return "";
+  if (role.toLowerCase() === "superadmin") return "Super Admin";
+  return role.replace(/[_-]+/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+}
 
 /**
  * "Discover people" strip for the profile page — built on the existing
@@ -23,6 +30,22 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pendingIds, setPendingIds] = useState<Set<number>>(new Set());
   const [dismissedIds, setDismissedIds] = useState<Set<number>>(new Set());
+
+  // Left/right arrows so the strip can be scrolled with a mouse on a PC.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateArrows = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  const scrollByCards = (direction: 1 | -1) => {
+    scrollRef.current?.scrollBy({ left: direction * 300, behavior: "smooth" });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +71,13 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
   }, []);
 
   const visible = suggestions.filter((s) => !dismissedIds.has(s.user_id));
+
+  useEffect(() => {
+    updateArrows();
+    window.addEventListener("resize", updateArrows);
+    return () => window.removeEventListener("resize", updateArrows);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestions, dismissedIds, isLoading]);
 
   async function handleFollowToggle(user: UserSuggestion) {
     setPendingIds((prev) => new Set(prev).add(user.user_id));
@@ -96,16 +126,41 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
         </div>
       }
     >
-      <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
+      <div className="relative">
+        {canScrollLeft && (
+          <button
+            type="button"
+            onClick={() => scrollByCards(-1)}
+            aria-label="Scroll left"
+            className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 items-center justify-center rounded-full bg-white shadow-md border border-orange-100 text-gray-600 hover:text-[#FF6B35] transition-colors cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+        )}
+        {canScrollRight && (
+          <button
+            type="button"
+            onClick={() => scrollByCards(1)}
+            aria-label="Scroll right"
+            className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 items-center justify-center rounded-full bg-white shadow-md border border-orange-100 text-gray-600 hover:text-[#FF6B35] transition-colors cursor-pointer"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        )}
+
+      <div
+        ref={scrollRef}
+        onScroll={updateArrows}
+        className="flex gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-1 -mx-1 px-1"
+      >
         {visible.map((user) => {
           const isPending = pendingIds.has(user.user_id);
-          const initials =
-            (user.full_name || user.username || "?").charAt(0).toUpperCase();
+          const initials = getInitials({ name: user.full_name, username: user.username });
 
           return (
             <div
               key={user.user_id}
-              className="relative shrink-0 w-32 bg-white rounded-2xl border border-[#FFEFE0] p-3 flex flex-col items-center text-center"
+              className="relative shrink-0 w-36 bg-white rounded-2xl border border-[#FFEFE0] p-3 flex flex-col items-center text-center"
             >
               <button
                 type="button"
@@ -132,8 +187,11 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
               <p className="text-sm font-semibold text-gray-900 truncate w-full">
                 {user.full_name || `@${user.username}`}
               </p>
-              <p className="text-xs text-gray-400 truncate w-full mb-3">
-                {user.bio || user.role}
+              <p className="text-xs font-semibold text-[#FF6B35] truncate w-full">
+                {formatRole(user.role)}
+              </p>
+              <p className="text-[11px] leading-snug text-gray-500 line-clamp-2 w-full min-h-[2rem] mt-1 mb-3">
+                {user.bio || ""}
               </p>
 
               <button
@@ -149,6 +207,7 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
             </div>
           );
         })}
+      </div>
       </div>
     </Cardlayout>
   );
