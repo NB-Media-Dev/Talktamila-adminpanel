@@ -108,7 +108,7 @@ export default function TodayStories() {
         return {
           id: parentId,
           story_id: parentId,
-          userName: group.userName,
+          username: group.username,
           avatar: group.avatar || avatar1,
           verified: group.verified || false,
           timeAgo: group.timeAgo || "Just now",
@@ -135,6 +135,7 @@ export default function TodayStories() {
               music_start_time: s.music_start_time ?? correspondingStory?.music_start_time ?? 0,
               music_title: s.music_title || correspondingStory?.music_title,
               music_artist: s.music_artist || correspondingStory?.music_artist,
+              audience: s.audience || correspondingStory?.audience || "PUBLIC",
             };
           }),
         };
@@ -328,7 +329,7 @@ export default function TodayStories() {
                   onClick={() => openPreview(userIndexInAll >= 0 ? userIndexInAll : 0)}
                 />
                 <span className="text-[10px] font-medium text-gray-600 truncate max-w-[55px]">
-                  {user.userName}
+                  {user.username}
                 </span>
               </div>
             );

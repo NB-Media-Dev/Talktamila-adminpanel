@@ -21,6 +21,9 @@ import {
   Flag,
   Bookmark,
   MoreVertical,
+  Star,
+  Users,
+  Globe,
 } from "lucide-react";
 import { storyService } from "@/services/Stories.service";
 import type { StoryActivityData, StorySlide, StoryUser, UserStoryGroup } from "@/types/Stories";
@@ -517,7 +520,7 @@ export function StoryViewer({
       <div className="absolute inset-0">
         <img
           src={currentSlide.imageUrl}
-          alt={`${user.userName} story slide`}
+          alt={`${user.username} story slide`}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/80 via-black/30 to-transparent pointer-events-none" />
@@ -527,7 +530,7 @@ export function StoryViewer({
       <div className="absolute inset-0">
         <Image
           src={currentSlide.imageUrl}
-          alt={`${user.userName} story slide`}
+          alt={`${user.username} story slide`}
           fill
           sizes="360px"
           className="object-cover"
@@ -556,23 +559,34 @@ export function StoryViewer({
           <div className="w-8 h-8 p-[2px] rounded-full bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35] shrink-0">
             <div className="w-full h-full rounded-full overflow-hidden relative bg-gray-100">
               {typeof user.avatar === "string" ? (
-                <img src={user.avatar} alt={user.userName} className="w-full h-full object-cover" />
+                <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
               ) : (
-                <Image src={user.avatar} alt={user.userName} fill sizes="32px" className="object-cover" />
+                <Image src={user.avatar} alt={user.username} fill sizes="32px" className="object-cover" />
               )}
             </div>
           </div>
           {/* Name + meta */}
           <div className="flex flex-col">
             <span className="text-[11px] font-bold text-white leading-tight drop-shadow-sm flex items-center gap-1">
-              {user.is_my_story ? "Your Story" : user.userName}
+              {user.is_my_story ? "Your Story" : user.username}
               {user.verified && (
                 <CheckCircle2 size={10} className="text-blue-400 fill-blue-400" />
               )}
             </span>
-            <span className="text-[9px] text-white/70 font-medium">
-              {formatTimeAgo(currentSlide?.created_at, user.timeAgo || "Just now")}
-            </span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[9px] text-white/70 font-medium">
+                {formatTimeAgo(currentSlide?.created_at, user.timeAgo || "Just now")}
+              </span>
+              {currentSlide?.audience && (currentSlide.audience.toUpperCase() === "CLOSE_FRIENDS" || currentSlide.audience.toUpperCase() === "CLOSE") ? (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#10B981] text-[8px] text-white font-semibold shadow-xs">
+                  <Star size={8} className="fill-white" /> Close Friends
+                </span>
+              ) : currentSlide?.audience && (currentSlide.audience.toUpperCase() === "FOLLOWERS" || currentSlide.audience.toUpperCase() === "FOLLOWER") ? (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#3B82F6] text-[8px] text-white font-medium shadow-xs">
+                  <Users size={8} /> Followers
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
 
@@ -680,12 +694,12 @@ export function StoryViewer({
                       onClick={() => {
                         setShowOptionsMenu(false);
                         setIsPaused(false);
-                        alert(`Muted ${user.userName}'s stories.`);
+                        alert(`Muted ${user.username}'s stories.`);
                       }}
                       className="flex items-center gap-2.5 px-3 py-2 text-xs text-white/90 hover:bg-white/10 transition-colors text-left cursor-pointer"
                     >
                       <VolumeX size={14} />
-                      <span>Mute {user.userName}</span>
+                      <span>Mute {user.username}</span>
                     </button>
                   </>
                 )}
@@ -819,7 +833,7 @@ export function StoryViewer({
                   handleSendReply();
                 }
               }}
-              placeholder={`Reply to ${user.userName}...`}
+              placeholder={`Reply to ${user.username}...`}
               className="w-full bg-transparent text-white placeholder:text-white/70 text-xs outline-none pr-2"
             />
             {replyText.trim() && (

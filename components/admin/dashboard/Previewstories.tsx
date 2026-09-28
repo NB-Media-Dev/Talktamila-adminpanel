@@ -107,7 +107,7 @@ export default function PreviewStories({
             onClick={() => setUserIndex(idx)}
             className={`flex flex-col items-center gap-0.5 shrink-0 transition-all cursor-pointer ${idx === userIndex ? "scale-110" : "opacity-60 hover:opacity-90"
               }`}
-            aria-label={`View ${u.userName}'s story`}
+            aria-label={`View ${u.username}'s story`}
           >
             <div
               className={`p-[2px] rounded-full ${idx === userIndex ? "bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]" : "bg-white/30"
@@ -115,14 +115,14 @@ export default function PreviewStories({
             >
               <div className="w-8 h-8 rounded-full overflow-hidden relative bg-gray-100">
                 {typeof u.avatar === "string" ? (
-                  <img src={u.avatar} alt={u.userName} className="w-full h-full object-cover" />
+                  <img src={u.avatar} alt={u.username} className="w-full h-full object-cover" />
                 ) : (
-                  <Image src={u.avatar} alt={u.userName} fill sizes="32px" className="object-cover" />
+                  <Image src={u.avatar} alt={u.username} fill sizes="32px" className="object-cover" />
                 )}
               </div>
             </div>
             <span className="text-[8px] text-white/80 font-medium max-w-[36px] truncate">
-              {u.is_my_story ? "You" : u.userName}
+              {u.is_my_story ? "You" : u.username}
             </span>
           </button>
         ))}
@@ -143,4 +143,3 @@ export default function PreviewStories({
     </div>
   );
 }
-

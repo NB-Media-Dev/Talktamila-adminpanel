@@ -61,6 +61,7 @@ export interface StorySlide {
   music_start_time?: number;
   music_title?: string;
   music_artist?: string;
+  audience?: string;
 }
 
 /**
@@ -71,14 +72,14 @@ export interface StorySlide {
 export interface StoryGroup {
   /** Shared parent identifier for this story group (common across all slides) */
   story_id: number;
-  userName: string;
+  username: string;
   slides: StorySlide[];
 }
 
 export interface UserStoryGroup {
   story_id?: number;       // The single common ID for the entire story post / group
   id: number;              // The common parental story identifier
-  userName: string;
+  username: string;
   avatar: StaticImageData | string;
   verified?: boolean;
   timeAgo?: string;
@@ -97,6 +98,7 @@ export interface BackendSlide {
   media_url?: string;
   media_type?: string;
   caption?: string;
+  audience?: string;
   duration?: number;
   liked?: boolean;
   likes_count?: number;
@@ -118,7 +120,7 @@ export interface StoryUser extends UserStoryGroup {
 export interface BackendStoryGroup {
   id: string | number;
   story_id?: string | number;
-  userName: string;
+  username: string;
   avatar?: string;
   verified?: boolean;
   timeAgo?: string;
