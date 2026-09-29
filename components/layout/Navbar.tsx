@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useContext, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { User, Wallet, Settings, LogOut, ChevronDown } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
 import { useContenthook } from "@/hooks/useContent";
@@ -12,12 +12,15 @@ import { userService } from "@/services/user.service";
 import { getInitials, initialsAvatar } from "@/lib/avatar";
 import LogoutConfirmDialog from "./LogoutConfirmDialog";
 import Bellnotification from "../admin/dashboard/Bellnotification";
+import AnimatedLogo from "./AnimatedLogo";
+import MessageButton from "../messages/MessageButton";
 
 
 
 export default function Navbar() {
   const context = useContext(useContenthook);
   const router = useRouter();
+  const pathname = usePathname();
   const { isInfluencer, isFreelancer,} = useAuthRole();
   const {user, setUser } = useAuthuser();
 
@@ -106,7 +109,7 @@ export default function Navbar() {
       context.setHandlestate(false);
       context.setAnalyticsState(false);
     }
-    if (path) {
+    if (path && path !== pathname) {
       return router.push(path);
     }
   };
@@ -202,15 +205,7 @@ export default function Navbar() {
       {/* Mobile Header */}
       <div className="block md:hidden w-full bg-white rounded-2xl sm:rounded-3xl px-2.5 xs:px-3.5 sm:px-4 py-2 xs:py-2.5 sm:py-3 shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-orange-100/60">
         <div className="flex items-center justify-between gap-1">
-          <div className="flex items-center gap-0.5 select-none shrink-0">
-            <span className="text-sm xs:text-base sm:text-lg font-bold text-[#1A1A1A] tracking-tight">Talk</span>
-            <span className="text-sm xs:text-base sm:text-lg font-bold text-[#FF6B35] tracking-tight flex items-center gap-0.5">
-              Tamila<span className={`w-3 h-3 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 rounded-full ${buttonVariants({ variant: "default" })} flex items-center justify-center gap-[1px] shrink-0 shadow-xs ml-0.5`}>
-                <span className="w-[1.5px] h-[1.5px] xs:w-[2px] xs:h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
-                <span className="w-[1.5px] h-[1.5px] xs:w-[2px] xs:h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
-              </span>
-            </span>
-          </div>
+          <AnimatedLogo variant="mobile" />
 
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 shrink-0">
             <button
@@ -229,6 +224,8 @@ export default function Navbar() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.904L9 9l.813 5.096L15 15l-5.187.904zM19.071 4.929l-.354 2.213-2.213.354 2.213.354.354 2.213.354-2.213 2.213-.354-2.213-.354-.354-2.213z" />
               </svg>
             </button>
+
+            <MessageButton className="p-1.5 min-w-[32px] min-h-[32px] xs:p-2 xs:min-w-[36px] xs:min-h-[36px] flex items-center justify-center rounded-full text-gray-500 hover:text-[#FF6B35] active:bg-orange-50 transition-colors cursor-pointer" />
 
             {/* Mobile Notification Container */}
             <div className="relative" ref={notificationRef}>
@@ -268,15 +265,7 @@ export default function Navbar() {
       {/* Desktop Header */}
       <div className="hidden md:flex w-full mt-0.5 rounded-2xl md:rounded-full px-4 md:px-6 py-2 md:py-2.5 mx-auto items-center justify-between gap-3 md:gap-4 bg-white shadow-md border border-[#FFEFE0]">
 
-        <div className="flex items-center gap-1 shrink-0 select-none">
-          <span className="text-lg md:text-xl font-bold text-black tracking-tight">Talk</span>
-          <span className="text-lg md:text-xl font-bold text-brand tracking-tight flex items-center gap-1.5">
-            Tamila<span className={`w-4 h-4 md:w-5 md:h-5 rounded-full ${buttonVariants({ variant: "default" })} flex items-center justify-center gap-0.5 shrink-0 shadow-xs`}>
-              <span className="w-1 h-1 rounded-full bg-white inline-block"></span>
-              <span className="w-1 h-1 rounded-full bg-white inline-block"></span>
-            </span>
-          </span>
-        </div>
+        <AnimatedLogo variant="desktop" />
 
         <form onSubmit={handleSearchSubmit} className="flex-1 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto">
           <div className="relative w-full">
@@ -314,11 +303,7 @@ export default function Navbar() {
             <span className="hidden lg:inline">AI</span>
           </button>
 
-          <button type="button" className={`p-2 rounded-full ${buttonVariants({ variant: "bgcolor" })} active:scale-95 transition-all cursor-pointer`} title="Messages">
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M16.5 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M12 18.75c4.97 0 9-3.47 9-7.75s-4.03-7.75-9-7.75-9 3.47-9 7.75c0 1.63.58 3.14 1.55 4.35l-1.373 3.3a.75.75 0 0 0 .924.996l3.376-1.125a9.191 9.191 0 0 0 4.524 1.181Z" />
-            </svg>
-          </button>
+          <MessageButton className={`p-2 rounded-full ${buttonVariants({ variant: "bgcolor" })} cursor-pointer`} />
 
           {/* Desktop Notification Container */}
           <div className="relative" ref={notificationRef}>

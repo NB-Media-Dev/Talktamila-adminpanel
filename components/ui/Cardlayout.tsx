@@ -10,6 +10,8 @@ interface SidebarCardProps {
   isLoading?: boolean;
   skeleton?: React.ReactNode;
   className?: string;
+  /** Makes the action label a real, keyboard-focusable button. */
+  onActionClick?: () => void;
 }
 
 export function Cardlayout({
@@ -20,6 +22,7 @@ export function Cardlayout({
   isLoading = false,
   skeleton,
   className = "",
+  onActionClick,
 }: SidebarCardProps) {
   return (
     <div
@@ -35,9 +38,19 @@ export function Cardlayout({
           </div>
 
           {!isLoading && action && (
-            <div className="text-xs sm:text-sm font-medium text-orange-600 cursor-pointer">
-              {action}
-            </div>
+            onActionClick ? (
+              <button
+                type="button"
+                onClick={onActionClick}
+                className="text-xs sm:text-sm font-medium text-orange-600 hover:underline cursor-pointer"
+              >
+                {action}
+              </button>
+            ) : (
+              <div className="text-xs sm:text-sm font-medium text-orange-600 cursor-pointer">
+                {action}
+              </div>
+            )
           )}
         </div>
 

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { goBack as historyBack } from "@/lib/navigation";
 import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
 import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
@@ -253,8 +254,7 @@ export default function EditProfile() {
   };
 
   const goBackToProfile = () => {
-    if (profile) router.push(`/${profile.role}/profile`);
-    else router.back();
+    historyBack(router, profile ? `/${profile.role}/profile` : "/");
   };
 
   const handleSave = async () => {
@@ -291,7 +291,7 @@ export default function EditProfile() {
         avatar: avatarFile,
       });
       syncAuthUser(updated);
-      router.push(`/${updated.role}/profile`);
+      router.replace(`/${updated.role}/profile`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save profile.");
       setIsSaving(false);

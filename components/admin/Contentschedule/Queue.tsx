@@ -181,7 +181,7 @@ function QueueCard({ item, onDelete }: QueueCardProps) {
         </div>
 
         <div className="flex items-center gap-3 sm:gap-4 py-1 min-w-0">
-          <Image
+          <Image width={100} height={100}
             src={item.thumbnail}
             alt={item.title}
             className="w-16 h-16 sm:w-20 sm:h-20 rounded-[16px] sm:rounded-[20px] object-cover shrink-0 border border-gray-100/60 shadow-sm"
@@ -258,7 +258,7 @@ function QueueCard({ item, onDelete }: QueueCardProps) {
 
         <div className="flex items-center justify-between gap-3 min-w-0">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <Image
+            <Image width={100} height={100}
               src={item.thumbnail}
               alt={item.title}
               className="w-16 h-16 rounded-[16px] object-cover shrink-0 border border-gray-100/60"

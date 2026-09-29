@@ -190,7 +190,7 @@ export default function RegisterPage() {
 
       setIsSubmitting(false)
       setSuccess(true)
-      setTimeout(() => router.push('/login'), 1500)
+      setTimeout(() => router.replace('/login'), 1500)
     } catch (err) {
       setIsSubmitting(false)
       const errorInstance = err as Error

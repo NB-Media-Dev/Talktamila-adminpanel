@@ -295,7 +295,7 @@ export default function ApprovedContent({
            
               <div className="flex items-start justify-between gap-2 min-w-0">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <Image
+                  <Image width={100} height={100}
                     src={item.creator.avatar}
                     alt={item.creator.name}
                     className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-gray-100 shadow-xs shrink-0"
@@ -430,7 +430,7 @@ export default function ApprovedContent({
               <div className="h-56 sm:h-64 bg-gray-900 relative flex items-center justify-center shrink-0">
                 {previewItem.type === "video" ? (
                   <>
-                    <Image
+                    <Image width={100} height={100}
                       src={previewItem.mediaUrl || ""}
                       alt={previewItem.title}
                       className="w-full h-full object-cover"
@@ -461,7 +461,7 @@ export default function ApprovedContent({
 
               <div className="p-4 sm:p-6 space-y-4">
                 <div className="flex items-center gap-3">
-                  <Image
+                  <Image width={100} height={100}
                     src={previewItem.creator.avatar}
                     alt={previewItem.creator.name}
                     className="w-10 h-10 rounded-full object-cover shrink-0"
@@ -506,4 +506,3 @@ export default function ApprovedContent({
     </div>
   );
 }
-

@@ -149,7 +149,7 @@ function DesktopTableRow({ item }: { item: ContentItem }) {
       <td className="py-2.5 sm:py-3 pl-2">
         <div className="flex items-center gap-2.5 sm:gap-3 max-w-[240px] sm:max-w-[300px] md:max-w-[260px] lg:max-w-[340px]">
           <div className="relative w-[64px] h-[42px] sm:w-[76px] sm:h-[48px] rounded-xl overflow-hidden shrink-0 bg-gray-100 border border-gray-100">
-            <Image
+            <Image width={100} height={100}
               src={item.thumbnail}
               alt={item.title}
               className="w-full h-full object-cover"

@@ -66,11 +66,11 @@ export default function BottomNavigation() {
             onClick={() => {
 
               if (isInfluencer) {
-                router.push('/influencer/trendradar')
+                router.replace('/influencer/trendradar')
               } else if (isFreelancer) {
                 return null
               } else {
-                router.push("/admin/trendradar")
+                router.replace("/admin/trendradar")
               }
               setActiveTab('ai');
               setHandlestate(false);
@@ -114,7 +114,7 @@ export default function BottomNavigation() {
                 } else if (isInfluencer) {
                   homeRoute = '/influencer';
                 }
-                router.push(homeRoute);
+                router.replace(homeRoute);
               }}
 
               aria-label="Home"
@@ -128,7 +128,7 @@ export default function BottomNavigation() {
           <button
             onClick={() => {
               if (isInfluencer) {
-                router.push('/influencer/analytics')
+                router.replace('/influencer/analytics')
               } else if (isFreelancer) {
                 return null
               }
@@ -194,4 +194,3 @@ export default function BottomNavigation() {
     </>
   );
 }
-

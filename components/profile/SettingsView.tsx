@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { goBack as historyBack } from "@/lib/navigation";
 import {
   ArrowLeft,
   ChevronRight,
@@ -221,8 +222,7 @@ export default function SettingsView() {
   };
 
   const goBack = () => {
-    if (profile) router.push(`/${profile.role}/profile`);
-    else router.back();
+    historyBack(router, profile ? `/${profile.role}/profile` : "/");
   };
 
   if (isLoading) {

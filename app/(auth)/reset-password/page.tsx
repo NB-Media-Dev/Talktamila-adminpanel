@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { goBack } from "@/lib/navigation";
 import Link from "next/link";
 import { CheckCircle2, ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { authService } from "@/services/auth.service";
@@ -39,7 +40,7 @@ function ResetPasswordForm() {
       await authService.resetPassword({ identifier, otp, new_password: newPassword });
       sessionStorage.removeItem("reset_otp");
       setSuccess(true);
-      setTimeout(() => router.push("/login"), 1500);
+      setTimeout(() => router.replace("/login"), 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not reset the password. Please try again.");
       setIsSubmitting(false);
@@ -55,7 +56,7 @@ function ResetPasswordForm() {
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() => router.push("/forgot-password")}
+            onClick={() => goBack(router, "/forgot-password")}
             className="p-1 -ml-1 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100/80"
             aria-label="Back"
           >

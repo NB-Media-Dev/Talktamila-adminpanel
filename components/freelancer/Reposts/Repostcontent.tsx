@@ -91,7 +91,7 @@ function MobileItemCard({ item }: { item: RepostedItem }) {
     <div className="p-4 flex flex-col gap-3 hover:bg-gray-50/60 transition-colors">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <Image
+          <Image width={100} height={100}
             src={item.thumbnail}
             alt={item.title}
             className="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-100 shadow-xs"
@@ -130,7 +130,7 @@ function DesktopTableRow({ item }: { item: RepostedItem }) {
     <tr className="hover:bg-gray-50/60 transition-colors group">
       <td className="py-3.5 px-6">
         <div className="flex items-center gap-3">
-          <Image
+          <Image width={100} height={100}
             src={item.thumbnail}
             alt={item.title}
             className="w-9 h-9 rounded-full object-cover shrink-0 border border-gray-100 shadow-xs"

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { goBack } from "@/lib/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { authService } from "@/services/auth.service";
@@ -78,7 +79,7 @@ export default function ForgotPasswordPage() {
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() => router.push("/login")}
+            onClick={() => goBack(router, "/login")}
             className="p-1 -ml-1 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100/80"
             aria-label="Back to login"
           >

@@ -74,7 +74,7 @@ export default function TrendingRepost({
             className="flex items-center gap-3 p-1 rounded-2xl hover:bg-gray-50/80 transition-colors"
           >
             
-            <Image
+            <Image width={100} height={100}
               src={item.imageUrl}
               alt={item.title}
               className="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-100 shadow-xs"

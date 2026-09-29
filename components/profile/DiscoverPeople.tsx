@@ -7,6 +7,7 @@ import { userService } from "@/services/user.service";
 import type { UserSuggestion } from "@/types/Auth";
 import { Cardlayout } from "@/components/ui/Cardlayout";
 import { buttonVariants } from "@/components/ui/Button";
+import PeopleModal from "@/components/messages/PeopleModal";
 
 function formatRole(role?: string | null): string {
   if (!role) return "";
@@ -30,6 +31,7 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pendingIds, setPendingIds] = useState<Set<number>>(new Set());
   const [dismissedIds, setDismissedIds] = useState<Set<number>>(new Set());
+  const [showAll, setShowAll] = useState(false);
 
   // Left/right arrows so the strip can be scrolled with a mouse on a PC.
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -117,6 +119,7 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
       title="Discover people"
       icon={<Users className="w-4 h-4 text-[#FF6B35]" />}
       action="See all"
+      onActionClick={() => setShowAll(true)}
       isLoading={isLoading}
       skeleton={
         <div className="flex gap-3 overflow-x-hidden">
@@ -209,6 +212,13 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
         })}
       </div>
       </div>
+
+      <PeopleModal
+        open={showAll}
+        onClose={() => setShowAll(false)}
+        mode="discover"
+        onFollowChange={onFollowChange}
+      />
     </Cardlayout>
   );
 }

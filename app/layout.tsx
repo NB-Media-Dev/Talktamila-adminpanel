@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./animations.css";
 import { UseContentProvider } from "@/hooks/useContent";
 import { AuthProvider }  from "@/hooks/useAuthuser";
+import SplashScreen from "@/components/layout/SplashScreen";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 {children}
         </UseContentProvider>
         </AuthProvider>
+        <SplashScreen />
         </body>
     </html>
   );

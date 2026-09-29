@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { authService } from "@/services/auth.service";
 import { useAuthuser } from "@/hooks/useAuthuser";
+import AnimatedLogo from "@/components/layout/AnimatedLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -48,20 +49,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FFEAE2] p-4 font-sans">
       <div className="w-full max-w-md rounded-[32px] bg-white p-8 sm:p-12 shadow-xl shadow-orange-900/5">
-        <div className="flex items-center gap-0.5 select-none shrink-0">
-          <span className="text-md sm:text-lg font-bold text-[#1A1A1A] tracking-tight">
-            Talk
-          </span>
-          <span className="text-base sm:text-lg font-bold text-[#FF6B35] tracking-tight flex items-center gap-0.5">
-            Tamila
-            <span
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full ${buttonVariants({ variant: "default" })} flex items-center justify-center gap-[1px] shrink-0 shadow-xs ml-0.5`}
-            >
-              <span className="w-[2px] h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
-              <span className="w-[2px] h-[2px] sm:w-[2.5px] sm:h-[2.5px] rounded-full bg-white inline-block"></span>
-            </span>
-          </span>
-        </div>
+        <AnimatedLogo variant="login" />
 
         <div className="mt-6">
           <h1
