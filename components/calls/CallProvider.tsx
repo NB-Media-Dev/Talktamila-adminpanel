@@ -99,7 +99,7 @@ function signalingUrl(token: string): string {
 
 async function acquireMedia(media: CallMedia): Promise<MediaStream | string> {
   if (typeof window === "undefined" || !window.isSecureContext) {
-    return "Calls need a secure connection (HTTPS). Open the app over HTTPS, or on localhost, to use voice and video calls.";
+    return "Can't Connect";
   }
   if (!navigator.mediaDevices?.getUserMedia || typeof RTCPeerConnection === "undefined") {
     return "This browser doesn't support voice and video calls.";

@@ -1,25 +1,30 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
   ArrowLeft,
   Check,
   CheckCheck,
+  ChevronDown,
+  ChevronUp,
   Copy,
   MoreHorizontal,
   Phone,
   PhoneMissed,
+  Search,
   Send,
   Smile,
   Trash2,
   Video,
+  X,
 } from "lucide-react";
 import { messageService } from "@/services/message.service";
 import { buttonVariants } from "@/components/ui/Button";
 import { useProfileLink } from "@/hooks/useProfileLink";
 import { useCall } from "@/components/calls/CallProvider";
 import UserAvatar from "./UserAvatar";
+import ChatHeaderMenu from "./ChatHeaderMenu";
 import {
   clock,
   dayLabel,
@@ -104,6 +109,11 @@ export default function ChatThread({
   const { openProfile } = useProfileLink();
   const { startCall, inCall } = useCall();
   const [callError, setCallError] = useState<string | null>(null);
+  // Header 3-dot menu: search-in-chat bar and a small dismissable notice.
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [matchIdx, setMatchIdx] = useState(0);
+  const [notice, setNotice] = useState<{ tone: "info" | "error"; text: string } | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -340,6 +350,68 @@ export default function ChatThread({
     if (err) setCallError(err);
   }
 
+  const callBlocked = !!(partner?.blocked_by_me || partner?.blocked_me);
+  const partnerName = partner ? partner.full_name || `@${partner.username}` : "this user";
+
+  // ---- Search in chat: looks through the messages loaded in this chat ----
+  const matchIds = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!searchOpen || !q) return [] as number[];
+    return messages
+      .filter((m) => m.kind !== "call" && m.body.toLowerCase().includes(q))
+      .map((m) => m.id);
+  }, [messages, query, searchOpen]);
+  const activeIdx = matchIds.length ? Math.min(matchIdx, matchIds.length - 1) : -1;
+  const activeMatchId = activeIdx >= 0 ? matchIds[activeIdx] : null;
+
+  useEffect(() => {
+    if (activeMatchId === null) return;
+    document.getElementById(`msg-${activeMatchId}`)?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [activeMatchId]);
+
+  function stepMatch(dir: 1 | -1) {
+    if (!matchIds.length) return;
+    setMatchIdx((activeIdx + dir + matchIds.length) % matchIds.length);
+  }
+
+  function closeSearch() {
+    setSearchOpen(false);
+    setQuery("");
+  }
+
+  // ---- Header menu actions (each one throws on failure; the menu shows the error) ----
+  async function toggleMute() {
+    if (!partner) return;
+    const next = !partner.muted;
+    if (next) await messageService.mute(userId);
+    else await messageService.unmute(userId);
+    setPartner((p) => (p ? { ...p, muted: next } : p));
+    onActivity();
+    setNotice({
+      tone: "info",
+      text: next ? "Muted. This chat won't count in your unread badge." : "Unmuted.",
+    });
+  }
+
+  async function toggleBlock() {
+    if (!partner) return;
+    const next = !partner.blocked_by_me;
+    if (next) await messageService.block(userId);
+    else await messageService.unblock(userId);
+    setPartner((p) => (p ? { ...p, blocked_by_me: next } : p));
+    setSendError(null);
+  }
+
+  async function reportPartner(reason: string) {
+    await messageService.report(userId, reason);
+  }
+
+  async function deleteThisChat() {
+    await messageService.deleteChat(userId);
+    onActivity();
+    onBack();
+  }
+
   const last = messages[messages.length - 1];
   const statusText = !last?.is_mine || last.kind === "call"
     ? null
@@ -388,7 +460,7 @@ export default function ChatThread({
           <button
             type="button"
             onClick={() => placeCall("audio")}
-            disabled={!partner || inCall}
+            disabled={!partner || inCall || callBlocked}
             aria-label="Voice call"
             title="Voice call"
             className="w-9 h-9 rounded-full flex items-center justify-center text-gray-600 hover:text-[#FF6B35] hover:bg-orange-50 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all cursor-pointer"
@@ -398,15 +470,108 @@ export default function ChatThread({
           <button
             type="button"
             onClick={() => placeCall("video")}
-            disabled={!partner || inCall}
+            disabled={!partner || inCall || callBlocked}
             aria-label="Video call"
             title="Video call"
             className="w-9 h-9 rounded-full flex items-center justify-center text-gray-600 hover:text-[#FF6B35] hover:bg-orange-50 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all cursor-pointer"
           >
             <Video className="w-5 h-5" />
           </button>
+          <ChatHeaderMenu
+            name={partnerName}
+            muted={!!partner?.muted}
+            blocked={!!partner?.blocked_by_me}
+            disabled={!partner}
+            onViewProfile={() => partner && openProfile(partner.username)}
+            onSearch={() => setSearchOpen(true)}
+            onToggleMute={toggleMute}
+            onToggleBlock={toggleBlock}
+            onReport={reportPartner}
+            onDeleteChat={deleteThisChat}
+            onError={(text) => setNotice({ tone: "error", text })}
+            onNotice={(text) => setNotice({ tone: "info", text })}
+          />
         </div>
       </div>
+
+      {searchOpen && (
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-2 border-b border-[#FFEFE0] bg-white">
+          <Search className="w-4 h-4 text-gray-400 shrink-0" />
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setMatchIdx(Number.MAX_SAFE_INTEGER); // a new search starts at the newest match
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                stepMatch(e.shiftKey ? -1 : 1);
+              } else if (e.key === "Escape") {
+                closeSearch();
+              }
+            }}
+            placeholder="Search in this chat"
+            aria-label="Search in this chat"
+            className="flex-1 min-w-0 bg-[#FDEEE2] rounded-full px-3 py-1.5 text-sm outline-none border border-transparent focus:border-brand/35"
+          />
+          <span className="text-[11px] text-gray-500 tabular-nums shrink-0">
+            {matchIds.length ? `${activeIdx + 1}/${matchIds.length}` : query.trim() ? "No results" : ""}
+          </span>
+          <button
+            type="button"
+            onClick={() => stepMatch(-1)}
+            disabled={!matchIds.length}
+            aria-label="Previous result"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-gray-600 hover:bg-orange-50 disabled:opacity-40 cursor-pointer"
+          >
+            <ChevronUp className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => stepMatch(1)}
+            disabled={!matchIds.length}
+            aria-label="Next result"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-gray-600 hover:bg-orange-50 disabled:opacity-40 cursor-pointer"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={closeSearch}
+            aria-label="Close search"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-gray-600 hover:bg-orange-50 cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+      {searchOpen && hasMore && (
+        <p className="px-4 py-1 text-[11px] text-gray-400 bg-white border-b border-[#FFEFE0]">
+          Searching the messages loaded so far. Use &quot;Load earlier messages&quot; to search further back.
+        </p>
+      )}
+
+      {notice && (
+        <div
+          className={`flex items-start gap-2 px-4 py-2 text-xs border-b ${
+            notice.tone === "error"
+              ? "text-red-600 bg-red-50 border-red-100"
+              : "text-[#B34A1D] bg-orange-50 border-[#FFEFE0]"
+          }`}
+        >
+          <p className="flex-1">{notice.text}</p>
+          <button
+            type="button"
+            onClick={() => setNotice(null)}
+            aria-label="Dismiss"
+            className="font-bold cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {callError && (
         <div className="flex items-start gap-2 px-4 py-2 text-xs text-red-600 bg-red-50 border-b border-red-100">
@@ -567,7 +732,11 @@ export default function ChatThread({
               ) : null;
 
               return (
-                <div key={m.id}>
+                <div
+                  key={m.id}
+                  id={`msg-${m.id}`}
+                  className={activeMatchId === m.id ? "rounded-xl bg-amber-100/70" : undefined}
+                >
                   {newDay && (
                     <div className="flex justify-center my-3">
                       <span className="text-[11px] font-semibold text-gray-500 bg-white/80 border border-[#FFEFE0] rounded-full px-3 py-0.5">
@@ -801,6 +970,29 @@ export default function ChatThread({
       )}
 
       {/* Composer */}
+      {callBlocked ? (
+        <div className="border-t border-[#FFEFE0] bg-white px-4 py-4 text-center">
+          {partner?.blocked_by_me ? (
+            <>
+              <p className="text-sm font-semibold text-gray-900">You blocked {partnerName}</p>
+              <p className="text-xs text-gray-500 mt-0.5">You can&apos;t message or call each other.</p>
+              <button
+                type="button"
+                onClick={() =>
+                  toggleBlock().catch((e) =>
+                    setNotice({ tone: "error", text: e instanceof Error ? e.message : "Couldn't unblock." })
+                  )
+                }
+                className="mt-2 text-sm font-bold text-[#FF6B35] hover:underline cursor-pointer"
+              >
+                Unblock
+              </button>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">You can&apos;t send messages to this account.</p>
+          )}
+        </div>
+      ) : (
       <form onSubmit={handleSend} className="relative border-t border-[#FFEFE0] bg-white px-3 py-3">
         {sendError && <p className="text-xs text-red-600 mb-2 px-2">{sendError}</p>}
         {emojiOpen && (
@@ -844,6 +1036,7 @@ export default function ChatThread({
           </button>
         </div>
       </form>
+      )}
     </div>
   );
 }

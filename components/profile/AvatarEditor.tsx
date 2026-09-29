@@ -112,15 +112,24 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
 
   // Load the picked photo.
   useEffect(() => {
+    let cancelled = false; // becomes true when this run is cleaned up
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
+      if (cancelled) return; // ignore old runs
       imgRef.current = img;
+      setLoadError(null);
       setReady(true);
     };
-    img.onerror = () => setLoadError("Could not read that image.");
+    img.onerror = () => {
+      if (cancelled) return; // ignore old runs
+      setLoadError("Could not read that image.");
+    };
     img.src = url;
-    return () => URL.revokeObjectURL(url);
+    return () => {
+      cancelled = true;
+      URL.revokeObjectURL(url);
+    };
   }, [file]);
 
   // Lock page scroll and close on Escape while the editor is open.
@@ -412,7 +421,7 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
           </div>
 
           {/* Filters */}
-          <div className="mt-4 flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          <div className="mt-4 flex flex-wrap gap-2 pb-1">
             {LOOKS.map((l, i) => (
               <button
                 key={l.name}

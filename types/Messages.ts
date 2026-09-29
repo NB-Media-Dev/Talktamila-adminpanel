@@ -7,6 +7,10 @@ export interface ChatUser {
   bio: string | null;
   followers_count: number;
   is_following: boolean;
+  /** Only present on the partner returned by the first page of a thread. */
+  blocked_by_me?: boolean;
+  blocked_me?: boolean;
+  muted?: boolean;
 }
 
 /** "text" is normal chat. The story kinds are created automatically when someone

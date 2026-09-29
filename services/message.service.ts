@@ -68,6 +68,34 @@ export const messageService = {
   deleteChat: (userId: number): Promise<{ success: boolean }> =>
     apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}`, { method: 'DELETE' }),
 
+  /** Block this person: neither of you can message or call the other. */
+  block: (userId: number): Promise<{ success: boolean; blocked: boolean }> =>
+    apiClient<{ success: boolean; blocked: boolean }>(`/api/v1/messages/thread/${userId}/block`, {
+      method: 'POST',
+    }),
+
+  unblock: (userId: number): Promise<{ success: boolean; blocked: boolean }> =>
+    apiClient<{ success: boolean; blocked: boolean }>(`/api/v1/messages/thread/${userId}/block`, {
+      method: 'DELETE',
+    }),
+
+  /** Mute a chat: it stops counting in the unread badge. */
+  mute: (userId: number): Promise<{ success: boolean; muted: boolean }> =>
+    apiClient<{ success: boolean; muted: boolean }>(`/api/v1/messages/thread/${userId}/mute`, {
+      method: 'POST',
+    }),
+
+  unmute: (userId: number): Promise<{ success: boolean; muted: boolean }> =>
+    apiClient<{ success: boolean; muted: boolean }>(`/api/v1/messages/thread/${userId}/mute`, {
+      method: 'DELETE',
+    }),
+
+  report: (userId: number, reason: string): Promise<{ success: boolean }> =>
+    apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}/report`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    }),
+
   /** Unsend (delete for everyone) a message I sent. */
   unsend: (messageId: number): Promise<UnsendResult> =>
     apiClient<UnsendResult>(`/api/v1/messages/${messageId}`, { method: 'DELETE' }),
