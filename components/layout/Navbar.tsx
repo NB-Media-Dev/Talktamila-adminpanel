@@ -145,9 +145,9 @@ export default function Navbar() {
         </div>
         <div className="flex flex-col min-w-0 flex-1">
           <span className="text-xs font-bold text-gray-900 truncate">
-            {user?.user.role}
+            {me?.role}
           </span>
-          <span className="text-[11px] text-gray-500 truncate">{user?.user.email}</span>
+          <span className="text-[11px] text-gray-500 truncate">{me?.email}</span>
         </div>
       </div>
 

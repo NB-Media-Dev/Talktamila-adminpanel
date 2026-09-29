@@ -1,9 +1,24 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { ArrowLeft, Check, CheckCheck, Send, Smile } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  CheckCheck,
+  Copy,
+  MoreHorizontal,
+  Phone,
+  PhoneMissed,
+  Send,
+  Smile,
+  Trash2,
+  Video,
+} from "lucide-react";
 import { messageService } from "@/services/message.service";
+import { buttonVariants } from "@/components/ui/Button";
+import { useProfileLink } from "@/hooks/useProfileLink";
+import { useCall } from "@/components/calls/CallProvider";
 import UserAvatar from "./UserAvatar";
 import {
   clock,
@@ -15,6 +30,7 @@ import {
   minRealId,
   sameDay,
   sameReactions,
+  callSummary,
 } from "./chatUtils";
 import type { ChatMessage, ChatUser, MessageReaction } from "@/types/Messages";
 
@@ -81,6 +97,13 @@ export default function ChatThread({
   // Which message has its reaction bar open, and whether the full emoji list is showing.
   const [reactFor, setReactFor] = useState<number | null>(null);
   const [reactFull, setReactFull] = useState(false);
+  // Message actions (Copy / Unsend): which message has its menu open, and the unsend confirmation.
+  const [menuFor, setMenuFor] = useState<number | null>(null);
+  const [confirmUnsendId, setConfirmUnsendId] = useState<number | null>(null);
+  const [unsending, setUnsending] = useState(false);
+  const { openProfile } = useProfileLink();
+  const { startCall, inCall } = useCall();
+  const [callError, setCallError] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,6 +113,8 @@ export default function ChatThread({
   const loadedRef = useRef(false);
   // Messages with a reaction request in flight - polling must not overwrite these.
   const reactBusy = useRef<Set<number>>(new Set());
+  // Long-press timer (touch screens) for opening a message's menu.
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -127,9 +152,11 @@ export default function ChatThread({
     const id = setInterval(async () => {
       if (document.hidden || !loadedRef.current) return;
       try {
+        const knownMax = maxRealId(messagesRef.current);
+        const knownMin = minRealId(messagesRef.current);
         const res = await messageService.thread(userId, {
-          afterId: maxRealId(messagesRef.current),
-          syncFromId: minRealId(messagesRef.current),
+          afterId: knownMax,
+          syncFromId: knownMin,
         });
         if (res.messages.length) {
           setMessages((prev) => mergeById(prev, res.messages));
@@ -147,6 +174,17 @@ export default function ChatThread({
               return { ...m, reactions: fresh };
             });
             return changed ? next : prev;
+          });
+        }
+        // Messages unsent since the last check: anything we hold in the polled range
+        // that the server no longer has. Newer / older ids are left alone.
+        if (res.existing_ids && knownMin !== undefined) {
+          const alive = new Set(res.existing_ids);
+          setMessages((prev) => {
+            const next = prev.filter(
+              (m) => m.id <= 0 || m.id < knownMin || m.id > knownMax || alive.has(m.id)
+            );
+            return next.length === prev.length ? prev : next;
           });
         }
         setLastReadId(res.last_read_by_other_id);
@@ -252,8 +290,58 @@ export default function ChatThread({
     }
   }
 
+  function startPress(m: ChatMessage) {
+    if (m.id <= 0) return;
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    pressTimer.current = setTimeout(() => {
+      setReactFor(null);
+      setReactFull(false);
+      setMenuFor(m.id);
+    }, 450);
+  }
+
+  function cancelPress() {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  }
+
+  async function copyMessage(m: ChatMessage) {
+    setMenuFor(null);
+    try {
+      await navigator.clipboard.writeText(m.body);
+    } catch {
+      setSendError("Couldn't copy the message.");
+    }
+  }
+
+  /** Unsend = delete for everyone. Only my own messages; the server double-checks. */
+  async function confirmUnsend() {
+    const id = confirmUnsendId;
+    if (id === null || unsending) return;
+    setUnsending(true);
+    try {
+      await messageService.unsend(id);
+      setMessages((prev) => prev.filter((x) => x.id !== id));
+      onActivity();
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : "Couldn't unsend the message.");
+    } finally {
+      setUnsending(false);
+      setConfirmUnsendId(null);
+    }
+  }
+
+  async function placeCall(media: "audio" | "video") {
+    if (!partner) return;
+    setCallError(null);
+    const err = await startCall(partner, media);
+    if (err) setCallError(err);
+  }
+
   const last = messages[messages.length - 1];
-  const statusText = !last?.is_mine
+  const statusText = !last?.is_mine || last.kind === "call"
     ? null
     : last.pending
     ? "Sending…"
@@ -274,7 +362,12 @@ export default function ChatThread({
           <ArrowLeft className="w-5 h-5" />
         </button>
         {partner ? (
-          <>
+          <button
+            type="button"
+            onClick={() => openProfile(partner.username)}
+            aria-label={`View ${partner.full_name || partner.username}'s profile`}
+            className="flex items-center gap-3 min-w-0 text-left cursor-pointer"
+          >
             <UserAvatar user={partner} size={38} />
             <div className="min-w-0">
               <p className="text-sm font-bold text-gray-900 truncate">
@@ -285,11 +378,49 @@ export default function ChatThread({
                 {partner.role ? <span className="text-[#FF6B35] font-semibold"> · {roleLabel(partner.role)}</span> : null}
               </p>
             </div>
-          </>
+          </button>
         ) : (
           <div className="h-9 w-40 rounded-full bg-orange-100/60 animate-pulse" />
         )}
+
+        {/* Voice and video call - available from the very first message */}
+        <div className="ml-auto flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => placeCall("audio")}
+            disabled={!partner || inCall}
+            aria-label="Voice call"
+            title="Voice call"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-gray-600 hover:text-[#FF6B35] hover:bg-orange-50 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all cursor-pointer"
+          >
+            <Phone className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => placeCall("video")}
+            disabled={!partner || inCall}
+            aria-label="Video call"
+            title="Video call"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-gray-600 hover:text-[#FF6B35] hover:bg-orange-50 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-all cursor-pointer"
+          >
+            <Video className="w-5 h-5" />
+          </button>
+        </div>
       </div>
+
+      {callError && (
+        <div className="flex items-start gap-2 px-4 py-2 text-xs text-red-600 bg-red-50 border-b border-red-100">
+          <p className="flex-1">{callError}</p>
+          <button
+            type="button"
+            onClick={() => setCallError(null)}
+            aria-label="Dismiss"
+            className="font-bold text-red-500 cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Messages */}
       <div
@@ -343,11 +474,80 @@ export default function ChatThread({
                 !next || next.is_mine !== m.is_mine || !sameDay(new Date(next.created_at), d);
               const startOfGroup = !prev || prev.is_mine !== m.is_mine || newDay;
 
+              if (m.kind === "call") {
+                const c = callSummary(m.body, m.is_mine);
+                return (
+                  <div key={m.id}>
+                    {newDay && (
+                      <div className="flex justify-center my-3">
+                        <span className="text-[11px] font-semibold text-gray-500 bg-white/80 border border-[#FFEFE0] rounded-full px-3 py-0.5">
+                          {dayLabel(m.created_at)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-center my-2">
+                      <div
+                        className={`inline-flex items-center gap-2 rounded-full border bg-white px-3.5 py-1.5 text-xs font-semibold ${
+                          c.missed ? "border-red-200 text-red-600" : "border-[#FFEFE0] text-gray-700"
+                        }`}
+                      >
+                        {c.missed ? (
+                          <PhoneMissed className="w-4 h-4" />
+                        ) : c.media === "video" ? (
+                          <Video className="w-4 h-4 text-[#FF6B35]" />
+                        ) : (
+                          <Phone className="w-4 h-4 text-[#FF6B35]" />
+                        )}
+                        <span>{c.title}</span>
+                        {c.detail && <span className="font-normal text-gray-400">· {c.detail}</span>}
+                        <span className="text-[10px] font-normal text-gray-400">{clock(m.created_at)}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
               const isStoryMsg = m.kind === "story_reply" || m.kind === "story_reaction";
               const groups = groupReactions(m.reactions, userId);
               const canReact = m.id > 0;
               const barOpen = reactFor === m.id && !reactFull;
               const myEmoji = m.reactions.find((r) => r.user_id !== userId)?.emoji ?? null;
+
+              const menuOpen = menuFor === m.id;
+
+              // Long-press (touch) or right-click opens the message menu.
+              const pressProps = canReact
+                ? {
+                    onTouchStart: () => startPress(m),
+                    onTouchEnd: cancelPress,
+                    onTouchMove: cancelPress,
+                    onTouchCancel: cancelPress,
+                    onContextMenu: (e: React.MouseEvent) => {
+                      e.preventDefault();
+                      setReactFor(null);
+                      setReactFull(false);
+                      setMenuFor(m.id);
+                    },
+                  }
+                : {};
+
+              const moreButton = canReact ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReactFor(null);
+                    setReactFull(false);
+                    setMenuFor((cur) => (cur === m.id ? null : m.id));
+                  }}
+                  aria-label="Message options"
+                  aria-expanded={menuOpen}
+                  className={`shrink-0 mb-1 w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:text-[#FF6B35] hover:bg-orange-50 transition-opacity cursor-pointer focus:opacity-100 [@media(hover:none)]:opacity-60 ${
+                    menuOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  }`}
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              ) : null;
 
               const reactButton = canReact ? (
                 <button
@@ -380,12 +580,18 @@ export default function ChatThread({
                       startOfGroup ? "mt-2" : "mt-0.5"
                     }`}
                   >
-                    {m.is_mine && reactButton}
+                    {m.is_mine && (
+                      <>
+                        {moreButton}
+                        {reactButton}
+                      </>
+                    )}
                     <div className={`relative max-w-[78%] flex flex-col ${m.is_mine ? "items-end" : "items-start"}`}>
                       {isStoryMsg && <StoryContextCard m={m} />}
 
                       {m.kind === "story_reaction" ? (
                         <span
+                          {...pressProps}
                           className={`text-4xl leading-none px-1 py-0.5 ${m.pending ? "opacity-70" : ""}`}
                           onDoubleClick={() => canReact && toggleReaction(m, "❤️")}
                         >
@@ -393,6 +599,7 @@ export default function ChatThread({
                         </span>
                       ) : (
                         <div
+                          {...pressProps}
                           onDoubleClick={() => {
                             if (!canReact) return;
                             window.getSelection()?.removeAllRanges(); // double-click also selects a word
@@ -470,8 +677,51 @@ export default function ChatThread({
                           </div>
                         </>
                       )}
+
+                      {menuOpen && (
+                        <>
+                          <button
+                            type="button"
+                            aria-label="Close menu"
+                            onClick={() => setMenuFor(null)}
+                            className="fixed inset-0 z-10 cursor-default"
+                          />
+                          <div
+                            className={`absolute z-20 min-w-[150px] rounded-2xl border border-[#FFEFE0] bg-white py-1 shadow-lg ${
+                              i === 0 ? "top-full mt-1" : "bottom-full mb-1"
+                            } ${m.is_mine ? "right-0" : "left-0"}`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => copyMessage(m)}
+                              className="flex w-full items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-gray-700 hover:bg-orange-50 hover:text-[#FF6B35] cursor-pointer"
+                            >
+                              <Copy className="w-4 h-4 text-[#FF6B35]" />
+                              Copy
+                            </button>
+                            {m.is_mine && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setMenuFor(null);
+                                  setConfirmUnsendId(m.id);
+                                }}
+                                className="flex w-full items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Unsend
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
-                    {!m.is_mine && reactButton}
+                    {!m.is_mine && (
+                      <>
+                        {reactButton}
+                        {moreButton}
+                      </>
+                    )}
                   </div>
                 </div>
               );
@@ -510,6 +760,42 @@ export default function ChatThread({
               height={380}
               lazyLoadEmojis
             />
+          </div>
+        </div>
+      )}
+
+      {/* Unsend confirmation (like Instagram) */}
+      {confirmUnsendId !== null && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !unsending && setConfirmUnsendId(null)}
+        >
+          <div
+            className="w-full max-w-xs rounded-2xl bg-white p-5 shadow-xl text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-base font-bold text-gray-900">Unsend message?</p>
+            <p className="text-xs text-gray-500 mt-1">
+              This removes the message for everyone in the chat.
+            </p>
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmUnsendId(null)}
+                disabled={unsending}
+                className={`${buttonVariants({ variant: "outline" })} flex-1 px-4 py-2 text-sm font-bold disabled:opacity-50`}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmUnsend}
+                disabled={unsending}
+                className={`${buttonVariants({ variant: "destructive" })} flex-1 px-4 py-2 text-sm font-bold disabled:opacity-50`}
+              >
+                {unsending ? "…" : "Unsend"}
+              </button>
+            </div>
           </div>
         </div>
       )}

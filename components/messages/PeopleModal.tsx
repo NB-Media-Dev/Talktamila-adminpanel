@@ -7,6 +7,7 @@ import { MessageCircle, Search, X } from "lucide-react";
 import { messageService } from "@/services/message.service";
 import { userService } from "@/services/user.service";
 import { useMessagesBase } from "@/hooks/useMessagesBase";
+import { useProfileLink } from "@/hooks/useProfileLink";
 import { buttonVariants } from "@/components/ui/Button";
 import UserAvatar from "./UserAvatar";
 import type { ChatUser } from "@/types/Messages";
@@ -37,6 +38,7 @@ export default function PeopleModal({
 }) {
   const router = useRouter();
   const base = useMessagesBase();
+  const { openProfile } = useProfileLink();
   const [query, setQuery] = useState("");
   const [people, setPeople] = useState<ChatUser[]>([]);
   const [loading, setLoading] = useState(false);
@@ -119,6 +121,11 @@ export default function PeopleModal({
     }
   }
 
+  function visitProfile(user: ChatUser) {
+    onClose();
+    openProfile(user.username);
+  }
+
   function startChat(user: ChatUser) {
     onClose();
     if (onPick) onPick(user);
@@ -189,6 +196,10 @@ export default function PeopleModal({
                     mode === "pick" ? "hover:bg-orange-50/70 cursor-pointer" : ""
                   }`}
                 >
+                  <div
+                    className={`flex items-center gap-3 min-w-0 flex-1 ${mode === "discover" ? "cursor-pointer" : ""}`}
+                    onClick={mode === "discover" ? () => visitProfile(u) : undefined}
+                  >
                   <UserAvatar user={u} size={44} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-gray-900 truncate">
@@ -198,6 +209,7 @@ export default function PeopleModal({
                       @{u.username}
                       {u.role ? <span className="text-[#FF6B35] font-semibold"> · {roleLabel(u.role)}</span> : null}
                     </p>
+                  </div>
                   </div>
 
                   {mode === "discover" && (

@@ -10,8 +10,10 @@ export interface ChatUser {
 }
 
 /** "text" is normal chat. The story kinds are created automatically when someone
- *  replies to / reacts to a story - sender is the replier, receiver is the story owner. */
-export type MessageKind = "text" | "story_reply" | "story_reaction";
+ *  replies to / reacts to a story - sender is the replier, receiver is the story owner.
+ *  "call" is a log entry written by the calls WebSocket when a call ends (sender = caller);
+ *  its `body` is JSON: {"media": "audio"|"video", "outcome": "...", "seconds": n}. */
+export type MessageKind = "text" | "story_reply" | "story_reaction" | "call";
 
 export interface MessageReaction {
   user_id: number;
@@ -54,6 +56,8 @@ export interface Conversation {
     read_at: string | null;
   };
   unread_count: number;
+  /** true when there are unread messages OR the chat was marked as unread from the 3-dot menu. */
+  is_unread?: boolean;
 }
 
 export interface ThreadResponse {
@@ -63,6 +67,13 @@ export interface ThreadResponse {
   last_read_by_other_id: number | null;
   /** Only when polling with syncFromId: current reactions for every message from that id on. */
   reactions_sync: Record<string, MessageReaction[]> | null;
+  /** Only when polling with syncFromId: ids that still exist from that id on (so unsent messages can be dropped). */
+  existing_ids: number[] | null;
+}
+
+export interface UnsendResult {
+  success: boolean;
+  message_id: number;
 }
 
 export interface ReactionUpdate {

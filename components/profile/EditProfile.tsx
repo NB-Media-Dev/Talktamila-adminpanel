@@ -8,11 +8,11 @@ import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { buttonVariants } from "@/components/ui/Button";
+import AvatarEditor from "@/components/profile/AvatarEditor";
 import type { ProfileData } from "@/types/Auth";
 
 const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_PICKED_FILE_BYTES = 8 * 1024 * 1024; // the picture is shrunk before upload
-const AVATAR_SIZE = 256; // px, square
+const MAX_PICKED_FILE_BYTES = 8 * 1024 * 1024; // the photo editor shrinks it before upload
 const NAME_MAX = 100;
 const BIO_MAX = 300;
 const LOCATION_MAX = 100;
@@ -22,41 +22,6 @@ const MOBILE_RE = /^\+?[0-9\s-]{7,20}$/;
 const PASSWORD_MIN = 6;
 const USERNAME_RE = /^[A-Za-z0-9_.]{3,30}$/;
 const OTP_RESEND_SECONDS = 30;
-
-/** Crops the picture to a centred square, shrinks it, and returns a small JPEG file. */
-async function shrinkAvatar(file: File): Promise<File> {
-  const objectUrl = URL.createObjectURL(file);
-  try {
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error("Could not read that image."));
-      image.src = objectUrl;
-    });
-
-    const side = Math.min(img.width, img.height);
-    const sx = (img.width - side) / 2;
-    const sy = (img.height - side) / 2;
-    const target = Math.min(AVATAR_SIZE, side);
-
-    const canvas = document.createElement("canvas");
-    canvas.width = target;
-    canvas.height = target;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Could not process that image.");
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, target, target);
-    ctx.drawImage(img, sx, sy, side, side, 0, 0, target, target);
-
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, "image/jpeg", 0.85)
-    );
-    if (!blob) throw new Error("Could not process that image.");
-    return new File([blob], "avatar.jpg", { type: "image/jpeg" });
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
-}
 
 function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -106,6 +71,8 @@ export default function EditProfile() {
   const [mobileNo, setMobileNo] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  // The photo just picked, waiting in the editor (crop / zoom / filters).
+  const [pendingAvatar, setPendingAvatar] = useState<File | null>(null);
 
   // Change-password fields are kept separate: they hit their own endpoint
   // and shouldn't be blocked by (or block) the profile-fields save.
@@ -177,7 +144,7 @@ export default function EditProfile() {
     );
   };
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = ""; // lets the same file be picked again later
     if (!file) return;
@@ -191,13 +158,19 @@ export default function EditProfile() {
       return;
     }
 
+    setError(null);
+    setPendingAvatar(file); // opens the photo editor
+  };
+
+  // The editor hands back the finished, cropped square photo.
+  const handleAvatarEdited = async (edited: File) => {
     try {
-      setError(null);
-      const small = await shrinkAvatar(file);
-      setAvatarFile(small);
-      setAvatarPreview(await readAsDataUrl(small));
+      setAvatarFile(edited);
+      setAvatarPreview(await readAsDataUrl(edited));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not process that image.");
+    } finally {
+      setPendingAvatar(null);
     }
   };
 
@@ -572,6 +545,14 @@ export default function EditProfile() {
           </button>
         </div>
       </div>
+
+      {pendingAvatar && (
+        <AvatarEditor
+          file={pendingAvatar}
+          onCancel={() => setPendingAvatar(null)}
+          onSave={handleAvatarEdited}
+        />
+      )}
     </div>
   );
 }

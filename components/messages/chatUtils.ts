@@ -81,8 +81,71 @@ export function groupReactions(
   return groups;
 }
 
+export interface CallLog {
+  media: "audio" | "video";
+  outcome: "completed" | "missed" | "declined" | "busy";
+  seconds: number;
+}
+
+/** The body of a "call" message is a small JSON blob written by the backend. */
+export function parseCallLog(body: string): CallLog {
+  try {
+    const o = JSON.parse(body) as Partial<CallLog>;
+    return {
+      media: o.media === "video" ? "video" : "audio",
+      outcome:
+        o.outcome === "completed" || o.outcome === "declined" || o.outcome === "busy" ? o.outcome : "missed",
+      seconds: typeof o.seconds === "number" && o.seconds > 0 ? Math.floor(o.seconds) : 0,
+    };
+  } catch {
+    return { media: "audio", outcome: "missed", seconds: 0 };
+  }
+}
+
+export function formatDuration(totalSeconds: number): string {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+}
+
+/** Text for a call entry, from the point of view of the viewer (`isMine` = I made the call). */
+export function callSummary(
+  body: string,
+  isMine: boolean
+): { media: "audio" | "video"; title: string; detail: string | null; missed: boolean } {
+  const log = parseCallLog(body);
+  const kind = log.media === "video" ? "video" : "voice";
+  const Kind = log.media === "video" ? "Video" : "Voice";
+  switch (log.outcome) {
+    case "completed":
+      return { media: log.media, title: `${Kind} call`, detail: formatDuration(log.seconds), missed: false };
+    case "declined":
+      return {
+        media: log.media,
+        title: isMine ? "Call declined" : "You declined the call",
+        detail: null,
+        missed: false,
+      };
+    case "busy":
+      return isMine
+        ? { media: log.media, title: "Line busy", detail: null, missed: false }
+        : { media: log.media, title: `Missed ${kind} call`, detail: null, missed: true };
+    default:
+      return isMine
+        ? { media: log.media, title: "No answer", detail: null, missed: false }
+        : { media: log.media, title: `Missed ${kind} call`, detail: null, missed: true };
+  }
+}
+
 /** Inbox one-liner for the last message in a conversation. */
 export function previewText(last: Conversation["last_message"]): string {
+  if (last.kind === "call") {
+    const c = callSummary(last.body, last.is_mine);
+    return c.detail ? `${c.title} · ${c.detail}` : c.title;
+  }
   if (last.kind === "story_reaction") {
     return last.is_mine ? `You reacted ${last.body} to their story` : `Reacted ${last.body} to your story`;
   }

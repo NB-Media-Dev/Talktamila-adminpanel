@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { userService } from "@/services/user.service";
+import { useProfileLink } from "@/hooks/useProfileLink";
 import type { UserSuggestion } from "@/types/Auth";
 import { buttonVariants } from "@/components/ui/Button";
 
@@ -20,6 +21,7 @@ export default function FollowListModal({
   onClose,
   onChanged,
 }: FollowListModalProps) {
+  const { openProfile } = useProfileLink();
   const [tab, setTab] = useState<"followers" | "following">(initialTab);
   const [list, setList] = useState<UserSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -173,6 +175,23 @@ export default function FollowListModal({
                   key={user.user_id}
                   className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-orange-50/60"
                 >
+                  <div
+                    role="link"
+                    tabIndex={0}
+                    aria-label={`View ${user.full_name || user.username}'s profile`}
+                    onClick={() => {
+                      onClose();
+                      openProfile(user.username);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onClose();
+                        openProfile(user.username);
+                      }
+                    }}
+                    className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
+                  >
                   <div className="w-11 h-11 rounded-full ring-1 ring-orange-200 overflow-hidden bg-orange-100 flex items-center justify-center shrink-0">
                     {user.avatar_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -193,6 +212,7 @@ export default function FollowListModal({
                     <p className="text-xs text-gray-400 truncate">
                       {user.bio || `@${user.username}`}
                     </p>
+                  </div>
                   </div>
 
                   <button

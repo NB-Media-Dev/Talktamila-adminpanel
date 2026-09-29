@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { getInitials } from "@/lib/avatar";
 import { userService } from "@/services/user.service";
+import { useProfileLink } from "@/hooks/useProfileLink";
 import type { UserSuggestion } from "@/types/Auth";
 import { Cardlayout } from "@/components/ui/Cardlayout";
 import { buttonVariants } from "@/components/ui/Button";
@@ -26,6 +27,7 @@ function formatRole(role?: string | null): string {
  *   DELETE /api/v1/stories/follow/{id}   <- exists (StoryService.unfollow_user)
  */
 export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: () => void }) {
+  const { openProfile } = useProfileLink();
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -174,6 +176,20 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
                 ✕
               </button>
 
+              {/* Tap the photo / name to open their profile */}
+              <div
+                role="link"
+                tabIndex={0}
+                aria-label={`View ${user.full_name || user.username}'s profile`}
+                onClick={() => openProfile(user.username)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openProfile(user.username);
+                  }
+                }}
+                className="w-full flex flex-col items-center cursor-pointer"
+              >
               <div className="w-14 h-14 rounded-full ring-2 ring-orange-200 ring-offset-2 overflow-hidden bg-orange-100 flex items-center justify-center shrink-0 mb-2">
                 {user.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -196,6 +212,7 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
               <p className="text-[11px] leading-snug text-gray-500 line-clamp-2 w-full min-h-[2rem] mt-1 mb-3">
                 {user.bio || ""}
               </p>
+              </div>
 
               <button
                 type="button"

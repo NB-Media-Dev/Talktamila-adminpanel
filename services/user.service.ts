@@ -1,4 +1,4 @@
-import { ProfileData, UserSuggestion, FollowActionResponse } from '@/types/Auth';
+import { ProfileData, PublicProfileData, UserSuggestion, FollowActionResponse } from '@/types/Auth';
 import { apiClient } from './api-client';
 
 export interface ProfileUpdateInput {
@@ -49,6 +49,16 @@ export const userService = {
       method: 'PUT',
       body: buildProfileFormData(input),
     });
+  },
+
+  /* ---- Another person's public profile (Instagram-style page) ----
+     Matches GET /api/v1/users/by-username/{username}
+     (app/profile/routes.py). */
+  getPublicProfile: async (username: string): Promise<PublicProfileData> => {
+    return apiClient<PublicProfileData>(
+      `/api/v1/users/by-username/${encodeURIComponent(username)}`,
+      { method: 'GET' }
+    );
   },
 
   /* ---- Discover people ----

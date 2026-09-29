@@ -6,6 +6,7 @@ import type {
   MessageSummary,
   ReactionUpdate,
   ThreadResponse,
+  UnsendResult,
 } from '@/types/Messages';
 
 export const messageService = {
@@ -54,4 +55,20 @@ export const messageService = {
 
   unreact: (messageId: number): Promise<ReactionUpdate> =>
     apiClient<ReactionUpdate>(`/api/v1/messages/${messageId}/reaction`, { method: 'DELETE' }),
+
+  /** Mark a chat as read without opening it (inbox 3-dot menu). */
+  markRead: (userId: number): Promise<{ success: boolean }> =>
+    apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}/read`, { method: 'POST' }),
+
+  /** Mark a chat as unread (inbox 3-dot menu). The other person's "Seen" status is not affected. */
+  markUnread: (userId: number): Promise<{ success: boolean }> =>
+    apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}/unread`, { method: 'POST' }),
+
+  /** Delete a chat for me only - the other person keeps their copy. */
+  deleteChat: (userId: number): Promise<{ success: boolean }> =>
+    apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}`, { method: 'DELETE' }),
+
+  /** Unsend (delete for everyone) a message I sent. */
+  unsend: (messageId: number): Promise<UnsendResult> =>
+    apiClient<UnsendResult>(`/api/v1/messages/${messageId}`, { method: 'DELETE' }),
 };
