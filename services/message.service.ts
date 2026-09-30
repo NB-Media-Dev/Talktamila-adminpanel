@@ -64,6 +64,12 @@ export const messageService = {
   markUnread: (userId: number): Promise<{ success: boolean }> =>
     apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}/unread`, { method: 'POST' }),
 
+  /** Accept a message request: the chat moves from Requests to the main inbox. */
+  acceptRequest: (userId: number): Promise<{ success: boolean; accepted: boolean }> =>
+    apiClient<{ success: boolean; accepted: boolean }>(`/api/v1/messages/thread/${userId}/accept`, {
+      method: 'POST',
+    }),
+
   /** Delete a chat for me only - the other person keeps their copy. */
   deleteChat: (userId: number): Promise<{ success: boolean }> =>
     apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}`, { method: 'DELETE' }),

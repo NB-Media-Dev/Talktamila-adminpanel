@@ -62,6 +62,18 @@ export interface Conversation {
   unread_count: number;
   /** true when there are unread messages OR the chat was marked as unread from the 3-dot menu. */
   is_unread?: boolean;
+  /** true = not a mutual follow and not accepted yet, so it belongs in the Requests tab. */
+  is_request?: boolean;
+}
+
+/** Sent with every thread response so the chat screen knows which bar to show. */
+export interface RequestState {
+  /** They are asking to message me and I have not accepted yet. */
+  is_request: boolean;
+  /** I am messaging someone who has not accepted me yet. */
+  request_sent: boolean;
+  /** false once I used up my allowed messages while waiting for them to accept. */
+  can_send: boolean;
 }
 
 export interface ThreadResponse {
@@ -73,6 +85,7 @@ export interface ThreadResponse {
   reactions_sync: Record<string, MessageReaction[]> | null;
   /** Only when polling with syncFromId: ids that still exist from that id on (so unsent messages can be dropped). */
   existing_ids: number[] | null;
+  request?: RequestState;
 }
 
 export interface UnsendResult {
@@ -87,5 +100,8 @@ export interface ReactionUpdate {
 
 export interface MessageSummary {
   latest_message_id: number;
+  /** Unread chats in the main inbox (requests are not counted here). */
   unread_conversations: number;
+  /** Unread chats waiting in the Requests tab. */
+  request_unread?: number;
 }

@@ -25,6 +25,7 @@ import { useProfileLink } from "@/hooks/useProfileLink";
 import { useCall } from "@/components/calls/CallProvider";
 import UserAvatar from "./UserAvatar";
 import ChatHeaderMenu from "./ChatHeaderMenu";
+import RequestBar from "./RequestBar";
 import {
   clock,
   dayLabel,
@@ -37,7 +38,7 @@ import {
   sameReactions,
   callSummary,
 } from "./chatUtils";
-import type { ChatMessage, ChatUser, MessageReaction } from "@/types/Messages";
+import type { ChatMessage, ChatUser, MessageReaction, RequestState } from "@/types/Messages";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -90,6 +91,8 @@ export default function ChatThread({
   onActivity: () => void;
 }) {
   const [partner, setPartner] = useState<ChatUser | null>(null);
+  // Message-request status: are they asking to message me, or am I waiting on them?
+  const [request, setRequest] = useState<RequestState | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -138,6 +141,7 @@ export default function ChatThread({
       .then((res) => {
         if (cancelled) return;
         setPartner(res.partner);
+        setRequest(res.request ?? null);
         setMessages(res.messages);
         setHasMore(res.has_more);
         setLastReadId(res.last_read_by_other_id);
@@ -198,6 +202,8 @@ export default function ChatThread({
           });
         }
         setLastReadId(res.last_read_by_other_id);
+        // Picks up "they accepted my request" / "I can send again" without a reload.
+        if (res.request) setRequest(res.request);
       } catch {
         /* transient - try again next tick */
       }
@@ -410,6 +416,19 @@ export default function ChatThread({
     await messageService.deleteChat(userId);
     onActivity();
     onBack();
+  }
+
+  // ---- Message request actions (Accept / Delete / Block bar) ----
+  async function acceptRequest() {
+    await messageService.acceptRequest(userId);
+    // Now a normal chat: show the composer right away and refresh the inbox.
+    setRequest((r) => (r ? { ...r, is_request: false } : r));
+    onActivity();
+  }
+
+  async function blockRequest() {
+    await toggleBlock();
+    onActivity();
   }
 
   const last = messages[messages.length - 1];
@@ -992,8 +1011,27 @@ export default function ChatThread({
             <p className="text-sm text-gray-500">You can&apos;t send messages to this account.</p>
           )}
         </div>
+      ) : request?.is_request ? (
+        <RequestBar
+          name={partnerName}
+          onAccept={acceptRequest}
+          onDelete={deleteThisChat}
+          onBlock={blockRequest}
+        />
+      ) : request?.request_sent && !request.can_send ? (
+        <div className="border-t border-[#FFEFE0] bg-white px-4 py-4 text-center">
+          <p className="text-sm font-semibold text-gray-900">Message request sent</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            You can send more messages once {partnerName} accepts your request.
+          </p>
+        </div>
       ) : (
       <form onSubmit={handleSend} className="relative border-t border-[#FFEFE0] bg-white px-3 py-3">
+        {request?.request_sent && (
+          <p className="text-[11px] text-gray-500 mb-2 px-2">
+            {partnerName} doesn&apos;t follow you back, so your message will go to their message requests.
+          </p>
+        )}
         {sendError && <p className="text-xs text-red-600 mb-2 px-2">{sendError}</p>}
         {emojiOpen && (
           <div className="absolute bottom-full left-3 mb-2 z-20 shadow-xl rounded-2xl overflow-hidden">
