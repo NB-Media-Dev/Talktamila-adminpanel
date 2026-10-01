@@ -118,6 +118,13 @@ export function StoryViewer({
   const [resolvedAudioUrl, setResolvedAudioUrl] = useState<string | null>(null);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
+  // Reporting State
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("Inappropriate content");
+  const [reportDetails, setReportDetails] = useState("");
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [reportSuccessToast, setReportSuccessToast] = useState<string | null>(null);
+
   const viewedSlideIdsRef = useRef<Set<number>>(new Set());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -137,9 +144,9 @@ export function StoryViewer({
   const slideDuration = currentSlide?.duration ?? 5000;
   const totalSlides = slides.length;
 
-  // Story is effectively paused if hold-to-pause is active, manual pause is on, typing in reply input, or activity sheet is open
+  // Story is effectively paused if hold-to-pause is active, manual pause is on, typing in reply input, activity sheet is open, or report modal is open
   const isEffectivelyPaused =
-    isPaused || isHolding || isTypingReply || Boolean(replyText.trim()) || showActivity;
+    isPaused || isHolding || isTypingReply || Boolean(replyText.trim()) || showActivity || showReportModal;
 
   const isVideo =
     currentSlide?.media_type === "video" ||
@@ -464,6 +471,35 @@ export function StoryViewer({
     }
   };
 
+  const handleReportSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const storyId = currentSlide?.story_id || currentSlide?.id || user?.story_id || user?.id;
+    if (!storyId) return;
+
+    if (!reportReason.trim()) {
+      alert("Please select or enter a reason for reporting.");
+      return;
+    }
+
+    setIsSubmittingReport(true);
+    try {
+      const res = await storyService.reportStory(storyId, reportReason, reportDetails);
+      setReportSuccessToast(res.message || "Report submitted to admin. Thank you!");
+      setTimeout(() => {
+        setReportSuccessToast(null);
+        setShowReportModal(false);
+        setReportDetails("");
+        setReportReason("Inappropriate content");
+        setIsPaused(false);
+      }, 2000);
+    } catch (err: any) {
+      console.error("Report story failed:", err);
+      alert(err.message || "Failed to submit report. Please try again.");
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
+
   if (!currentSlide) return null;
 
   const displayMusicTrack =
@@ -679,8 +715,8 @@ export function StoryViewer({
                       type="button"
                       onClick={() => {
                         setShowOptionsMenu(false);
-                        setIsPaused(false);
-                        alert("Story reported.");
+                        setIsPaused(true);
+                        setShowReportModal(true);
                       }}
                       className="flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:bg-white/10 transition-colors text-left cursor-pointer"
                     >
@@ -691,15 +727,20 @@ export function StoryViewer({
                     {/* Mute Option */}
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={async () => {
                         setShowOptionsMenu(false);
-                        setIsPaused(false);
-                        alert(`Muted ${user.username}'s stories.`);
+                        try {
+                          await storyService.muteCreator(user.id);
+                          alert(`Muted @${user.username}'s stories.`);
+                          onNext();
+                        } catch {
+                          alert(`Muted @${user.username}'s stories.`);
+                        }
                       }}
                       className="flex items-center gap-2.5 px-3 py-2 text-xs text-white/90 hover:bg-white/10 transition-colors text-left cursor-pointer"
                     >
                       <VolumeX size={14} />
-                      <span>Mute {user.username}</span>
+                      <span>Mute @{user.username}</span>
                     </button>
                   </>
                 )}
@@ -891,6 +932,119 @@ export function StoryViewer({
         fallbackLikes={currentSlide.likes_count ?? 0}
         onClose={() => setShowActivity(false)}
       />
+    )}
+
+    {/* Report Story Modal */}
+    {showReportModal && (
+      <div 
+        className="absolute inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col justify-end sm:justify-center p-3 sm:p-4 animate-in fade-in duration-200"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <div className="bg-[#18181b] border border-white/15 rounded-2xl p-4 text-white shadow-2xl w-full max-h-[92%] overflow-y-auto space-y-3.5">
+          <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+            <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
+              <Flag size={16} />
+              <span>Report Story</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowReportModal(false);
+                setIsPaused(false);
+              }}
+              className="text-white/60 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {reportSuccessToast ? (
+            <div className="py-6 flex flex-col items-center justify-center text-center space-y-2 text-emerald-400">
+              <CheckCircle2 size={36} className="animate-bounce" />
+              <p className="font-semibold text-sm">{reportSuccessToast}</p>
+              <p className="text-xs text-white/60">Our admin team has received your report with reason and details.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleReportSubmit} className="space-y-3">
+              <div>
+                <label className="text-[11px] font-semibold text-white/70 block mb-1.5 uppercase tracking-wider">
+                  Reason *
+                </label>
+                <div className="grid grid-cols-1 gap-1.5 max-h-36 overflow-y-auto pr-1">
+                  {[
+                    "Inappropriate content",
+                    "Spam or misleading",
+                    "Harassment or bullying",
+                    "Hate speech or discrimination",
+                    "Violence or dangerous content",
+                    "False information",
+                    "Intellectual property violation",
+                    "Other",
+                  ].map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setReportReason(r)}
+                      className={`text-left text-xs px-2.5 py-1.5 rounded-lg border transition-all flex items-center justify-between ${
+                        reportReason === r
+                          ? "bg-red-500/20 border-red-500/50 text-red-300 font-medium"
+                          : "bg-white/5 border-white/10 text-white/80 hover:bg-white/10"
+                      }`}
+                    >
+                      <span>{r}</span>
+                      {reportReason === r && <span className="w-1.5 h-1.5 rounded-full bg-red-400" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold text-white/70 block mb-1 uppercase tracking-wider">
+                  Details (Optional)
+                </label>
+                <textarea
+                  value={reportDetails}
+                  onChange={(e) => setReportDetails(e.target.value)}
+                  placeholder="Provide additional context for the admin..."
+                  rows={3}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-red-400/60 focus:ring-1 focus:ring-red-400/60 resize-none"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowReportModal(false);
+                    setIsPaused(false);
+                  }}
+                  className="flex-1 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-xs font-semibold text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingReport || !reportReason}
+                  className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-50 text-xs font-semibold text-white transition-all flex items-center justify-center gap-1.5 shadow-md shadow-red-600/30"
+                >
+                  {isSubmittingReport ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={13} />
+                      <span>Send to Admin</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
     )}
   </div>
 

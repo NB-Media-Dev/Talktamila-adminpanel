@@ -181,6 +181,59 @@ export interface ReplyStoryResponse {
   reply_id?: number;
 }
 
+export interface ReportStoryRequest {
+  reason: string;
+  details?: string;
+}
+
+export interface ReportStoryResponse {
+  success: boolean;
+  message: string;
+  story_id: number;
+}
+
+export interface AdminReportStoryItem {
+  id: number;
+  story_id: number;
+  user_id: number;
+  author_id?: number;
+  media_url: string;
+  media_type: string;
+  caption?: string | null;
+  content?: string | null;
+  audience: string;
+  created_at: string;
+  expires_at?: string | null;
+  is_deleted: boolean;
+  is_active: boolean;
+  views_count?: number;
+  likes_count?: number;
+  replies_count?: number;
+  shares_count?: number;
+  reports_count?: number;
+  user?: {
+    id: number;
+    user_id: number;
+    username: string;
+    avatar?: string;
+    avatar_url?: string;
+    full_name?: string;
+    role?: string;
+    verified?: boolean;
+  };
+}
+
+export interface AdminReportItem {
+  report_id: number;
+  story_id: number;
+  user_id: number;
+  reporter_username?: string;
+  reason: string;
+  details?: string | null;
+  created_at: string;
+  story?: AdminReportStoryItem | null;
+}
+
 export interface PreviewStoriesProps {
   stories: StoryUser[];
   initialUserIndex?: number;

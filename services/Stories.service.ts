@@ -8,6 +8,8 @@ import {
   LikeStoryResponse,
   ReplyStoryResponse,
   MultipleUploadResponse,
+  AdminReportItem,
+  ReportStoryResponse,
 } from '@/types/Stories';
 import { apiClient } from './api-client';
 
@@ -84,6 +86,45 @@ export const storyService = {
   deleteStory: async (storyId: number | string): Promise<void> => {
     return apiClient<void>(`/api/v1/stories/${storyId}`, {
       method: 'DELETE',
+    });
+  },
+
+  // Reporting & Moderation
+  reportStory: async (storyId: number | string, reason: string, details?: string): Promise<ReportStoryResponse> => {
+    return apiClient<ReportStoryResponse>(`/api/v1/stories/${storyId}/report`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, details: details || undefined }),
+    });
+  },
+
+  muteCreator: async (userId: number | string): Promise<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }> => {
+    return apiClient<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }>(`/api/v1/stories/users/${userId}/mute`, {
+      method: 'POST',
+    });
+  },
+
+  // Admin Reports & Actions
+  getStoryReports: async (limit: number = 50, offset: number = 0): Promise<AdminReportItem[]> => {
+    return apiClient<AdminReportItem[]>(`/api/v1/admin/stories/reports?limit=${limit}&offset=${offset}`, {
+      method: 'GET',
+    });
+  },
+
+  adminDeleteStory: async (storyId: number | string): Promise<{ success: boolean; message: string }> => {
+    return apiClient<{ success: boolean; message: string }>(`/api/v1/admin/stories/${storyId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  adminRestoreStory: async (storyId: number | string): Promise<{ success: boolean; message: string }> => {
+    return apiClient<{ success: boolean; message: string }>(`/api/v1/admin/stories/${storyId}/restore`, {
+      method: 'PATCH',
+    });
+  },
+
+  adminBanUser: async (userId: number | string): Promise<{ success: boolean; message: string }> => {
+    return apiClient<{ success: boolean; message: string }>(`/api/v1/admin/users/${userId}/ban`, {
+      method: 'POST',
     });
   },
 
