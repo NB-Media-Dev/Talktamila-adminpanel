@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import BottomNavigation from '@/components/layout/BottomNavigation';
+import MessageNotifications from '@/components/messages/MessageNotifications';
 
 export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         {children}
       </main>
       <BottomNavigation />
+      <MessageNotifications />
     </div>
   );
 }

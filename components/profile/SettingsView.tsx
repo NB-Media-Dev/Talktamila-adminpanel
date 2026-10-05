@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { goBack as historyBack } from "@/lib/navigation";
 import {
   ArrowLeft,
+  Bell,
   ChevronRight,
   Loader2,
   LogOut,
@@ -18,6 +19,7 @@ import { authService } from "@/services/auth.service";
 import type { ProfileData } from "@/types/Auth";
 import { buttonVariants } from "@/components/ui/Button";
 import LogoutConfirmDialog from "@/components/layout/LogoutConfirmDialog";
+import { disablePush, enablePush, getPushStatus, type PushStatus } from "@/lib/push";
 
 /* ───────────── small building blocks ───────────── */
 
@@ -122,6 +124,21 @@ export default function SettingsView() {
 
   const [logoutOpen, setLogoutOpen] = useState(false);
 
+  // Message notifications (this browser/device only)
+  const [pushStatus, setPushStatus] = useState<PushStatus | null>(null);
+  const [pushBusy, setPushBusy] = useState(false);
+  const [pushNote, setPushNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    getPushStatus().then((s) => {
+      if (alive) setPushStatus(s);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   useEffect(() => {
     async function load() {
       try {
@@ -214,6 +231,25 @@ export default function SettingsView() {
     }
   };
 
+  const handlePushToggle = async () => {
+    if (pushBusy || !pushStatus) return;
+    setPushBusy(true);
+    setPushNote(null);
+    if (pushStatus === "on") {
+      const ok = await disablePush();
+      if (!ok) setPushNote("Couldn't turn off notifications. Please try again.");
+    } else {
+      const result = await enablePush();
+      if (result === "blocked") {
+        setPushNote("Notifications are blocked. Allow them for this site in your browser settings.");
+      } else if (result !== "on") {
+        setPushNote("Couldn't turn on notifications right now. Please try again later.");
+      }
+    }
+    setPushStatus(await getPushStatus());
+    setPushBusy(false);
+  };
+
   const handleLogout = () => {
     authService.signOut();
     setLogoutOpen(false);
@@ -284,6 +320,48 @@ export default function SettingsView() {
           </span>
           <ChevronRight size={16} className="text-gray-400" />
         </button>
+      </SectionCard>
+
+      {/* Notifications */}
+      <SectionCard
+        icon={<Bell size={18} />}
+        title="Notifications"
+        subtitle="Get notified about new messages, even when Talk Tamila is closed"
+      >
+        <div className="flex items-center justify-between gap-4 px-2 py-2">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-gray-900">Message notifications</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {pushStatus === null && "Checking…"}
+              {pushStatus === "on" && "On for this device. You'll be notified when someone messages you."}
+              {pushStatus === "off" && "Off. Turn on to be notified about new messages on this device."}
+              {pushStatus === "blocked" &&
+                "Blocked for this site. Allow notifications in your browser's site settings, then reload this page."}
+              {pushStatus === "unsupported" &&
+                "This browser can't show notifications here. They need a secure (https) address. On iPhone, add Talk Tamila to your Home Screen first."}
+              {pushStatus === "unavailable" && "Notifications aren't available right now. Please try again later."}
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={pushStatus === "on"}
+            aria-label="Message notifications"
+            onClick={handlePushToggle}
+            disabled={pushBusy || (pushStatus !== "on" && pushStatus !== "off")}
+            className={`relative shrink-0 w-12 h-7 rounded-full transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+              pushStatus === "on" ? "bg-[linear-gradient(135deg,#E6703A,#FFA663)]" : "bg-gray-200"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform duration-200 ${
+                pushStatus === "on" ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+        {pushNote && <p className="mt-1 px-2 text-xs text-red-600">{pushNote}</p>}
+        <p className="mt-1 px-2 text-[11px] text-gray-400">This setting applies to this browser or device only.</p>
       </SectionCard>
 
       {/* Close friends */}

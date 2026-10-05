@@ -1,4 +1,5 @@
 import { apiClient } from './api-client';
+import { getStoredPushEndpoint } from '@/lib/push';
 import type {
   ChatMessage,
   ChatUser,
@@ -40,11 +41,15 @@ export const messageService = {
     });
   },
 
-  send: (userId: number, body: string): Promise<ChatMessage> =>
-    apiClient<ChatMessage>(`/api/v1/messages/thread/${userId}`, {
+  send: (userId: number, body: string): Promise<ChatMessage> => {
+    const pushEndpoint = getStoredPushEndpoint();
+    return apiClient<ChatMessage>(`/api/v1/messages/thread/${userId}`, {
       method: 'POST',
       body: JSON.stringify({ body }),
-    }),
+      // Tells the backend which browser is sending, so it never notifies the sender's own browser.
+      headers: pushEndpoint ? { 'X-Push-Endpoint': pushEndpoint } : undefined,
+    });
+  },
 
   /** Set my reaction on a message I sent or received (replaces my previous one). */
   react: (messageId: number, emoji: string): Promise<ReactionUpdate> =>

@@ -2,6 +2,7 @@ import BottomNavigation from '@/components/layout/BottomNavigation';
 import Navbar from '@/components/layout/Navbar';
 import CallProvider from '@/components/calls/CallProvider';
 import React from 'react';
+import MessageNotifications from '@/components/messages/MessageNotifications';
 
 
 export default function InfluencerLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +14,7 @@ export default function InfluencerLayout({ children }: { children: React.ReactNo
           {children}
         </main>
         <BottomNavigation />
+        <MessageNotifications />
       </div>
     </CallProvider>
   );

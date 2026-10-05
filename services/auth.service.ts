@@ -12,6 +12,7 @@ import {
 } from '@/types/Auth';
 import { apiClient } from './api-client';
 import { setAuthToken, setAuthRole, clearAuthToken } from '@/lib/cookies';
+import { forgetPushOnLogout } from '@/lib/push';
 
 export const authService = {
   signIn: async (payload: loginPayload): Promise<loginResponse> => {
@@ -35,6 +36,8 @@ export const authService = {
     });
   },
   signOut: () => {
+    // Stop message notifications on this browser for the person who is leaving.
+    forgetPushOnLogout();
     clearAuthToken();
   },
   forgotPassword: async (payload: ForgotPasswordPayload): Promise<SimpleSuccessResponse> => {

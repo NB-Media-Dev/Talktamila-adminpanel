@@ -1,6 +1,7 @@
 import BottomNavigation from "@/components/layout/BottomNavigation";
 import Navbar from "@/components/layout/Navbar";
 import CallProvider from "@/components/calls/CallProvider";
+import MessageNotifications from '@/components/messages/MessageNotifications';
 
 
 
@@ -13,6 +14,7 @@ export default function freelanceLayout({ children }: { children: React.ReactNod
           {children}
         </main>
         <BottomNavigation />
+        <MessageNotifications />
       </div>
     </CallProvider>
   );
