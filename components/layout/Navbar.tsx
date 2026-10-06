@@ -125,6 +125,16 @@ export default function Navbar() {
   };
 
   
+  const getSettingsPath = () => {
+    if (isInfluencer) {
+      return '/influencer/profile/settings';
+    } else if (isFreelancer) {
+      return '/freelancer/profile/settings';
+    } else {
+      return '/admin/profile/settings';
+    }
+  };
+
   const getWalletPath = () => {
     if (isInfluencer) {
       return '/influencer';
@@ -174,7 +184,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          onClick={() => handleProfileNavigation(getUserPath())}
+          onClick={() => handleProfileNavigation(getSettingsPath())}
           className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 hover:text-[#FF6B35] hover:bg-orange-50/80 rounded-xl transition-colors w-full text-left cursor-pointer"
         >
           <Settings className="w-4 h-4 text-[#FF6B35]" />
