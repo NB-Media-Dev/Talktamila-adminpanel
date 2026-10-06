@@ -24,7 +24,6 @@ export default function Navbar() {
   const { isInfluencer, isFreelancer,} = useAuthRole();
   const {user, setUser } = useAuthuser();
 
-  // The saved profile picture. With no photo, show the user's initials
   // (the same default the profile page and stories use).
   const authUser = user as any;
   const me = authUser?.user || authUser || null;
@@ -34,7 +33,6 @@ export default function Navbar() {
       getInitials({ firstName: me?.first_name, lastName: me?.last_name, username: me?.username })
     );
 
-  // After a page reload the auth context starts empty, so load the profile once.
   const hydratedRef = useRef(false);
   useEffect(() => {
     if (user || hydratedRef.current) return;

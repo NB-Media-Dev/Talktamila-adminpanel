@@ -7,16 +7,11 @@ export interface ChatUser {
   bio: string | null;
   followers_count: number;
   is_following: boolean;
-  /** Only present on the partner returned by the first page of a thread. */
   blocked_by_me?: boolean;
   blocked_me?: boolean;
   muted?: boolean;
 }
 
-/** "text" is normal chat. The story kinds are created automatically when someone
- *  replies to / reacts to a story - sender is the replier, receiver is the story owner.
- *  "call" is a log entry written by the calls WebSocket when a call ends (sender = caller);
- *  its `body` is JSON: {"media": "audio"|"video", "outcome": "...", "seconds": n}. */
 export type MessageKind = "text" | "story_reply" | "story_reaction" | "call";
 
 export interface MessageReaction {
@@ -24,12 +19,10 @@ export interface MessageReaction {
   emoji: string;
 }
 
-/** Small card describing the story a reply/reaction belongs to. */
 export interface StoryContext {
   story_id: number;
   media_type: string;
   caption: string | null;
-  /** false once the story has expired or been deleted. */
   available: boolean;
 }
 
@@ -39,13 +32,11 @@ export interface ChatMessage {
   receiver_id: number;
   body: string;
   kind: MessageKind;
-  /** Only set for story_reply / story_reaction; null if the story row is gone. */
   story: StoryContext | null;
   reactions: MessageReaction[];
   created_at: string;
   read_at: string | null;
   is_mine: boolean;
-  /** Client-only: shown while the message is still being sent. */
   pending?: boolean;
 }
 
@@ -60,19 +51,13 @@ export interface Conversation {
     read_at: string | null;
   };
   unread_count: number;
-  /** true when there are unread messages OR the chat was marked as unread from the 3-dot menu. */
   is_unread?: boolean;
-  /** true = not a mutual follow and not accepted yet, so it belongs in the Requests tab. */
   is_request?: boolean;
 }
 
-/** Sent with every thread response so the chat screen knows which bar to show. */
 export interface RequestState {
-  /** They are asking to message me and I have not accepted yet. */
   is_request: boolean;
-  /** I am messaging someone who has not accepted me yet. */
   request_sent: boolean;
-  /** false once I used up my allowed messages while waiting for them to accept. */
   can_send: boolean;
 }
 
@@ -81,9 +66,7 @@ export interface ThreadResponse {
   messages: ChatMessage[];
   has_more: boolean;
   last_read_by_other_id: number | null;
-  /** Only when polling with syncFromId: current reactions for every message from that id on. */
   reactions_sync: Record<string, MessageReaction[]> | null;
-  /** Only when polling with syncFromId: ids that still exist from that id on (so unsent messages can be dropped). */
   existing_ids: number[] | null;
   request?: RequestState;
 }
@@ -100,8 +83,6 @@ export interface ReactionUpdate {
 
 export interface MessageSummary {
   latest_message_id: number;
-  /** Unread chats in the main inbox (requests are not counted here). */
   unread_conversations: number;
-  /** Unread chats waiting in the Requests tab. */
   request_unread?: number;
 }

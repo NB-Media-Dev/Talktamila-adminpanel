@@ -177,16 +177,6 @@ export function CreatenewPost() {
           </div>
 
           <div className={`flex flex-col gap-2 min-[3840px]:gap-3 ${step !== "edit" ? "block" : "hidden lg:flex"}`}>
-            {/* <div className="flex items-center justify-between lg:block mb-1 select-none">
-              <h3 className="text-xs min-[3840px]:text-sm font-extrabold text-gray-800 tracking-wide uppercase">Live Preview</h3>
-              <button
-                type="button"
-                onClick={() => setStep("edit")}
-                className="lg:hidden text-xs font-bold text-orange-600 hover:text-orange-700 transition-colors cursor-pointer flex items-center gap-1"
-              >
-                ← Back to Edit
-              </button>
-            </div> */}
 
             {isPreviewLoading ? (
               <LivePreviewloading />

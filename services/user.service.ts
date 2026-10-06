@@ -12,7 +12,6 @@ export interface ProfileUpdateInput {
   avatar?: File | null;
 }
 
-/** A person shown in the Settings lists (muted creators / close friends). */
 export interface SettingsPerson {
   user_id: number;
   username: string;
@@ -51,9 +50,6 @@ export const userService = {
     });
   },
 
-  /* ---- Another person's public profile (Instagram-style page) ----
-     Matches GET /api/v1/users/by-username/{username}
-     (app/profile/routes.py). */
   getPublicProfile: async (username: string): Promise<PublicProfileData> => {
     return apiClient<PublicProfileData>(
       `/api/v1/users/by-username/${encodeURIComponent(username)}`,
@@ -61,9 +57,6 @@ export const userService = {
     );
   },
 
-  /* ---- Discover people ----
-     Matches GET /api/v1/stories/suggestions on the backend
-     (StoryService.get_suggestions). */
   getSuggestions: async (limit: number = 10): Promise<UserSuggestion[]> => {
     const params = new URLSearchParams();
     params.set('limit', String(limit));
@@ -73,10 +66,6 @@ export const userService = {
     );
   },
 
-  /* These two match the existing backend routes in
-     app/story/routes.py (prefix "/stories"):
-       POST   /stories/follow/{user_id}
-       DELETE /stories/follow/{user_id} */
   followUser: async (userId: number): Promise<FollowActionResponse> => {
     return apiClient<FollowActionResponse>(`/api/v1/stories/follow/${userId}`, {
       method: 'POST',
@@ -89,8 +78,6 @@ export const userService = {
     });
   },
 
-  /* ---- Followers / Following lists ----
-     Match app/story/settings_routes.py (prefix "/stories/settings"). */
   getFollowers: async (userId: number, limit: number = 50): Promise<UserSuggestion[]> => {
     const params = new URLSearchParams();
     params.set('limit', String(limit));

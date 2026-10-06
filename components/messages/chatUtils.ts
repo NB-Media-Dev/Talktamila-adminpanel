@@ -26,7 +26,6 @@ export function dayLabel(iso: string) {
   });
 }
 
-/** Short time for the inbox list: clock today, weekday this week, else date. */
 export function listTime(iso: string) {
   const d = new Date(iso);
   const now = new Date();
@@ -36,7 +35,6 @@ export function listTime(iso: string) {
   return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
-/** Keep the first message for each id (pending copies and polled copies can overlap). */
 export function dedupe(list: ChatMessage[]): ChatMessage[] {
   const seen = new Set<number>();
   return list.filter((m) => (seen.has(m.id) ? false : (seen.add(m.id), true)));
@@ -62,7 +60,6 @@ export function sameReactions(a: MessageReaction[], b: MessageReaction[]): boole
   return a.length === b.length && a.every((r, i) => r.user_id === b[i].user_id && r.emoji === b[i].emoji);
 }
 
-/** One entry per distinct emoji, in first-seen order. `mine` = the current user used it. */
 export function groupReactions(
   reactions: MessageReaction[],
   partnerId: number
@@ -87,7 +84,6 @@ export interface CallLog {
   seconds: number;
 }
 
-/** The body of a "call" message is a small JSON blob written by the backend. */
 export function parseCallLog(body: string): CallLog {
   try {
     const o = JSON.parse(body) as Partial<CallLog>;
@@ -111,7 +107,6 @@ export function formatDuration(totalSeconds: number): string {
   return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
 }
 
-/** Text for a call entry, from the point of view of the viewer (`isMine` = I made the call). */
 export function callSummary(
   body: string,
   isMine: boolean
@@ -140,7 +135,6 @@ export function callSummary(
   }
 }
 
-/** Inbox one-liner for the last message in a conversation. */
 export function previewText(last: Conversation["last_message"]): string {
   if (last.kind === "call") {
     const c = callSummary(last.body, last.is_mine);

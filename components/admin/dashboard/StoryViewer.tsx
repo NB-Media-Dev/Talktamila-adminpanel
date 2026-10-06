@@ -36,7 +36,6 @@ interface ProgressBarProps {
   slides?: StorySlide[];
   total: number;
   current: number;
-  /** 0-100 progress of the active bar */
   progress: number;
   onSeek: (index: number) => void;
 }
@@ -144,7 +143,6 @@ export function StoryViewer({
   const slideDuration = currentSlide?.duration ?? 5000;
   const totalSlides = slides.length;
 
-  // Story is effectively paused if hold-to-pause is active, manual pause is on, typing in reply input, activity sheet is open, or report modal is open
   const isEffectivelyPaused =
     isPaused || isHolding || isTypingReply || Boolean(replyText.trim()) || showActivity || showReportModal;
 
@@ -211,7 +209,6 @@ export function StoryViewer({
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch((err) => {
-          // Ignore AbortError since it's normal when play is interrupted by pause
           if (err.name !== 'AbortError') {
             console.warn("Audio playback note:", err);
           }
@@ -692,7 +689,6 @@ export function StoryViewer({
                 ) : (
                   /* --- OTHER USER'S STORY OPTIONS --- */
                  <>
-                    {/* Song Details Option (Inside Menu - Shown ONLY IF music track exists) */}
                     {(displayMusicTrack || currentSlide.musicTrack) && (
                       <button
                         type="button"

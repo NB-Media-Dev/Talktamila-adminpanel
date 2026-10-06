@@ -9,7 +9,6 @@ import { buttonVariants } from "@/components/ui/Button";
 import DiscoverPeople from "@/components/profile/DiscoverPeople";
 import FollowListModal from "@/components/profile/FollowListModal";
 
-/** How often the profile quietly re-checks its follower / following counts. */
 const LIVE_COUNTS_POLL_MS = 8000;
 
 export default function ProfileView() {
@@ -37,15 +36,12 @@ export default function ProfileView() {
   const refreshProfile = useCallback(async () => {
     try {
       const data = await userService.getProfile();
-      // Keep the same object when nothing changed, so the page doesn't re-render for nothing.
       setProfile((prev) => (prev && JSON.stringify(prev) === JSON.stringify(data) ? prev : data));
     } catch {
       // keep showing the last known profile
     }
   }, []);
 
-  // Live counts: when someone follows / unfollows you, this page updates by itself
-  // (quiet re-check every few seconds and whenever you come back to the tab).
   useEffect(() => {
     const check = () => {
       if (!document.hidden) refreshProfile();

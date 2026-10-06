@@ -36,7 +36,6 @@ export const authService = {
     });
   },
   signOut: () => {
-    // Stop message notifications on this browser for the person who is leaving.
     forgetPushOnLogout();
     clearAuthToken();
   },

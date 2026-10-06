@@ -32,7 +32,6 @@ function readAsDataUrl(file: File): Promise<string> {
   });
 }
 
-/** One Instagram-style settings row: label on the left, control on the right. */
 function EditRow({
   label,
   children,
@@ -71,7 +70,6 @@ export default function EditProfile() {
   const [mobileNo, setMobileNo] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  // The photo just picked, waiting in the editor (crop / zoom / filters).
   const [pendingAvatar, setPendingAvatar] = useState<File | null>(null);
 
   // Change-password fields are kept separate: they hit their own endpoint
@@ -84,7 +82,6 @@ export default function EditProfile() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
 
-  // One-time code emailed to the registered address before a password change.
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
@@ -126,7 +123,6 @@ export default function EditProfile() {
     return () => clearTimeout(t);
   }, [otpCooldown]);
 
-  // Push the saved values into the auth context so the navbar updates without a reload.
   const syncAuthUser = (updated: ProfileData) => {
     if (!user) return;
     const patch = {

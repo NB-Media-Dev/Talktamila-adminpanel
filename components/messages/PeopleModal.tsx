@@ -19,10 +19,6 @@ function roleLabel(role?: string | null) {
   return role.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/**
- * mode "discover": the "See all" list on the profile page (Follow + Message).
- * mode "pick":     the "New message" picker inside Messages (tap a row to chat).
- */
 export default function PeopleModal({
   open,
   onClose,
@@ -58,7 +54,6 @@ export default function PeopleModal({
     };
   }, [open]);
 
-  // Load the first page whenever the sheet opens or the search text changes (debounced).
   useEffect(() => {
     if (!open) return;
     const myRequest = ++requestRef.current;

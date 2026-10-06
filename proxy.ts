@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Redirect-only guard (UX). Real authorization is enforced by the backend on every API call.
 
 const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
 const HOME_BY_ROLE: Record<string, string> = {
@@ -10,7 +9,6 @@ const HOME_BY_ROLE: Record<string, string> = {
   freelancer: '/freelancer',
 };
 
-// A token that has expired counts as "not logged in" (no unverified trust beyond exp).
 function tokenIsLive(token?: string): boolean {
   if (!token) return false;
   try {
@@ -36,7 +34,6 @@ export function proxy(request: NextRequest) {
     return redirect(loggedIn && home ? home : '/login');
   }
 
-  // Already signed in -> never show login / signup / reset pages again.
   if (AUTH_PAGES.includes(pathname.toLowerCase())) {
     return loggedIn && home ? redirect(home) : NextResponse.next();
   }
@@ -57,7 +54,6 @@ export function proxy(request: NextRequest) {
     if (!inOwnArea && !adminMaySeeSuperadmin) return redirect(home);
   }
 
-  // Dashboards must not be served from the browser's back/forward cache after logout.
   const res = NextResponse.next();
   res.headers.set('Cache-Control', 'no-store');
   return res;
