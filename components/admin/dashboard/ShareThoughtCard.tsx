@@ -1,11 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import { buttonVariants } from "@/components/ui/Button";
 import { islandMoments } from "@/public/Fonts/Fonts";
 import { Pencil, Image as ImageIcon, Video } from "lucide-react";
+import PostComposer, { type ComposerMode } from "./PostComposer";
+import { useAuthRole } from "@/hooks/useAuthRole";
+import { canCreatePosts } from "@/lib/postPermissions";
 
 export default function ShareThoughtCard() {
+  const { userRole } = useAuthRole();
+  const canPost = canCreatePosts(userRole);
+  const [composer, setComposer] = useState<{ mode: ComposerMode; openEmoji?: boolean } | null>(null);
+
+  const open = (mode: ComposerMode, openEmoji = false) => {
+    if (canPost) setComposer({ mode, openEmoji });
+  };
+  const lockedTitle = "Posting is limited to admins right now";
+  const lock = canPost ? "" : "opacity-50 disabled:cursor-not-allowed";
+
   return (
+    <>
     <div className={`@container w-full max-w-[24rem] mx-auto select-none p-0.5 sm:p-1 ${islandMoments.variable}`}>
       <div className="relative w-full">
 
@@ -57,8 +72,10 @@ export default function ShareThoughtCard() {
               transition-transform duration-200 
               active:scale-90 hover:scale-110
             "
-            title="Edit thought"
-            aria-label="Edit thought"
+            title={canPost ? "Write a thought" : lockedTitle}
+            aria-label="Write a thought"
+            disabled={!canPost}
+            onClick={() => open("text")}
           >
             <Pencil
               className="w-3.5 h-3.5 sm:w-5.5 sm:h-5.5 text-white transform -rotate-12 drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.25)]"
@@ -78,9 +95,15 @@ export default function ShareThoughtCard() {
               Thoughts...
             </h2>
 
-            <p className="text-[11px] sm:text-[14px] text-[#3A3A3C] font-sans font-normal mt-1 sm:mt-4 truncate">
+            <button
+              type="button"
+              disabled={!canPost}
+              onClick={() => open("text")}
+              title={canPost ? "Write a thought" : lockedTitle}
+              className={`block w-full text-left text-[11px] sm:text-[14px] text-[#3A3A3C] font-sans font-normal mt-1 sm:mt-4 truncate ${canPost ? "cursor-text" : "cursor-not-allowed"}`}
+            >
               New Thought Incoming...
-            </p>
+            </button>
           </div>
 
           <div className="relative z-10 flex items-center justify-between px-3.5 sm:px-6 pt-1 sm:pt-2 pb-3 sm:pb-4 mt-auto">
@@ -88,8 +111,10 @@ export default function ShareThoughtCard() {
             <div className="flex items-center gap-1.5 xs:gap-2.5 sm:gap-5 text-[#8E8E93]">
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
-                title="Add Image"
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5 ${lock}`}
+                disabled={!canPost}
+                title={canPost ? "Add Image" : lockedTitle}
+                onClick={() => open("image")}
                 aria-label="Add Image"
               >
                 <ImageIcon className="w-[17px] h-[17px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
@@ -97,8 +122,10 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
-                title="Add Video"
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5 ${lock}`}
+                disabled={!canPost}
+                title={canPost ? "Add Video" : lockedTitle}
+                onClick={() => open("video")}
                 aria-label="Add Video"
               >
                 <Video className="w-[17px] h-[17px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
@@ -106,8 +133,10 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
-                title="Create Poll"
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5 ${lock}`}
+                disabled={!canPost}
+                title={canPost ? "Create Poll" : lockedTitle}
+                onClick={() => open("poll")}
                 aria-label="Create Poll"
               >
                 <svg
@@ -126,8 +155,10 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
-                title="Add Emoji"
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5 ${lock}`}
+                disabled={!canPost}
+                title={canPost ? "Add Emoji or GIF" : lockedTitle}
+                onClick={() => open("text", true)}
                 aria-label="Add Emoji"
               >
                 <svg
@@ -145,7 +176,11 @@ export default function ShareThoughtCard() {
 
             <button
               type="button"
+              disabled={!canPost}
+              onClick={() => open("text")}
+              title={canPost ? "Write a thought" : lockedTitle}
               className={`
+               ${canPost ? "" : "opacity-50 cursor-not-allowed"}
                ${buttonVariants({ variant: "default" })}
                 text-white
                 text-[12px] sm:text-[15px]
@@ -168,5 +203,14 @@ export default function ShareThoughtCard() {
         </div>
       </div>
     </div>
+
+    {composer && (
+      <PostComposer
+        mode={composer.mode}
+        openEmoji={composer.openEmoji}
+        onClose={() => setComposer(null)}
+      />
+    )}
+    </>
   );
 }
