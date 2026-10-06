@@ -64,7 +64,7 @@ function isAllowedGifLink(raw: string): boolean {
   }
 }
 
-/* ------------------------------------------------------------------ GIF panel */
+// GIF panel
 function GifPanel({ onPick }: { onPick: (url: string) => void }) {
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<GiphyItem[]>([]);
@@ -177,13 +177,13 @@ function GifPanel({ onPick }: { onPick: (url: string) => void }) {
   );
 }
 
-/* ------------------------------------------------------------------- composer */
+// composer
 interface PostComposerProps {
   mode: ComposerMode;
   openEmoji?: boolean;
-  /** the thought already held in the card, to edit it */
+  // thought already in the card, used for editing
   initial?: Thought | null;
-  /** called with what the user wrote when they press Post (nothing is sent to the server) */
+  // called when Post is pressed (nothing goes to the server)
   onSubmit: (thought: ThoughtInput) => void;
   onClose: () => void;
 }
@@ -197,7 +197,7 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, ini
     me?.avatar_url ||
     initialsAvatar(getInitials({ firstName: me?.first_name, lastName: me?.last_name, username: me?.username }));
 
-  // Opened from the image / video / poll icon -> start that kind; opened on the held thought -> edit it.
+  // icon opened -> start that type, thought opened -> edit it
   const editing = initial && (initial.kind === initialMode || initialMode === "text") ? initial : null;
   const [mode, setMode] = useState<ComposerMode>(editing ? editing.kind : initialMode);
   const [text, setText] = useState(editing?.text ?? "");
@@ -233,7 +233,7 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, ini
 
   const requestClose = () => onClose();
 
-  // Close on Escape, stop the page behind from scrolling, free the preview URL on exit.
+  // close on Escape, lock page scroll
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") requestClose();

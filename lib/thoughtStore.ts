@@ -1,20 +1,13 @@
 import { useSyncExternalStore } from "react";
 import type { PostType } from "@/types/Posts";
 
-/**
- * The thought / photo / video / poll the user wrote in the "Share Your Thoughts" card.
- * It stays in the card - nothing is sent to the server and nothing appears in the feed.
- *
- * It lives here (not inside the card) because the dashboard mounts the card more than once
- * (one per screen size) and every copy must show the same thing. It is kept while the user moves
- * between pages, and cleared when the page is refreshed.
- */
+// thought written in the Share Your Thoughts card (stays in the browser, not sent anywhere)
 export interface Thought {
   kind: PostType; // text | image | video | gif | poll
   text: string;
-  /** image / video the user picked */
+  // image / video picked by the user
   file?: File;
-  /** browser-local preview address for `file` (created and freed by this store) */
+  // preview url for the file
   mediaUrl?: string;
   gifUrl?: string;
   pollOptions?: string[];

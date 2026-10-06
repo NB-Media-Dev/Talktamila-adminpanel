@@ -8,10 +8,7 @@ import TopCreators from "../RightPanel/TopCreators";
 import BreakingNews from "../dashboard/BreakingNews";
 import TodaysEvents from "../dashboard/TodaysEvents";
 
-/**
- * The sample feed (hard-coded posts). Posts the user writes in the "Share Your Thoughts" card
- * stay in that card and are not added here. The three small widgets show only on mobile.
- */
+// hard-coded sample feed
 export default function FeedPost() {
   return (
     <div className="w-full gap-6 flex flex-col select-none">

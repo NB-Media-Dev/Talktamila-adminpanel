@@ -7,7 +7,7 @@ import { Pencil, Image as ImageIcon, Video, X } from "lucide-react";
 import PostComposer, { type ComposerMode } from "./PostComposer";
 import { clearThought, saveThought, useThought, type Thought } from "@/lib/thoughtStore";
 
-/** One short line describing what is held in the card. */
+// short text shown in the card
 function thoughtText(t: Thought): string {
   switch (t.kind) {
     case "poll":
