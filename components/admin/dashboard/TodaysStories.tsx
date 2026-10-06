@@ -89,6 +89,7 @@ export default function TodayStories() {
   const [isAddStoryOpen, setIsAddStoryOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [selectedUserIndex, setSelectedUserIndex] = useState(0);
+  const [targetStoryId, setTargetStoryId] = useState<number | undefined>(undefined);
   const [, setLoading] = useState(true);
 
   const { user: authUser } = useAuthuser();
@@ -136,6 +137,13 @@ export default function TodayStories() {
               music_title: s.music_title || correspondingStory?.music_title,
               music_artist: s.music_artist || correspondingStory?.music_artist,
               audience: s.audience || correspondingStory?.audience || "PUBLIC",
+              parent_story_id: s.parent_story_id ?? correspondingStory?.parent_story_id,
+              original_story_id: s.original_story_id ?? correspondingStory?.original_story_id,
+              original_owner_id: s.original_owner_id ?? correspondingStory?.original_owner_id,
+              original_username: s.original_username ?? correspondingStory?.original_username,
+              is_reshare: Boolean(s.is_reshare ?? correspondingStory?.is_reshare),
+              can_reshare: Boolean(s.can_reshare ?? correspondingStory?.can_reshare),
+              mentions: s.mentions || correspondingStory?.mentions || [],
             };
           }),
         };
@@ -164,8 +172,43 @@ export default function TodayStories() {
     fetchStories();
   }, [fetchStories]);
 
+  // ── Auto-open story from notification deep-link (?open_story={story_id}) ──
+  useEffect(() => {
+    if (typeof window === "undefined" || allStoryUsers.length === 0) return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const openStoryId = searchParams.get("open_story");
+    if (!openStoryId) return;
+
+    const targetId = Number(openStoryId);
+
+    // Find the StoryUser whose slides contain a slide with this story_id
+    const userIndex = allStoryUsers.findIndex((u) =>
+      u.story_id === targetId ||
+      u.id === targetId ||
+      (u.slides || []).some((s) => s.story_id === targetId || s.id === targetId)
+    );
+
+    if (userIndex >= 0) {
+      setSelectedUserIndex(userIndex);
+      setTargetStoryId(targetId);
+      setIsPreviewOpen(true);
+    } else {
+      // story_id not found in feed — open first user as fallback
+      setSelectedUserIndex(0);
+      setTargetStoryId(targetId);
+      setIsPreviewOpen(true);
+    }
+
+    // Clear the param from URL so refreshing doesn't re-open it
+    searchParams.delete("open_story");
+    const cleanQuery = searchParams.toString();
+    const cleanUrl = cleanQuery ? `${window.location.pathname}?${cleanQuery}` : window.location.pathname;
+    window.history.replaceState({}, "", cleanUrl);
+  }, [allStoryUsers]);
+
   const feedUsers = useMemo(() => {
     const filtered = allStoryUsers.filter((u) => !u.is_my_story);
+
     
     return [...filtered].sort((a, b) => {
       const aViewed = a.isViewed || !a.hasUnseen;
@@ -362,8 +405,10 @@ export default function TodayStories() {
         <PreviewStories
           stories={allStoryUsers}
           initialUserIndex={selectedUserIndex}
+          initialStoryId={targetStoryId}
           onClose={() => {
             setIsPreviewOpen(false);
+            setTargetStoryId(undefined);
             fetchStories();
           }}
           onStoryDeleted={() => fetchStories()}

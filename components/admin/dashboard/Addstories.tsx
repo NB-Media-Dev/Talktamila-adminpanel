@@ -25,12 +25,14 @@ import {
   Images as ImagesIcon,
   Video,
   Film,
+  AtSign,
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useContenthook } from "@/hooks/useContent";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { storyService } from "@/services/Stories.service";
+import type { MentionUserSearchItem } from "@/types/Stories";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import MusicsControl, { MusicTrack } from "./MusicsControl";
 import EmojiPicker from "emoji-picker-react";
@@ -98,8 +100,57 @@ export default function Addstories({
   const pickerRef = useRef<HTMLDivElement>(null);
 
 
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const [mentionResults, setMentionResults] = useState<MentionUserSearchItem[]>([]);
+  const [isSearchingMentions, setIsSearchingMentions] = useState<boolean>(false);
+  const [showMentionMenu, setShowMentionMenu] = useState<boolean>(false);
+  const mentionMenuRef = useRef<HTMLDivElement>(null);
+
+  const handleCaptionChange = (val: string) => {
+    setCaption(val);
+    const lastAtIdx = val.lastIndexOf("@");
+    if (lastAtIdx !== -1) {
+      const queryPart = val.slice(lastAtIdx + 1);
+      if (!queryPart.includes(" ") && queryPart.length <= 25) {
+        setMentionQuery(queryPart);
+        setShowMentionMenu(true);
+        return;
+      }
+    }
+    setShowMentionMenu(false);
+    setMentionQuery(null);
+  };
+
+  useEffect(() => {
+    if (mentionQuery === null || !showMentionMenu) return;
+    const timer = setTimeout(async () => {
+      try {
+        setIsSearchingMentions(true);
+        const users = await storyService.searchMentionUsers(mentionQuery);
+        setMentionResults(users);
+      } catch (err) {
+        console.error("Mention search error:", err);
+      } finally {
+        setIsSearchingMentions(false);
+      }
+    }, 180);
+    return () => clearTimeout(timer);
+  }, [mentionQuery, showMentionMenu]);
+
+  const selectMentionUser = (user: MentionUserSearchItem) => {
+    const lastAtIdx = caption.lastIndexOf("@");
+    if (lastAtIdx !== -1) {
+      const before = caption.slice(0, lastAtIdx);
+      setCaption(`${before}@${user.username} `);
+    } else {
+      setCaption((prev) => `${prev}@${user.username} `);
+    }
+    setShowMentionMenu(false);
+    setMentionQuery(null);
+  };
+
   const onEmojiClick = (emojiData: { emoji: string }) => {
-    setCaption((prevText) => prevText + emojiData.emoji);
+    handleCaptionChange(caption + emojiData.emoji);
   };
   const [selectedAudience, setSelectedAudience] = useState<string>("public");
   const [selectedMusic, setSelectedMusic] = useState<string>("");
@@ -119,6 +170,9 @@ export default function Addstories({
     function handleClickOutside(event: MouseEvent) {
       if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
         setShowPicker(false);
+      }
+      if (mentionMenuRef.current && !mentionMenuRef.current.contains(event.target as Node)) {
+        setShowMentionMenu(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -408,27 +462,85 @@ export default function Addstories({
                   id="storyCaption"
                   rows={2}
                   value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="Type your story text or caption here..."
-                  className="w-full p-2.5 rounded-xl bg-white border border-orange-100 outline-none text-xs sm:text-sm resize-none transition-all shadow-xs focus:border-[#ef8b54] focus:ring-1 focus:ring-[#ef8b54]/30 placeholder:text-gray-400 text-gray-800 leading-relaxed"
+                  onChange={(e) => handleCaptionChange(e.target.value)}
+                  placeholder="Type your story text or caption... (type @username to mention)"
+                  className="w-full p-2.5 pr-16 rounded-xl bg-white border border-orange-100 outline-none text-xs sm:text-sm resize-none transition-all shadow-xs focus:border-[#ef8b54] focus:ring-1 focus:ring-[#ef8b54]/30 placeholder:text-gray-400 text-gray-800 leading-relaxed"
                 />
-                 <button
-        type="button"
-        onClick={() => setShowPicker(!showPicker)}
-        className="absolute right-2.5 bottom-2.5 text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none"
-      >
-        <Smile size={16} />
-      </button> {showPicker && (
-        <div className="absolute right-0 z-50 top-full  shadow-xl rounded-xl overflow-hidden border border-gray-100">
-          <EmojiPicker
-            onEmojiClick={onEmojiClick}
-            autoFocusSearch={false}
-            width={320}
-            height={300}
-            previewConfig={{ showPreview: false }} // Hides the bulky description footer bar
-          />
-        </div>
-      )}
+
+                {/* Mention Autocomplete Dropdown */}
+                {showMentionMenu && (
+                  <div
+                    ref={mentionMenuRef}
+                    className="absolute left-0 bottom-full mb-1 w-full max-h-48 bg-white/95 backdrop-blur-md rounded-xl border border-orange-100 shadow-2xl overflow-y-auto z-50 py-1 divide-y divide-orange-50"
+                  >
+                    <div className="px-3 py-1.5 text-[10px] font-bold text-orange-900/60 uppercase tracking-wider flex items-center justify-between">
+                      <span>Mention Users</span>
+                      {isSearchingMentions && <Loader2 size={11} className="animate-spin text-orange-500" />}
+                    </div>
+                    {mentionResults.length > 0 ? (
+                      mentionResults.map((u) => (
+                        <button
+                          key={u.user_id}
+                          type="button"
+                          onClick={() => selectMentionUser(u)}
+                          className="w-full px-3 py-2 flex items-center gap-2.5 hover:bg-orange-50/80 transition-colors text-left cursor-pointer"
+                        >
+                          <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-[11px] font-bold text-orange-700 overflow-hidden shrink-0">
+                            {u.avatar_url ? (
+                              <img src={u.avatar_url} alt={u.username} className="w-full h-full object-cover" />
+                            ) : (
+                              u.username.slice(0, 1).toUpperCase()
+                            )}
+                          </div>
+                          <div className="flex flex-col min-w-0 flex-1">
+                            <span className="text-xs font-bold text-gray-800 truncate">@{u.username}</span>
+                            {u.full_name && (
+                              <span className="text-[10px] text-gray-400 truncate">{u.full_name}</span>
+                            )}
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2 text-xs text-gray-400 text-center">
+                        {isSearchingMentions ? "Searching..." : "No users found"}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="absolute right-2.5 bottom-2.5 flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCaption((prev) => (prev.endsWith(" ") || prev === "" ? `${prev}@` : `${prev} @`));
+                      setMentionQuery("");
+                      setShowMentionMenu(true);
+                    }}
+                    className="text-gray-400 hover:text-orange-500 transition-colors cursor-pointer focus:outline-none p-0.5"
+                    title="Mention a user (@)"
+                  >
+                    <AtSign size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowPicker(!showPicker)}
+                    className="text-gray-400 hover:text-gray-600 cursor-pointer focus:outline-none p-0.5"
+                    title="Add Emoji"
+                  >
+                    <Smile size={15} />
+                  </button>
+                </div>
+                {showPicker && (
+                  <div className="absolute right-0 z-50 top-full shadow-xl rounded-xl overflow-hidden border border-gray-100">
+                    <EmojiPicker
+                      onEmojiClick={onEmojiClick}
+                      autoFocusSearch={false}
+                      width={320}
+                      height={300}
+                      previewConfig={{ showPreview: false }}
+                    />
+                  </div>
+                )}
               </div>
 
               {mediaList.length === 0 && (

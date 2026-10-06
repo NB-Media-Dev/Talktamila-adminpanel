@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Image, { type StaticImageData } from "next/image";
 import {
   X,
@@ -24,11 +24,16 @@ import {
   Star,
   Users,
   Globe,
+  Repeat,
+  AtSign,
+  Download,
 } from "lucide-react";
 import { storyService } from "@/services/Stories.service";
 import type { StoryActivityData, StorySlide, StoryUser, UserStoryGroup } from "@/types/Stories";
 import { formatTimeAgo } from "./Previewstories";
 import { ActivitySheet } from "./StoryActivity";
+import { useAuthuser } from "@/hooks/useAuthuser";
+import { saveStoryToDevice } from "@/lib/storyExporter";
 
 // ─── Progress Bars ───────────────────────────────────────────────────────────
 
@@ -73,6 +78,8 @@ export function ProgressBars({ slides, total, current, progress, onSeek }: Progr
 
 export interface StoryViewerProps {
   user: StoryUser;
+  initialSlideIndex?: number;
+  initialStoryId?: number;
   onNext: () => void;
   onPrev: () => void;
   onClose: () => void;
@@ -81,18 +88,25 @@ export interface StoryViewerProps {
   hasNext: boolean;
 }
 
-const sortSlidesAscending = (rawSlides?: StorySlide[]): StorySlide[] => {
-  return [...(rawSlides || [])].sort((a, b) => {
-    const dateA = new Date(a.created_at || 0).getTime();
-    const dateB = new Date(b.created_at || 0).getTime();
-    if (dateA !== dateB) return dateA - dateB;
-    return Number(a.id || 0) - Number(b.id || 0);
-  });
-};
+const sortSlidesAscending = (rawSlides?: StorySlide[]): StorySlide[] =>
+  [...(rawSlides || [])].sort((a, b) => (new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()) || (Number(a.id || 0) - Number(b.id || 0)));
 
+const resolveInitialSlideIndex = (
+  sorted: StorySlide[],
+  initialStoryId?: number,
+  initialSlideIndex?: number
+): number => {
+  if (initialStoryId) {
+    const idx = sorted.findIndex((s) => s.id === initialStoryId || s.story_id === initialStoryId);
+    if (idx >= 0) return idx;
+  }
+  return typeof initialSlideIndex === "number" && initialSlideIndex >= 0 && initialSlideIndex < sorted.length ? initialSlideIndex : 0;
+};
 
 export function StoryViewer({
   user,
+  initialSlideIndex,
+  initialStoryId,
   onNext,
   onPrev,
   onClose,
@@ -100,8 +114,11 @@ export function StoryViewer({
   hasPrev,
   hasNext,
 }: StoryViewerProps) {
-  const [slides, setSlides] = useState<StorySlide[]>(() => sortSlidesAscending(user.slides));
-  const [slideIndex, setSlideIndex] = useState(0);
+  const initialSorted = useMemo(() => sortSlidesAscending(user.slides), [user.slides]);
+  const [slides, setSlides] = useState<StorySlide[]>(initialSorted);
+  const [slideIndex, setSlideIndex] = useState<number>(() =>
+    resolveInitialSlideIndex(initialSorted, initialStoryId, initialSlideIndex)
+  );
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
@@ -117,6 +134,23 @@ export function StoryViewer({
   const [loadingActivity, setLoadingActivity] = useState(false);
   const [resolvedAudioUrl, setResolvedAudioUrl] = useState<string | null>(null);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+
+  // Download to device state
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveToast, setSaveToast] = useState<string | null>(null);
+
+  // Mention Modal State
+  const [showMentionModal, setShowMentionModal] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionResults, setMentionResults] = useState<import("@/types/Stories").MentionUserSearchItem[]>([]);
+  const [isMentionSearching, setIsMentionSearching] = useState(false);
+  const [selectedMentions, setSelectedMentions] = useState<import("@/types/Stories").MentionUserSearchItem[]>([]);
+  const [isSubmittingMention, setIsSubmittingMention] = useState(false);
+  const [mentionToast, setMentionToast] = useState<string | null>(null);
+
+  // Resharing State
+  const [isResharing, setIsResharing] = useState(false);
+  const [reshareToast, setReshareToast] = useState(false);
 
   // Reporting State
   const [showReportModal, setShowReportModal] = useState(false);
@@ -134,13 +168,37 @@ export function StoryViewer({
   useEffect(() => {
     const sorted = sortSlidesAscending(user.slides);
     setSlides(sorted);
-    setSlideIndex(0);
+    setSlideIndex(resolveInitialSlideIndex(sorted, initialStoryId, initialSlideIndex));
     setIsTypingReply(false);
     setReplyText("");
-  }, [user]);
+  }, [user, initialStoryId, initialSlideIndex]);
 
+
+  const { user: authUser } = useAuthuser();
+  const currentLoggedInUser = (authUser as any)?.user || authUser || null;
+  const currentUsername = (currentLoggedInUser?.username || "").toLowerCase().trim();
+  const currentUserId = currentLoggedInUser?.id || currentLoggedInUser?.user_id;
 
   const currentSlide = slides[slideIndex] || slides[0];
+
+  const canReshareThisSlide = useMemo(() => {
+    if (!currentSlide || user.is_my_story) return false;
+    if (currentSlide.can_reshare === true) return true;
+    if (currentSlide.mentions && Array.isArray(currentSlide.mentions) && currentSlide.mentions.length > 0) {
+      if (currentSlide.mentions.some((m) => 
+        (m.username && currentUsername && m.username.toLowerCase().trim() === currentUsername) ||
+        (m.mentioned_user_id && currentUserId && Number(m.mentioned_user_id) === Number(currentUserId))
+      )) {
+        return true;
+      }
+    }
+    const captionLower = (currentSlide.caption || "").toLowerCase();
+    if (currentUsername && (captionLower.includes(`@${currentUsername}`) || captionLower.includes(`@${currentUsername.replace(/\s+/g, '')}`))) {
+      return true;
+    }
+    return false;
+  }, [currentSlide, user.is_my_story, currentUsername, currentUserId]);
+
   const slideDuration = currentSlide?.duration ?? 5000;
   const totalSlides = slides.length;
 
@@ -413,6 +471,25 @@ export function StoryViewer({
     }
   };
 
+  const handleReshareStory = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!currentSlide || isResharing) return;
+    const storyIdToReshare = currentSlide.id || currentSlide.story_id;
+    if (!storyIdToReshare) return;
+
+    try {
+      setIsResharing(true);
+      await storyService.reshareStory(storyIdToReshare);
+      setReshareToast(true);
+      setTimeout(() => setReshareToast(false), 2500);
+    } catch (err: any) {
+      console.error("Reshare story failed:", err);
+      alert(err.message || "Failed to add story to your story.");
+    } finally {
+      setIsResharing(false);
+    }
+  };
+
   const handleOpenActivity = async () => {
     if (!currentSlide) return;
     setShowActivity(true);
@@ -500,6 +577,87 @@ export function StoryViewer({
     }
   };
 
+  // Save to device (download) handler
+  const handleSaveToDevice = async (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!currentSlide || isSaving) return;
+
+    setIsSaving(true);
+    setSaveToast("Preparing download...");
+
+    try {
+      const res = await saveStoryToDevice(
+        currentSlide,
+        effectiveAudioUrl,
+        (progressMsg) => {
+          if (progressMsg) setSaveToast(progressMsg);
+        }
+      );
+      setSaveToast(res.message);
+      setTimeout(() => setSaveToast(null), 3000);
+    } catch (err: any) {
+      console.error("Download failed:", err);
+      setSaveToast("Failed to save story.");
+      setTimeout(() => setSaveToast(null), 3000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Mention search handler
+  const handleMentionSearch = async (q: string) => {
+    setMentionQuery(q);
+    if (!q.trim()) {
+      setMentionResults([]);
+      return;
+    }
+    setIsMentionSearching(true);
+    try {
+      const results = await storyService.searchMentionUsers(q, 15);
+      setMentionResults(results);
+    } catch {
+      setMentionResults([]);
+    } finally {
+      setIsMentionSearching(false);
+    }
+  };
+
+  const handleToggleMentionUser = (u: import("@/types/Stories").MentionUserSearchItem) => {
+    setSelectedMentions((prev) => {
+      const exists = prev.some((m) => m.user_id === u.user_id);
+      if (exists) return prev.filter((m) => m.user_id !== u.user_id);
+      return [...prev, u];
+    });
+  };
+
+  const handleSubmitMentions = async () => {
+    if (!currentSlide || selectedMentions.length === 0 || isSubmittingMention) return;
+    const storyId = Number(currentSlide.story_id || currentSlide.id);
+    if (!storyId) return;
+
+    setIsSubmittingMention(true);
+    try {
+      for (const u of selectedMentions) {
+        await storyService.addMentionToStory(storyId, u.user_id);
+      }
+      const names = selectedMentions.map((u) => `@${u.username}`).join(", ");
+      setMentionToast(`Mentioned ${names} in your story!`);
+      setTimeout(() => {
+        setMentionToast(null);
+        setShowMentionModal(false);
+        setSelectedMentions([]);
+        setMentionQuery("");
+        setMentionResults([]);
+        setIsPaused(false);
+      }, 2000);
+    } catch (err: any) {
+      setMentionToast(err?.message || "Failed to mention users.");
+      setTimeout(() => setMentionToast(null), 2200);
+    } finally {
+      setIsSubmittingMention(false);
+    }
+  };
+
   if (!currentSlide) return null;
 
   const displayMusicTrack =
@@ -529,6 +687,30 @@ export function StoryViewer({
       <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-black/85 text-white border border-white/20 text-xs font-bold px-3.5 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150">
         <CheckCircle2 size={13} className="text-emerald-400 fill-emerald-400/20" />
         <span>Reply sent successfully!</span>
+      </div>
+    )}
+
+    {/* Reshare Toast Message */}
+    {reshareToast && (
+      <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-black/85 text-white border border-white/20 text-xs font-bold px-3.5 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150">
+        <Repeat size={13} className="text-emerald-400" />
+        <span>Added to your Story!</span>
+      </div>
+    )}
+
+    {/* Save / Download Toast */}
+    {saveToast && (
+      <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-black/85 text-white border border-white/20 text-xs font-bold px-3.5 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150">
+        <Download size={13} className="text-amber-400" />
+        <span>{saveToast}</span>
+      </div>
+    )}
+
+    {/* Mention Toast */}
+    {mentionToast && (
+      <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-black/85 text-white border border-white/20 text-xs font-bold px-3.5 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-150">
+        <AtSign size={13} className="text-blue-400" />
+        <span>{mentionToast}</span>
       </div>
     )}
 
@@ -574,6 +756,31 @@ export function StoryViewer({
         />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/80 via-black/30 to-transparent pointer-events-none" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
+      </div>
+    )}
+
+    {/* Story Mentions Overlay */}
+    {currentSlide.mentions && currentSlide.mentions.length > 0 && (
+      <div className="absolute inset-0 pointer-events-none z-20">
+        {currentSlide.mentions.map((m) => (
+          <div
+            key={m.id || m.username}
+            style={{
+              position: "absolute",
+              left: `${m.x != null ? m.x * 100 : 50}%`,
+              top: `${m.y != null ? m.y * 100 : 75}%`,
+              transform: "translate(-50%, -50%)",
+            }}
+            className="pointer-events-auto cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white font-bold text-xs border border-white/25 shadow-lg hover:scale-105 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              alert(`Mentioned @${m.username}`);
+            }}
+          >
+            <AtSign size={11} className="text-orange-400" />
+            <span>{m.username}</span>
+          </div>
+        ))}
       </div>
     )}
 
@@ -623,6 +830,14 @@ export function StoryViewer({
                 </span>
               ) : null}
             </div>
+            {currentSlide?.is_reshare && currentSlide?.original_username && (
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-[8.5px] text-white/95 font-semibold">
+                  <Repeat size={9} className="text-emerald-400" />
+                  <span>Re-shared from @{currentSlide.original_username}</span>
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -656,6 +871,24 @@ export function StoryViewer({
               >
                 {user.is_my_story ? (
                   <>
+                    {/* Mention Option */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowOptionsMenu(false);
+                        setIsPaused(true);
+                        setMentionQuery("");
+                        setMentionResults([]);
+                        setSelectedMentions([]);
+                        setShowMentionModal(true);
+                      }}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs text-blue-300 hover:bg-white/10 transition-colors text-left cursor-pointer border-b border-white/10"
+                    >
+                      <AtSign size={14} className="text-blue-400" />
+                      <span>Mention</span>
+                    </button>
+
                     {/* Delete Option */}
                     <button
                       type="button"
@@ -675,18 +908,22 @@ export function StoryViewer({
                       <span>Delete</span>
                     </button>
 
-                    {/* Save Option */}
+                    {/* Save to Device Option */}
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={(e) => {
                         setShowOptionsMenu(false);
-                        setIsPaused(false);
-                        alert("Story saved successfully!");
+                        handleSaveToDevice(e);
                       }}
-                      className="flex items-center gap-2.5 px-3 py-2 text-xs text-white/90 hover:bg-white/10 transition-colors text-left cursor-pointer"
+                      disabled={isSaving}
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs text-white/90 hover:bg-white/10 transition-colors text-left cursor-pointer disabled:opacity-50"
                     >
-                      <Bookmark size={14} />
-                      <span>Save</span>
+                      {isSaving ? (
+                        <Loader2 size={14} className="animate-spin text-amber-400" />
+                      ) : (
+                        <Download size={14} className="text-amber-400" />
+                      )}
+                      <span>{isSaving ? "Saving..." : "Save to Device"}</span>
                     </button>
                   </>
                 ) : (
@@ -707,6 +944,27 @@ export function StoryViewer({
                         <span className="truncate max-w-[120px]">
                           {currentSlide.musicTrack || displayMusicTrack}
                         </span>
+                      </button>
+                    )}
+
+                    {/* Re-share / Add to My Story Option (Only if current user was mentioned in this specific story) */}
+                    {canReshareThisSlide && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          setShowOptionsMenu(false);
+                          setIsPaused(false);
+                          handleReshareStory(e);
+                        }}
+                        disabled={isResharing}
+                        className="flex items-center gap-2.5 px-3 py-2 text-xs text-white/90 hover:bg-white/10 transition-colors text-left cursor-pointer"
+                      >
+                        {isResharing ? (
+                          <Loader2 size={14} className="animate-spin text-orange-400" />
+                        ) : (
+                          <Repeat size={14} className="text-emerald-400" />
+                        )}
+                        <span>Add to My Story</span>
                       </button>
                     )}
 
@@ -904,6 +1162,22 @@ export function StoryViewer({
             />
           </button>
 
+          {canReshareThisSlide && (
+            <button
+              type="button"
+              onClick={handleReshareStory}
+              disabled={isResharing}
+              className="w-9 h-9 rounded-full bg-emerald-500/40 border border-emerald-400/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-emerald-500/60 transition-all cursor-pointer hover:scale-110 active:scale-95 shadow-md shrink-0 disabled:opacity-50"
+              title="Add to My Story (You were mentioned)"
+            >
+              {isResharing ? (
+                <Loader2 size={15} className="animate-spin text-emerald-200" />
+              ) : (
+                <Repeat size={15} className="text-emerald-200 hover:text-white" />
+              )}
+            </button>
+          )}
+
           <button
             type="button"
             onClick={(e) => {
@@ -932,6 +1206,169 @@ export function StoryViewer({
         fallbackLikes={currentSlide.likes_count ?? 0}
         onClose={() => setShowActivity(false)}
       />
+    )}
+
+    {/* Mention Modal */}
+    {showMentionModal && (
+      <div
+        className="absolute inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-end animate-in fade-in duration-200"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onPointerUp={(e) => e.stopPropagation()}
+      >
+        <div className="bg-[#111114] border border-white/10 rounded-t-3xl p-4 text-white shadow-2xl max-h-[88%] flex flex-col">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
+            <div className="flex items-center gap-2 text-blue-300 font-bold text-sm">
+              <AtSign size={16} className="text-blue-400" />
+              <span>Tag People in Story</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowMentionModal(false);
+                setIsPaused(false);
+                setSelectedMentions([]);
+                setMentionQuery("");
+                setMentionResults([]);
+              }}
+              className="text-white/50 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* Success state */}
+          {mentionToast && (
+            <div className="py-6 flex flex-col items-center justify-center text-center space-y-2 text-blue-300">
+              <CheckCircle2 size={36} className="animate-bounce" />
+              <p className="font-semibold text-sm">{mentionToast}</p>
+            </div>
+          )}
+
+          {!mentionToast && (
+            <>
+              {/* Selected Mentions Chips */}
+              {selectedMentions.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3 px-0.5">
+                  {selectedMentions.map((u) => (
+                    <button
+                      key={u.user_id}
+                      type="button"
+                      onClick={() => handleToggleMentionUser(u)}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-600/30 border border-blue-400/40 text-blue-200 text-xs font-semibold hover:bg-blue-600/50 transition-all"
+                    >
+                      {u.avatar_url ? (
+                        <img src={u.avatar_url} alt={u.username} className="w-4 h-4 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full bg-blue-500/60 flex items-center justify-center text-[8px] font-bold">
+                          {u.username?.[0]?.toUpperCase()}
+                        </div>
+                      )}
+                      <span>@{u.username}</span>
+                      <X size={10} className="opacity-60" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Search Input */}
+              <div className="relative mb-3">
+                <div className="flex items-center gap-2 bg-white/8 border border-white/15 rounded-xl px-3 py-2.5 focus-within:border-blue-400/60 focus-within:bg-black/40 transition-all">
+                  <AtSign size={14} className="text-blue-400 shrink-0" />
+                  <input
+                    type="text"
+                    value={mentionQuery}
+                    autoFocus
+                    onChange={(e) => handleMentionSearch(e.target.value)}
+                    placeholder="Search people to mention..."
+                    className="flex-1 bg-transparent text-white placeholder:text-white/40 text-xs outline-none"
+                  />
+                  {isMentionSearching && <Loader2 size={13} className="animate-spin text-blue-400 shrink-0" />}
+                  {mentionQuery && !isMentionSearching && (
+                    <button
+                      type="button"
+                      onClick={() => { setMentionQuery(""); setMentionResults([]); }}
+                      className="text-white/40 hover:text-white transition-colors"
+                    >
+                      <X size={12} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Results List */}
+              <div className="flex-1 overflow-y-auto space-y-1 min-h-[80px] max-h-[200px] pr-0.5">
+                {mentionResults.length === 0 && !isMentionSearching && mentionQuery.trim() && (
+                  <div className="py-6 text-center text-white/40 text-xs">No users found for "@{mentionQuery}"</div>
+                )}
+                {mentionResults.length === 0 && !mentionQuery.trim() && (
+                  <div className="py-6 text-center text-white/30 text-xs flex flex-col items-center gap-1.5">
+                    <AtSign size={22} className="text-white/20" />
+                    <span>Type a username to search and tag people</span>
+                  </div>
+                )}
+                {mentionResults.map((u) => {
+                  const isSelected = selectedMentions.some((m) => m.user_id === u.user_id);
+                  return (
+                    <button
+                      key={u.user_id}
+                      type="button"
+                      onClick={() => handleToggleMentionUser(u)}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all text-left ${
+                        isSelected
+                          ? "bg-blue-600/25 border border-blue-400/40"
+                          : "hover:bg-white/8 border border-transparent"
+                      }`}
+                    >
+                      {/* Avatar */}
+                      <div className="relative shrink-0">
+                        {u.avatar_url ? (
+                          <img src={u.avatar_url} alt={u.username} className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold">
+                            {u.username?.[0]?.toUpperCase()}
+                          </div>
+                        )}
+                        {isSelected && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-blue-500 border border-[#111114] flex items-center justify-center">
+                            <CheckCircle2 size={9} className="text-white" />
+                          </div>
+                        )}
+                      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-white truncate">@{u.username}</p>
+                        {u.full_name && <p className="text-[10px] text-white/50 truncate">{u.full_name}</p>}
+                      </div>
+                      {/* Following badge */}
+                      {u.is_following && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium shrink-0">Following</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Submit Button */}
+              <div className="mt-3 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={handleSubmitMentions}
+                  disabled={selectedMentions.length === 0 || isSubmittingMention}
+                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-40 text-xs font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/25"
+                >
+                  {isSubmittingMention ? (
+                    <><Loader2 size={13} className="animate-spin" /><span>Tagging...</span></>
+                  ) : (
+                    <><AtSign size={13} /><span>Tag {selectedMentions.length > 0 ? `${selectedMentions.length} ${selectedMentions.length === 1 ? 'Person' : 'People'}` : 'People'}</span></>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     )}
 
     {/* Report Story Modal */}

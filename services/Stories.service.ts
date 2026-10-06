@@ -10,6 +10,8 @@ import {
   MultipleUploadResponse,
   AdminReportItem,
   ReportStoryResponse,
+  StoryReshareRequest,
+  MentionUserSearchItem,
 } from '@/types/Stories';
 import { apiClient } from './api-client';
 
@@ -33,6 +35,20 @@ export const storyService = {
     return apiClient<StoryResponse>('/api/v1/stories', {
       method: 'POST',
       body: JSON.stringify(payload),
+    });
+  },
+
+  // Mentions & Re-shares
+  reshareStory: async (storyId: number | string, payload?: StoryReshareRequest): Promise<StoryResponse> => {
+    return apiClient<StoryResponse>(`/api/v1/stories/${storyId}/reshare`, {
+      method: 'POST',
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  searchMentionUsers: async (query: string = '', limit: number = 10): Promise<MentionUserSearchItem[]> => {
+    return apiClient<MentionUserSearchItem[]>(`/api/v1/stories/mentions/search?q=${encodeURIComponent(query)}&limit=${limit}`, {
+      method: 'GET',
     });
   },
 
@@ -87,6 +103,38 @@ export const storyService = {
     return apiClient<void>(`/api/v1/stories/${storyId}`, {
       method: 'DELETE',
     });
+  },
+
+  // Save & Unsave
+  saveStory: async (storyId: number | string): Promise<{ success: boolean; message: string }> => {
+    return apiClient<{ success: boolean; message: string }>(`/api/v1/stories/${storyId}/save`, {
+      method: 'POST',
+    });
+  },
+
+  unsaveStory: async (storyId: number | string): Promise<{ success: boolean; message: string }> => {
+    return apiClient<{ success: boolean; message: string }>(`/api/v1/stories/${storyId}/save`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Add mention to a story (tags single or batch users in an existing story)
+  addMentionToStory: async (
+    storyId: number | string,
+    target: number | number[],
+    x?: number,
+    y?: number
+  ): Promise<{ success: boolean; message: string; added_count?: number }> => {
+    const payload = Array.isArray(target)
+      ? { user_ids: target, x: x ?? 0.5, y: y ?? 0.5 }
+      : { mentioned_user_id: target, x: x ?? 0.5, y: y ?? 0.5 };
+    return apiClient<{ success: boolean; message: string; added_count?: number }>(
+      `/api/v1/stories/${storyId}/mentions`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    );
   },
 
   // Reporting & Moderation

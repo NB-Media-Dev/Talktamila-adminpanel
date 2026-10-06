@@ -34,6 +34,38 @@ export interface MultipleUploadResponse {
   stories: StoryResponse[];
 }
 
+export interface StoryMentionItem {
+  id: number;
+  story_id: number;
+  mentioned_user_id: number;
+  created_by_user_id: number;
+  username: string;
+  avatar_url?: string | null;
+  full_name?: string | null;
+  x?: number;
+  y?: number;
+  created_at?: string;
+}
+
+export interface MentionUserSearchItem {
+  user_id: number;
+  username: string;
+  full_name?: string | null;
+  avatar_url?: string | null;
+  is_following?: boolean;
+}
+
+export interface StoryReshareRequest {
+  caption?: string;
+  audience?: string;
+  mentions?: Array<{
+    user_id?: number;
+    username?: string;
+    x?: number;
+    y?: number;
+  }>;
+}
+
 /**
  * Represents a single slide frame within a story group.
  * - `id`          : Globally unique per-slide identifier (used for per-slide view tracking).
@@ -62,6 +94,14 @@ export interface StorySlide {
   music_title?: string;
   music_artist?: string;
   audience?: string;
+  parent_story_id?: number | null;
+  original_story_id?: number | null;
+  original_owner_id?: number | null;
+  original_username?: string | null;
+  original_avatar_url?: string | null;
+  is_reshare?: boolean;
+  can_reshare?: boolean;
+  mentions?: StoryMentionItem[];
 }
 
 /**
@@ -109,6 +149,14 @@ export interface BackendSlide {
   music_start_time?: number;
   music_title?: string;
   music_artist?: string;
+  parent_story_id?: number | null;
+  original_story_id?: number | null;
+  original_owner_id?: number | null;
+  original_username?: string | null;
+  original_avatar_url?: string | null;
+  is_reshare?: boolean;
+  can_reshare?: boolean;
+  mentions?: StoryMentionItem[];
 }
 
 export interface StoryUser extends UserStoryGroup {
@@ -237,6 +285,8 @@ export interface AdminReportItem {
 export interface PreviewStoriesProps {
   stories: StoryUser[];
   initialUserIndex?: number;
+  initialSlideIndex?: number;
+  initialStoryId?: number;
   onClose: () => void;
   onStoryDeleted?: (storyId: number) => void;
 }

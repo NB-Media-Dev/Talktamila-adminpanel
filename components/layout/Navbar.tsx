@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { User, Wallet, Settings, LogOut, ChevronDown } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
@@ -14,18 +14,32 @@ import LogoutConfirmDialog from "./LogoutConfirmDialog";
 import Bellnotification from "../admin/dashboard/Bellnotification";
 import AnimatedLogo from "./AnimatedLogo";
 import MessageButton from "../messages/MessageButton";
+import { notificationService } from "@/services/notification.service";
 
 
 
 export default function Navbar() {
+  // ── 1. Context & Routing Hooks ─────────────────────────────────────────────
   const context = useContext(useContenthook);
   const router = useRouter();
   const pathname = usePathname();
-  const { isInfluencer, isFreelancer,} = useAuthRole();
-  const {user, setUser } = useAuthuser();
+  const { isInfluencer, isFreelancer } = useAuthRole();
+  const { user, setUser } = useAuthuser();
 
-  // The saved profile picture. With no photo, show the user's initials
-  // (the same default the profile page and stories use).
+  // ── 2. React State (Grouped & Ordered) ──────────────────────────────────────
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState<boolean>(false);
+
+  // ── 3. DOM & Instance Refs ──────────────────────────────────────────────────
+  const hydratedRef = useRef(false);
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  // ── 4. Derived Values ───────────────────────────────────────────────────────
   const authUser = user as any;
   const me = authUser?.user || authUser || null;
   const avatarSrc: string =
@@ -34,8 +48,58 @@ export default function Navbar() {
       getInitials({ firstName: me?.first_name, lastName: me?.last_name, username: me?.username })
     );
 
-  // After a page reload the auth context starts empty, so load the profile once.
-  const hydratedRef = useRef(false);
+  // ── 5. Stable Event Handlers & Callbacks ────────────────────────────────────
+  const handleUnreadCountChange = useCallback((count: number) => {
+    setHasUnreadNotifications(count > 0);
+  }, []);
+
+  const checkUnread = useCallback(async () => {
+    try {
+      const data = await notificationService.getNotifications(50);
+      const unread = data.some((n) => !n.is_read);
+      setHasUnreadNotifications(unread);
+    } catch {
+      // Ignore polling errors
+    }
+  }, []);
+
+  const handleLogoutConfirm = () => {
+    setIsLogoutOpen(false);
+    setUser(null);
+    authService.signOut();
+    router.replace("/login");
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
+  const getUserPath = () => {
+    if (isInfluencer) return "/influencer/profile";
+    if (isFreelancer) return "/freelancer/profile";
+    return "/admin/profile";
+  };
+
+  const getWalletPath = () => {
+    if (isInfluencer) return "/influencer";
+    if (isFreelancer) return "/freelancer";
+    return "/admin/reports";
+  };
+
+  const handleProfileNavigation = (path: string, tab?: string) => {
+    setIsProfileOpen(false);
+    if (context) {
+      context.setActiveTab(tab || "home");
+      context.setHandlestate(false);
+      context.setAnalyticsState(false);
+    }
+    if (path && path !== pathname) {
+      return router.push(path);
+    }
+  };
+
+  // ── 6. Side Effects (Lifecycle Hooks) ───────────────────────────────────────
+  // Profile hydration on fresh page load
   useEffect(() => {
     if (user || hydratedRef.current) return;
     hydratedRef.current = true;
@@ -45,36 +109,16 @@ export default function Navbar() {
       .catch(() => {});
   }, [user, setUser]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const renderAvatar = (_sizes?: string) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={avatarSrc}
-      alt="User Profile"
-      className="absolute inset-0 w-full h-full object-cover"
-    />
-  );
+  // Periodic polling for notifications
+  useEffect(() => {
+    checkUnread();
+    const interval = setInterval(checkUnread, 10000);
+    return () => clearInterval(interval);
+  }, [checkUnread]);
 
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
-  const [isLogoutOpen, setIsLogoutOpen] = useState<boolean>(false);
-
-  const handleLogoutConfirm = () => {
-    setIsLogoutOpen(false);
-    setUser(null);
-    authService.signOut();
-    router.replace("/login");
-  };
-
-  const mobileDropdownRef = useRef<HTMLDivElement>(null);
-  const desktopDropdownRef = useRef<HTMLDivElement>(null);
-  const notificationRef = useRef<HTMLDivElement>(null);
-
-  
+  // Click outside to close dropdowns and popups
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // Close Profile Dropdowns if clicked outside
       if (
         mobileDropdownRef.current &&
         !mobileDropdownRef.current.contains(event.target as Node) &&
@@ -84,7 +128,6 @@ export default function Navbar() {
         setIsProfileOpen(false);
       }
 
-      // Close Notification Popup if clicked outside
       if (
         notificationRef.current &&
         !notificationRef.current.contains(event.target as Node)
@@ -98,47 +141,18 @@ export default function Navbar() {
     };
   }, []);
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  };
+  // ── 7. Render Helper Functions ──────────────────────────────────────────────
+  const renderAvatar = (_sizes?: string) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={avatarSrc}
+      alt="User Profile"
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+  );
 
-  const handleProfileNavigation = (path: string, tab?: string) => {
-    setIsProfileOpen(false);
-    if (context) {
-      context.setActiveTab(tab || 'home');
-      context.setHandlestate(false);
-      context.setAnalyticsState(false);
-    }
-    if (path && path !== pathname) {
-      return router.push(path);
-    }
-  };
-
-  const getUserPath = () => {
-    if (isInfluencer) {
-      return '/influencer/profile';
-    } else if (isFreelancer) {
-      return '/freelancer/profile';
-    } else {
-      return '/admin/profile';
-    }
-  };
-
-  
-  const getWalletPath = () => {
-    if (isInfluencer) {
-      return '/influencer';
-    } else if (isFreelancer) {
-      return '/freelancer';
-    } else {
-      return '/admin/reports';
-    }
-  };
-
-  
   const renderDropdownMenu = () => (
     <div className="absolute right-0 top-full mt-2 w-56 sm:w-60 bg-white rounded-2xl shadow-xl border border-orange-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-
       <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FDEEE2]/60 mb-1 border border-orange-100/40">
         <div className="w-9 h-9 rounded-full overflow-hidden relative border border-[#FF6B35]/30 shrink-0">
           {renderAvatar("36px")}
@@ -238,12 +252,15 @@ export default function Navbar() {
                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="w-4 h-4 xs:w-[18px] xs:h-[18px] sm:w-[19px] sm:h-[19px]">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                 </svg>
-                <span className="absolute top-1 right-1 xs:top-1.5 xs:right-1.5 w-1.5 h-1.5 bg-[#FF6B35] rounded-full"></span>
+                {hasUnreadNotifications && (
+                  <span className="absolute top-1 right-1 xs:top-1.5 xs:right-1.5 w-2 h-2 bg-[#FF6B35] rounded-full ring-2 ring-white animate-in zoom-in-50 duration-150"></span>
+                )}
               </button>
 
               <Bellnotification 
                 isOpen={isNotificationOpen} 
-                onClose={() => setIsNotificationOpen(false)} 
+                onClose={() => setIsNotificationOpen(false)}
+                onUnreadCountChange={handleUnreadCountChange}
               />
             </div>
 
@@ -316,12 +333,15 @@ export default function Navbar() {
               <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
               </svg>
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-brand rounded-full"></span>
+              {hasUnreadNotifications && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#FF6B35] rounded-full ring-2 ring-white animate-in zoom-in-50 duration-150"></span>
+              )}
             </button>
 
             <Bellnotification 
               isOpen={isNotificationOpen} 
-              onClose={() => setIsNotificationOpen(false)} 
+              onClose={() => setIsNotificationOpen(false)}
+              onUnreadCountChange={handleUnreadCountChange}
             />
           </div>
 

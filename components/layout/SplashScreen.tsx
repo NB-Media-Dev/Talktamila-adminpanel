@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import AnimatedLogo from "./AnimatedLogo";
 
-const SHOW_MS = 1800; // how long the logo stays before fading
-const FADE_MS = 600; // must match the .tt-splash transition
+const SHOW_MS = 1000; // how long the logo stays before fading
+const FADE_MS = 400; // must match the .tt-splash transition
 
 /**
  * Full-screen Talk Tamila logo shown on every fresh page load - before the login page

@@ -11,12 +11,14 @@
   justify-content: center;
   gap: 1.75rem;
   background: radial-gradient(circle at 50% 42%, #fff7f0 0%, #fdeee2 55%, #fbe3d1 100%);
-  transition: opacity 0.55s ease, transform 0.55s ease;
+  transition: opacity 0.55s ease, transform 0.55s ease, visibility 0.55s ease;
+  animation: tt-splash-auto-fade 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 .tt-splash-out {
-  opacity: 0;
-  transform: scale(1.04);
-  pointer-events: none;
+  opacity: 0 !important;
+  transform: scale(1.04) !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 .tt-splash-logo {
   animation: tt-breathe 1.8s ease-in-out 1s infinite;
@@ -41,6 +43,25 @@
 @keyframes tt-dot-pop { from { opacity: 0; transform: scale(0) rotate(-90deg); } to { opacity: 1; transform: none; } }
 @keyframes tt-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 @keyframes tt-bounce-dot { 0%, 80%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-9px); opacity: 1; } }
+@keyframes tt-splash-auto-fade {
+  0%, 70% {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+  }
+  95% {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+    visibility: hidden;
+  }
+}
 
 /* ---- Click animations (one is picked at random) ---- */
 .tt-logo { display: inline-flex; position: relative; will-change: transform; }

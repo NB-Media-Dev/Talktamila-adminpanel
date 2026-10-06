@@ -5,7 +5,13 @@ const nextConfig: NextConfig = {
 
   // Lets your phone / other devices on the Wi-Fi receive hot reload (HMR).
   // Add every LAN IP you open the app from (check "Network:" in the terminal).
-  allowedDevOrigins: ["192.168.0.45", "localhost", "127.0.0.1"],
+  allowedDevOrigins: [
+    "192.168.0.72",
+    "192.168.0.45",
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+  ],
 
   images: {
     formats: ["image/avif", "image/webp"],

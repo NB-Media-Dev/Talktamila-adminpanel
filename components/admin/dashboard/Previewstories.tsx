@@ -54,6 +54,9 @@ interface PreviewStoriesProps {
   stories: StoryUser[];
   /** Index of the user whose story opens first */
   initialUserIndex?: number;
+  /** Specific slide index or story ID to open first */
+  initialSlideIndex?: number;
+  initialStoryId?: number;
   onClose: () => void;
   onStoryDeleted?: (storyId: number) => void;
 }
@@ -63,6 +66,8 @@ interface PreviewStoriesProps {
 export default function PreviewStories({
   stories,
   initialUserIndex = 0,
+  initialSlideIndex,
+  initialStoryId,
   onClose,
   onStoryDeleted,
 }: PreviewStoriesProps) {
@@ -132,6 +137,8 @@ export default function PreviewStories({
         <StoryViewer
           key={userIndex}
           user={currentUser}
+          initialStoryId={userIndex === initialUserIndex ? initialStoryId : undefined}
+          initialSlideIndex={userIndex === initialUserIndex ? initialSlideIndex : 0}
           onNext={goNext}
           onPrev={goPrev}
           onClose={onClose}
