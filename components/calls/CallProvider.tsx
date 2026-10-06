@@ -14,20 +14,6 @@ import { getBaseUrl } from "@/services/api-client";
 import { getAuthToken } from "@/lib/cookies";
 import CallOverlay from "./CallOverlay";
 
-/* ------------------------------------------------------------------ *
- * Voice / video calls.
- *
- * Mounted once in each role layout (admin / influencer / freelancer) so an
- * incoming call can ring on any page. It keeps one WebSocket open to the
- * backend (/api/v1/calls/ws) for signaling, and uses the browser's WebRTC for
- * the actual audio/video, which flows directly between the two people.
- *
- * Optional: set NEXT_PUBLIC_ICE_SERVERS in .env.local to a JSON array of
- * STUN/TURN servers. Without it, free public Google STUN servers are used
- * (fine on the same Wi-Fi; add a TURN server for calls across networks), e.g.
- *   NEXT_PUBLIC_ICE_SERVERS=[{"urls":"stun:stun.l.google.com:19302"},
- *     {"urls":"turn:your.turn.host:3478","username":"user","credential":"pass"}]
- * ------------------------------------------------------------------ */
 
 export type CallMedia = "audio" | "video";
 
@@ -41,26 +27,20 @@ export interface CallPeer {
 export type CallPhase = "starting" | "ringing" | "incoming" | "connecting" | "active" | "ended";
 
 export interface CallState {
-  /** Server call id. null until the server confirms it is ringing. */
   id: string | null;
   peer: CallPeer;
   media: CallMedia;
   direction: "out" | "in";
   phase: CallPhase;
-  /** When the audio/video connected (ms since epoch), for the timer. */
   startedAt: number | null;
   muted: boolean;
   camOff: boolean;
-  /** Short reason shown briefly when the call ends (e.g. "No answer"). */
   endText: string | null;
 }
 
 interface CallContextValue {
-  /** true while the signaling socket is connected. */
   ready: boolean;
-  /** true while a call is ringing or in progress. */
   inCall: boolean;
-  /** Returns an error message to show the user, or null when the call started. */
   startCall: (peer: CallPeer, media: CallMedia) => Promise<string | null>;
 }
 
@@ -173,7 +153,6 @@ function createRinger(): Ringer {
         tick();
         timer = setInterval(tick, kind === "in" ? 2200 : 3000);
       } catch {
-        /* the browser blocked audio until the user interacts - the visual ring still shows */
       }
     },
     stop,
@@ -254,7 +233,6 @@ export function CallProvider({ children }: { children: ReactNode }) {
     setRemoteStream(null);
   }, []);
 
-  /** Close everything. With text, the overlay shows it for a moment; without, it closes right away. */
   const finish = useCallback(
     (text: string | null) => {
       teardownMedia();
@@ -326,7 +304,6 @@ export function CallProvider({ children }: { children: ReactNode }) {
         switch (m.type) {
           case "ringing": {
             if (!cur || cur.direction !== "out" || cur.phase === "ended" || !callId) {
-              // We hung up before the server confirmed - cancel the ringing call.
               if (callId) send({ type: "hangup", call_id: callId });
               break;
             }
@@ -448,7 +425,6 @@ export function CallProvider({ children }: { children: ReactNode }) {
     latest.current = { handle, finish };
   });
 
-  // The signaling socket: connects on mount, reconnects with backoff, keeps itself alive.
   useEffect(() => {
     let stopped = false;
     let retry = 0;
@@ -500,7 +476,6 @@ export function CallProvider({ children }: { children: ReactNode }) {
         setConnected(false);
         if (callRef.current && callRef.current.phase !== "ended") latest.current.finish("Connection lost");
         if (stopped) return;
-        // Code 1000 = another tab took over this account's call socket; it reconnects when this tab is used again.
         if (ev.code === 1000) return;
         const delay = ev.code === 4401 ? 30000 : Math.min(15000, 1000 * 2 ** retry++);
         retryTimer = setTimeout(connect, delay);

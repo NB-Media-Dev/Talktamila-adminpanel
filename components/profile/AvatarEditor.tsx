@@ -5,9 +5,7 @@ import { createPortal } from "react-dom";
 import { Loader2, RotateCcw, RotateCw, X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/Button";
 
-/** On-screen crop box (px). The picture is saved as a square; apps show it in a circle. */
 const STAGE = 260;
-/** Saved size (px) - matches the 256px avatars the app already stored. */
 const OUTPUT = 256;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
@@ -33,10 +31,6 @@ const LOOKS: Look[] = [
   { name: "Noir", brightness: 0.95, contrast: 1.35, saturate: 1, sepia: 0, gray: 1, tint: [1, 1, 1] },
 ];
 
-/**
- * Applies a filter on the pixels themselves (not ctx.filter), so what you see in the
- * editor is exactly what gets saved - including on Safari, which ignores ctx.filter.
- */
 function applyLook(ctx: CanvasRenderingContext2D, px: number, look: Look, brightness: number, contrast: number) {
   const b = look.brightness * brightness;
   const c = look.contrast * contrast;
@@ -80,18 +74,11 @@ function applyLook(ctx: CanvasRenderingContext2D, px: number, look: Look, bright
 }
 
 type Props = {
-  /** The photo the person picked. */
   file: File;
   onCancel: () => void;
-  /** Receives the finished square JPEG. */
   onSave: (file: File) => void | Promise<void>;
 };
 
-/**
- * Profile photo editor: drag to reposition, zoom (slider / scroll / pinch), rotate,
- * filters, brightness and contrast - with live previews of the round photo at the
- * sizes other people will see it.
- */
 export default function AvatarEditor({ file, onCancel, onSave }: Props) {
   const stageRef = useRef<HTMLCanvasElement>(null);
   const previewRefs = useRef<(HTMLCanvasElement | null)[]>([]);
@@ -132,7 +119,6 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
     };
   }, [file]);
 
-  // Lock page scroll and close on Escape while the editor is open.
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -146,7 +132,6 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
     };
   }, [onCancel, saving]);
 
-  /** Keeps the photo covering the whole crop box (no empty edges). */
   const clamp = useCallback((x: number, y: number, z: number, rot: number) => {
     const img = imgRef.current;
     if (!img) return { x, y };
@@ -162,7 +147,6 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
     };
   }, []);
 
-  /** Paints the current crop + look onto a canvas of `px` x `px`. */
   const draw = useCallback(
     (canvas: HTMLCanvasElement | null, px: number) => {
       const img = imgRef.current;
@@ -193,7 +177,6 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
     [zoom, rotation, offset, lookIdx, brightness, contrast]
   );
 
-  // Redraw the big crop area and the small previews whenever anything changes.
   useEffect(() => {
     if (!ready) return;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -262,7 +245,6 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
   const onPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
     pointers.current.delete(e.pointerId);
     pinchStart.current = null;
-    // Going from two fingers to one: continue dragging from where that finger is.
     const remaining = Array.from(pointers.current.values())[0];
     dragStart.current = remaining ? { x: remaining.x, y: remaining.y, ox: offset.x, oy: offset.y } : null;
     try {
@@ -319,7 +301,6 @@ export default function AvatarEditor({ file, onCancel, onSave }: Props) {
         </div>
 
         <div className="px-5 pb-5">
-          {/* Crop area: drag / pinch / scroll. The dimmed corners fall outside the round photo. */}
           <div className="flex justify-center mt-2">
             <div
               className="relative touch-none select-none cursor-grab active:cursor-grabbing rounded-2xl overflow-hidden bg-[#FDEEE2]"

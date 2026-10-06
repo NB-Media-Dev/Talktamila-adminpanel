@@ -3,12 +3,6 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
-/**
- * Shown at the bottom of a chat that is still a message request (the other person is
- * not a mutual follow and you have not accepted yet). Same idea as Instagram:
- * you can read the message, but nothing is sent back and they can't see that you
- * looked until you tap Accept.
- */
 export default function RequestBar({
   name,
   onAccept,

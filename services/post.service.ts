@@ -32,13 +32,11 @@ export const postService = {
     });
   },
 
-  /** media_url from the API is relative ("/api/v1/posts/5/media"); make it absolute. */
   mediaSrc(url: string): string {
     return /^https?:\/\//i.test(url) ? url : `${getBaseUrl()}${url}`;
   },
 };
 
-/** Tell every mounted feed to reload (called after a post is created). */
 export function notifyPostsChanged(): void {
   if (typeof window !== "undefined") window.dispatchEvent(new Event(CHANGED_EVENT));
 }

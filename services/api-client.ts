@@ -60,8 +60,6 @@ export async function apiClient<T>(
   }
 
   if (!response.ok) {
-    // The backend no longer falls back to a default user, so an expired/invalid
-    // token now surfaces as 401. Drop the stale cookie and send the user to login.
     const isPublicAuthCall = /\/auth\/(login|signin|register|signup|refresh|forgot-password|verify-otp|reset-password|check-availability)/.test(endpoint);
     if (response.status === 401 && !isPublicAuthCall && typeof window !== 'undefined') {
       clearAuthToken();

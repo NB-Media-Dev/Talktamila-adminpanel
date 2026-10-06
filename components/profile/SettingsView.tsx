@@ -117,7 +117,6 @@ export default function SettingsView() {
 
   const [pendingIds, setPendingIds] = useState<Set<number>>(new Set());
 
-  // "Add close friends" picker — lists people you follow who aren't close friends yet
   const [showPicker, setShowPicker] = useState(false);
   const [following, setFollowing] = useState<SettingsPerson[] | null>(null);
   const [isPickerLoading, setIsPickerLoading] = useState(false);

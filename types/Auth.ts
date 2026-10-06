@@ -161,11 +161,8 @@ export interface PublicProfileData {
   followers_count: number;
   following_count: number;
   posts_count: number;
-  /** I follow them. */
   is_following: boolean;
-  /** They follow me. */
   follows_you: boolean;
-  /** This is my own profile. */
   is_me: boolean;
   joined_at: string | null;
 }

@@ -37,11 +37,6 @@ function joinedLabel(iso: string | null) {
   return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
-/**
- * What you see when you open someone else's profile (Instagram-style):
- * avatar, username, Posts / Followers / Following, Follow + Message buttons,
- * bio, and a Posts / About tab area. Uses the same card look as your own profile.
- */
 export default function PublicProfileView({ username }: { username: string }) {
   const router = useRouter();
   const messagesBase = useMessagesBase();
@@ -59,8 +54,6 @@ export default function PublicProfileView({ username }: { username: string }) {
   const [copied, setCopied] = useState(false);
   const busyRef = useRef(false);
 
-  // Load when the page opens. (The route page gives this component key={username},
-  // so opening another person from here starts fresh with a new load.)
   useEffect(() => {
     let cancelled = false;
     userService
@@ -79,7 +72,6 @@ export default function PublicProfileView({ username }: { username: string }) {
     };
   }, [username]);
 
-  // Quiet refresh (no spinner) - keeps counts and the Follow button current.
   const refresh = useCallback(async () => {
     if (busyRef.current) return;
     try {
@@ -102,7 +94,6 @@ export default function PublicProfileView({ username }: { username: string }) {
     };
   }, [refresh]);
 
-  // Opening your own name (e.g. from a followers list) goes to your own profile page.
   useEffect(() => {
     if (profile?.is_me) router.replace(`${base}/profile`);
   }, [profile?.is_me, base, router]);

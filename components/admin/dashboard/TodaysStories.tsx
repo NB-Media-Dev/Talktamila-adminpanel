@@ -42,7 +42,6 @@ function StoryAvatar({
         ? "bg-gradient-to-tr from-[#FF4B2B] via-[#FF416C] to-[#FF6B35]"
         : "bg-gradient-to-tr from-gray-200 via-gray-300 to-gray-200";
     }
-    // If active story has no unseen slides (fully viewed), make it grey
     if (hasActiveStory && !hasUnseen) {
       return "bg-gradient-to-tr from-gray-300 via-gray-400 to-gray-300";
     }
@@ -203,7 +202,6 @@ export default function TodayStories() {
   };
   const handleTouchEnd = () => setTouchStart(null);
 
-  // Your own circle: your photo, otherwise your initials (same as navbar and profile).
   const me = currentUser as {
     avatar_url?: string | null;
     first_name?: string;

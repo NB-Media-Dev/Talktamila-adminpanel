@@ -38,18 +38,12 @@ export const storyService = {
 
   // Views & Likes
 
-  /**
-   * Records a view for an individual slide frame.
-   * POSTs to: POST /api/v1/stories/${slideId}/view
-   * @param slideId - The unique `id` of the StorySlide being viewed.
-   */
   recordSlideView: async (slideId: number): Promise<{ success: boolean; views_count: number }> => {
     return apiClient<{ success: boolean; views_count: number }>(`/api/v1/stories/${slideId}/view`, {
       method: 'POST',
     });
   },
 
-  /** @deprecated Use recordSlideView(slide.id) for per-slide tracking. */
   recordView: async (storyId: number | string): Promise<{ success: boolean; views_count: number }> => {
     return apiClient<{ success: boolean; views_count: number }>(`/api/v1/stories/${storyId}/view`, {
       method: 'POST',

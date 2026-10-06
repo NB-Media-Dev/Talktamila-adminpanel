@@ -27,7 +27,6 @@ function timeAgo(iso: string): string {
   return new Date(then).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 }
 
-/** Text with #hashtags in the brand colour. Newlines are kept. */
 function RichText({ text }: { text: string }) {
   const parts = text.split(/(#[\p{L}\p{M}\p{N}_]+)/gu);
   return (

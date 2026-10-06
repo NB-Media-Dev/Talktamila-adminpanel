@@ -50,9 +50,7 @@ export function formatTimeAgo(timestamp?: string | null, fallback?: string): str
 }
 
 interface PreviewStoriesProps {
-  /** All story-users to display */
   stories: StoryUser[];
-  /** Index of the user whose story opens first */
   initialUserIndex?: number;
   onClose: () => void;
   onStoryDeleted?: (storyId: number) => void;

@@ -1,19 +1,11 @@
 import { apiClient, getBaseUrl } from "@/services/api-client";
 
-/**
- * Instagram-style message notifications (Web Push).
- *
- * Flow: the person taps "Turn on" -> the browser asks permission -> we register
- * /sw.js -> the browser gives us a private address -> we send it to the backend.
- * From then on the backend pushes a notification whenever a chat message arrives.
- */
 
 const ENDPOINT_KEY = "tt_push_endpoint";
 const DISMISSED_KEY = "tt_push_prompt_dismissed_at";
 const DISABLED_KEY = "tt_push_disabled_by_user"; // set when the person switches notifications off in Settings
 const ASK_AGAIN_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 
-/** This browser's own notification address (sent with every message so we are not notified of our own messages). */
 export function getStoredPushEndpoint(): string | null {
   if (typeof window === "undefined") return null;
   try {
@@ -56,13 +48,11 @@ async function fetchServerKey(): Promise<{ enabled: boolean; public_key: string 
   });
 }
 
-/** Registers this browser with the backend for the person who is logged in right now. */
 async function registerThisBrowser(publicKey: string): Promise<void> {
   await navigator.serviceWorker.register("/sw.js");
   const reg = await navigator.serviceWorker.ready;
 
   let sub = await reg.pushManager.getSubscription();
-  // The server keys changed since this browser subscribed -> start fresh.
   if (sub && bytesToKey(sub.options.applicationServerKey) !== publicKey) {
     await sub.unsubscribe();
     sub = null;
@@ -86,13 +76,9 @@ async function registerThisBrowser(publicKey: string): Promise<void> {
   }
 }
 
-/**
- * Call after login / on every page load. If the person already allowed notifications,
- * this keeps this browser attached to whoever is logged in now. Never asks anything.
- */
 export async function syncPushIfAllowed(): Promise<void> {
   if (!pushSupported() || Notification.permission !== "granted") return;
-  if (isDisabledByUser()) return; // they switched it off in Settings: do not quietly turn it back on
+  if (isDisabledByUser()) return;
   try {
     const server = await fetchServerKey();
     if (server.enabled && server.public_key) await registerThisBrowser(server.public_key);
@@ -101,7 +87,6 @@ export async function syncPushIfAllowed(): Promise<void> {
   }
 }
 
-/** Only ask when it can work: supported, not decided yet, switched on in the backend. */
 export async function shouldShowPrompt(): Promise<boolean> {
   if (!pushSupported() || Notification.permission !== "default") return false;
   try {
@@ -125,7 +110,6 @@ export function dismissPrompt(): void {
   }
 }
 
-/** The "Turn on" button. Must run from a tap, because browsers require that. */
 export async function enablePush(): Promise<EnableResult> {
   if (!pushSupported()) return "unsupported";
   try {
@@ -162,7 +146,6 @@ async function currentSubscription(): Promise<PushSubscription | null> {
   return reg ? await reg.pushManager.getSubscription() : null;
 }
 
-/** What the Settings switch should show for THIS browser. */
 export async function getPushStatus(): Promise<PushStatus> {
   if (!pushSupported()) return "unsupported";
   if (Notification.permission === "denied") return "blocked";
@@ -185,7 +168,6 @@ export async function getPushStatus(): Promise<PushStatus> {
   }
 }
 
-/** The Settings switch turned OFF: forget this browser on the server and in the browser. */
 export async function disablePush(): Promise<boolean> {
   try {
     localStorage.setItem(DISABLED_KEY, "1");
@@ -201,7 +183,6 @@ export async function disablePush(): Promise<boolean> {
           body: JSON.stringify({ endpoint: sub.endpoint }),
         });
       } catch {
-        /* the server forgets a dead address on its own the next time it tries it */
       }
       await sub.unsubscribe();
     }
@@ -217,10 +198,6 @@ export async function disablePush(): Promise<boolean> {
   }
 }
 
-/**
- * Logout: tell the backend to stop sending this person's messages to this browser.
- * Uses sendBeacon so it still goes out while the page is being left.
- */
 export function forgetPushOnLogout(): void {
   if (typeof window === "undefined") return;
   let endpoint: string | null = null;
@@ -235,7 +212,6 @@ export function forgetPushOnLogout(): void {
   const url = `${getBaseUrl()}/api/v1/messages/push/unsubscribe`;
   const body = JSON.stringify({ endpoint });
   try {
-    // text/plain keeps this a "simple" request, so the browser sends it with no pre-check.
     const queued = navigator.sendBeacon?.(url, new Blob([body], { type: "text/plain" }));
     if (!queued) void fetch(url, { method: "POST", body, keepalive: true }).catch(() => {});
   } catch {
