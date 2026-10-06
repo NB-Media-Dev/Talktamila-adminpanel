@@ -141,7 +141,7 @@ export default function Navbar() {
     } else if (isFreelancer) {
       return '/freelancer';
     } else {
-      return '/admin/reports';
+      return '/admin/wallet';
     }
   };
 
