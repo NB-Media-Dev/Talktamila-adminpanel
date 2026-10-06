@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import type { EmojiClickData } from "emoji-picker-react";
 import { Image as ImageIcon, Loader2, Plus, Search, Video, X } from "lucide-react";
-import { notifyPostsChanged, postService } from "@/services/post.service";
+import type { Thought, ThoughtInput } from "@/lib/thoughtStore";
 import { useAuthuser } from "@/hooks/useAuthuser";
 import { getInitials, initialsAvatar } from "@/lib/avatar";
 import { POST_LIMITS, type PostType } from "@/types/Posts";
@@ -181,10 +181,14 @@ function GifPanel({ onPick }: { onPick: (url: string) => void }) {
 interface PostComposerProps {
   mode: ComposerMode;
   openEmoji?: boolean;
+  /** the thought already held in the card, to edit it */
+  initial?: Thought | null;
+  /** called with what the user wrote when they press Post (nothing is sent to the server) */
+  onSubmit: (thought: ThoughtInput) => void;
   onClose: () => void;
 }
 
-export default function PostComposer({ mode: initialMode, openEmoji = false, onClose }: PostComposerProps) {
+export default function PostComposer({ mode: initialMode, openEmoji = false, initial = null, onSubmit, onClose }: PostComposerProps) {
   const { user } = useAuthuser();
   const me = ((user as unknown as { user?: AuthLike } | null)?.user ?? user) as AuthLike | null;
   const displayName =
@@ -193,20 +197,20 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
     me?.avatar_url ||
     initialsAvatar(getInitials({ firstName: me?.first_name, lastName: me?.last_name, username: me?.username }));
 
-  const [mode, setMode] = useState<ComposerMode>(initialMode);
-  const [text, setText] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  // Opened from the image / video / poll icon -> start that kind; opened on the held thought -> edit it.
+  const editing = initial && (initial.kind === initialMode || initialMode === "text") ? initial : null;
+  const [mode, setMode] = useState<ComposerMode>(editing ? editing.kind : initialMode);
+  const [text, setText] = useState(editing?.text ?? "");
+  const [file, setFile] = useState<File | null>(editing?.file ?? null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [gifUrl, setGifUrl] = useState("");
-  const [options, setOptions] = useState<string[]>(["", ""]);
+  const [gifUrl, setGifUrl] = useState(editing?.gifUrl ?? "");
+  const [options, setOptions] = useState<string[]>(editing?.pollOptions?.length ? editing.pollOptions : ["", ""]);
   const [panel, setPanel] = useState<"emoji" | "gif" | null>(openEmoji ? "emoji" : null);
-  const [posting, setPosting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const textRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const urlRef = useRef<string | null>(null);
-  const postingRef = useRef(false);
 
   const canGif = mode === "text" || mode === "gif";
   const trimmed = text.trim();
@@ -227,9 +231,7 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
     }
   })();
 
-  const requestClose = () => {
-    if (!postingRef.current) onClose();
-  };
+  const requestClose = () => onClose();
 
   // Close on Escape, stop the page behind from scrolling, free the preview URL on exit.
   useEffect(() => {
@@ -237,6 +239,11 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
       if (e.key === "Escape") requestClose();
     };
     document.addEventListener("keydown", onKey);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      urlRef.current = url;
+      setPreviewUrl(url);
+    }
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -307,27 +314,16 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
     setMode("text");
   };
 
-  const submit = async () => {
-    if (!canPost || postingRef.current) return;
-    postingRef.current = true;
-    setPosting(true);
-    setError(null);
-    try {
-      await postService.create({
-        postType: mode,
-        content: trimmed || undefined,
-        media: file ?? undefined,
-        gifUrl: mode === "gif" ? gifUrl : undefined,
-        pollOptions: mode === "poll" ? cleanOptions : undefined,
-      });
-      notifyPostsChanged();
-      postingRef.current = false;
-      onClose();
-    } catch (e) {
-      postingRef.current = false;
-      setPosting(false);
-      setError(e instanceof Error ? e.message : "Could not post. Please try again.");
-    }
+  const submit = () => {
+    if (!canPost) return;
+    onSubmit({
+      kind: mode,
+      text: trimmed,
+      file: file ?? undefined,
+      gifUrl: mode === "gif" ? gifUrl : undefined,
+      pollOptions: mode === "poll" ? cleanOptions : undefined,
+    });
+    onClose();
   };
 
   const setOption = (i: number, value: string) =>
@@ -352,7 +348,6 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
           <button
             type="button"
             onClick={requestClose}
-            disabled={posting}
             className="w-8 h-8 rounded-full bg-[#FFF6ED] text-[#E05D24] flex items-center justify-center hover:bg-[#FFEFE0] cursor-pointer disabled:opacity-50"
             aria-label="Close"
           >
@@ -400,7 +395,6 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
                   <button
                     type="button"
                     onClick={clearFile}
-                    disabled={posting}
                     className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer"
                     aria-label="Remove file"
                   >
@@ -433,7 +427,6 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
               <button
                 type="button"
                 onClick={removeGif}
-                disabled={posting}
                 className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 cursor-pointer"
                 aria-label="Remove GIF"
               >
@@ -562,10 +555,10 @@ export default function PostComposer({ mode: initialMode, openEmoji = false, onC
             <button
               type="button"
               onClick={submit}
-              disabled={!canPost || posting}
+              disabled={!canPost}
               className="min-w-[84px] flex items-center justify-center gap-2 px-5 py-2 rounded-full text-[14px] font-bold text-white bg-[linear-gradient(135deg,#E6703A,#FFA663)] shadow-[0_4px_12px_rgba(240,90,36,0.35)] hover:brightness-110 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
             >
-              {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post"}
+              Post
             </button>
           </div>
         </div>
