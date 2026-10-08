@@ -1,5 +1,5 @@
 "use client"
-import { useContext, useState, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Sparkle, UploadCloud, MoveLeft, X } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
@@ -7,7 +7,15 @@ import { useRouter } from "next/navigation";
 import { LivePreviewloading } from "@/components/ui/Skeletonloading";
 const avatar1 = "/Images/avatar1.png";
 import { FacebookPostPreview } from "./FacebookPostPreview";
-import { useAuthRole } from "@/hooks/useAuthRole";
+import { notifyPostsChanged, postService } from "@/services/post.service";
+import { POST_LIMITS, type PostType } from "@/types/Posts";
+import {
+  errorMessage,
+  localInputToIso,
+  maxLocalInput,
+  minLocalInput,
+  validateLocalInput,
+} from "@/lib/schedule";
 
 const platformList = [
   { id: "Talk Tamila", name: "Talk Tamila" },
@@ -20,64 +28,129 @@ const platformList = [
   { id: "Telegram", name: "Telegram" },
 ];
 
-export function CreatenewPost() {
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([
-    "Talk Tamila",
-    "Instagram",
-    "Facebook",
-  ]);
-    const { isInfluencer, isFreelancer } = useAuthRole();
+function fileProblem(file: File): string | null {
+  const isImage = (POST_LIMITS.imageTypes as readonly string[]).includes(file.type);
+  const isVideo = (POST_LIMITS.videoTypes as readonly string[]).includes(file.type);
+  if (!isImage && !isVideo) return "Use a JPG, PNG, WEBP, GIF, MP4, WEBM or MOV file.";
+  const limit = isImage ? POST_LIMITS.imageBytes : POST_LIMITS.videoBytes;
+  if (file.size > limit) {
+    return `That ${isImage ? "image" : "video"} is too large. Maximum size is ${limit / (1024 * 1024)} MB.`;
+  }
+  return null;
+}
 
+export function CreatenewPost() {
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["Talk Tamila"]);
   const router = useRouter();
 
   const [step, setStep] = useState<"edit" | "loading" | "preview">("edit");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const context = useContext(useContenthook);
 
   if (!context) {
     throw new Error("CreatenewPost must be used within a UseContentProvider");
   }
-  const { setHandlestate  } = context;
+  const { setHandlestate } = context;
 
   const [title, setTitle] = useState("");
-  const [caption, setCaption] = useState("Write your thoughts here... Use #hashtags to trend!");
+  const [caption, setCaption] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [scheduleAt, setScheduleAt] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<"schedule" | "publish" | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const isVideoFile = !!file && file.type.startsWith("video/");
+
+  // Show the chosen image in the preview, and free the memory when it changes.
+  useEffect(() => {
+    if (!file || !file.type.startsWith("image/")) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
 
   const togglePlatform = (platformId: string) => {
     setSelectedPlatforms((prev) =>
-      prev.includes(platformId)
-        ? prev.filter((id) => id !== platformId)
-        : [...prev, platformId]
+      prev.includes(platformId) ? prev.filter((id) => id !== platformId) : [...prev, platformId]
     );
   };
 
-
+  const chooseFile = (picked: File | null | undefined) => {
+    if (!picked) return;
+    const problem = fileProblem(picked);
+    if (problem) {
+      setError(problem);
+      return;
+    }
+    setError(null);
+    setFile(picked);
+  };
 
   const handleNext = () => {
     setStep("loading");
-    setTimeout(() => {
-      setStep("preview");
-    }, 800);
+    setTimeout(() => setStep("preview"), 300);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000);
+  const submit = async (mode: "schedule" | "publish") => {
+    setError(null);
 
-    return () => clearTimeout(timer);
-  }, []);
+    const text = [title.trim(), caption.trim()].filter(Boolean).join("\n\n");
 
+    // If Schedule is clicked with no content at all → go straight to the schedule page
+    if (mode === "schedule" && !text && !file) {
+      setHandlestate(false);
+      router.push("/admin/content");
+      return;
+    }
 
+    // If Publish is clicked with no content → show error
+    if (mode === "publish" && !text && !file) {
+      setError("Write something or add a photo or video first.");
+      return;
+    }
 
-  const isPreviewLoading = isLoading || step === "loading";
+    let scheduledAt: string | undefined;
+    if (mode === "schedule") {
+      const problem = validateLocalInput(scheduleAt);
+      if (problem) {
+        setError(problem);
+        return;
+      }
+      scheduledAt = localInputToIso(scheduleAt);
+    }
+
+    const postType: PostType = file ? (file.type.startsWith("video/") ? "video" : "image") : "text";
+
+    setBusy(mode);
+    try {
+      await postService.create({
+        postType,
+        content: text || undefined,
+        media: file ?? undefined,
+        scheduledAt,
+      });
+      notifyPostsChanged();
+      setHandlestate(false);
+      if (mode === "schedule") router.push("/admin/content");
+    } catch (e) {
+      setError(errorMessage(e));
+      setBusy(null);
+    }
+  };
+
+  const isPreviewLoading = step === "loading";
 
   return (
     <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/50 backdrop-blur-xs flex items-start md:items-center justify-center p-0 md:p-4 z-40">
-      <div className="w-full h-full xs:mt-5 md:h-auto md:max-h-[92vh] md:max-w-4xl min-[2560px]:max-w-[1250px] min-[3840px]:max-w-[1600px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-3 pb-28 md:px-6 md:py-5 min-[2560px]:p-6 min-[3840px]:p-8 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto md:overflow-hidden flex flex-col justify-start">
-  
+      <div className="w-full h-full xs:mt-5 md:h-auto md:max-h-[92vh] md:max-w-4xl min-[2560px]:max-w-[1250px] min-[3840px]:max-w-[1600px] rounded-none md:rounded-[28px] bg-[#fff0e7] shadow-2xl px-4 pt-3 pb-28 md:px-6 md:py-5 min-[2560px]:p-6 min-[3840px]:p-8 relative font-sans antialiased border-0 md:border border-orange-100 overflow-y-auto flex flex-col justify-start">
+
         <div className="block sm:hidden mb-2">
-          <button 
+          <button
             onClick={() => { setHandlestate(false) }}
             className="hover:opacity-80 transition-opacity cursor-pointer flex items-center justify-center"
             aria-label="Go back"
@@ -86,7 +159,6 @@ export function CreatenewPost() {
           </button>
         </div>
 
-  
         <button
           onClick={() => { setHandlestate(false) }}
           className="hidden sm:flex absolute right-4 top-4 md:right-5 md:top-5 h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:text-gray-600 shadow-sm transition-all duration-200 cursor-pointer z-10"
@@ -107,7 +179,7 @@ export function CreatenewPost() {
             <div className="flex flex-col gap-2.5 min-[3840px]:gap-3">
               <div className="flex justify-between items-center">
                 <h2 className="text-sm min-[3840px]:text-base font-bold text-gray-800">Post Details</h2>
-                <button className="flex items-center gap-1 text-xs min-[3840px]:text-sm font-bold text-orange-600 hover:text-orange-700 transition-colors cursor-pointer">
+                <button type="button" className="flex items-center gap-1 text-xs min-[3840px]:text-sm font-bold text-orange-600 hover:text-orange-700 transition-colors cursor-pointer">
                   <Sparkle size={12} className="fill-orange-600 min-[3840px]:w-3.5 min-[3840px]:h-3.5" />
                   Generate Caption
                 </button>
@@ -132,20 +204,59 @@ export function CreatenewPost() {
                   rows={2}
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
+                  maxLength={POST_LIMITS.contentLength}
                   placeholder="Write your thoughts here... Use #hashtags to trend!"
                   className="w-full p-2.5 min-[3840px]:p-3.5 rounded-xl bg-white border border-transparent outline-none text-xs min-[3840px]:text-sm resize-none transition-all shadow-sm focus:border-[#ef8b54] placeholder:text-gray-400 text-gray-800 leading-relaxed"
                 />
               </div>
             </div>
 
-            <div className="border-2 border-dashed border-orange-200 bg-white rounded-2xl p-2.5 min-[2560px]:p-3 min-[3840px]:p-4 text-center flex flex-col items-center justify-center gap-1 min-[3840px]:gap-1.5 shadow-sm transition-colors hover:border-orange-300">
+            <input
+              ref={fileInput}
+              type="file"
+              accept={[...POST_LIMITS.imageTypes, ...POST_LIMITS.videoTypes].join(",")}
+              className="hidden"
+              onChange={(e) => {
+                chooseFile(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                chooseFile(e.dataTransfer.files?.[0]);
+              }}
+              className="border-2 border-dashed border-orange-200 bg-white rounded-2xl p-2.5 min-[2560px]:p-3 min-[3840px]:p-4 text-center flex flex-col items-center justify-center gap-1 min-[3840px]:gap-1.5 shadow-sm transition-colors hover:border-orange-300"
+            >
               <div className="p-0.5 bg-[#fff0e7] rounded-full text-[#ef8b54]">
                 <UploadCloud size={18} className="min-[3840px]:w-5 min-[3840px]:h-5" />
               </div>
-              <p className="text-xs min-[3840px]:text-sm font-bold text-gray-800">Drag and drop files here</p>
-              <p className="text-[10px] min-[3840px]:text-xs text-gray-400 max-w-[280px]">Support for PNG, JPG, MP4, and MOV (Max 50MB)</p>
-              <button className="mt-0.5 px-4 py-1.5 min-[3840px]:px-5 min-[3840px]:py-2 bg-[#ef8b54] text-white text-[10px] min-[3840px]:text-xs font-bold rounded-xl hover:bg-[#d9723a] transition-all shadow-md active:scale-95 cursor-pointer">
-                Browse Files
+              {file ? (
+                <>
+                  <p className="text-xs min-[3840px]:text-sm font-bold text-gray-800 max-w-[260px] truncate">{file.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => setFile(null)}
+                    className="text-[10px] font-bold text-red-500 hover:text-red-600 cursor-pointer"
+                  >
+                    Remove file
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs min-[3840px]:text-sm font-bold text-gray-800">Drag and drop files here</p>
+                  <p className="text-[10px] min-[3840px]:text-xs text-gray-400 max-w-[280px]">
+                    JPG, PNG, WEBP, GIF (max 5 MB) or MP4, WEBM, MOV (max 25 MB)
+                  </p>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => fileInput.current?.click()}
+                className="mt-0.5 px-4 py-1.5 min-[3840px]:px-5 min-[3840px]:py-2 bg-[#ef8b54] text-white text-[10px] min-[3840px]:text-xs font-bold rounded-xl hover:bg-[#d9723a] transition-all shadow-md active:scale-95 cursor-pointer"
+              >
+                {file ? "Change file" : "Browse Files"}
               </button>
             </div>
 
@@ -155,6 +266,7 @@ export function CreatenewPost() {
                 return (
                   <button
                     key={platform.id}
+                    type="button"
                     onClick={() => togglePlatform(platform.id)}
                     className={`py-1.5 min-[3840px]:py-2 px-3 min-[3840px]:px-4 text-[11px] min-[2560px]:text-xs min-[3840px]:text-sm font-bold rounded-full border text-center transition-all duration-200 shadow-sm cursor-pointer ${
                       isSelected
@@ -182,43 +294,49 @@ export function CreatenewPost() {
               <LivePreviewloading />
             ) : (
               <FacebookPostPreview
-                title={title || "it can be really easy to over indulge"}
-                caption={caption || "Write your thoughts here... Use #hashtags to trend!"}
-                image={avatar1}
-                isVideo={true}
+                title={title || "Your headline appears here"}
+                caption={caption || "Your caption appears here"}
+                image={previewUrl || avatar1}
+                isVideo={isVideoFile}
                 className="mt-1 min-[3840px]:mt-2"
               />
             )}
 
-            <div className="flex flex-col items-center gap-2 mt-2">
-              <div className="flex gap-1 justify-center mb-0.5">
-                <span className="w-3.5 h-1 bg-orange-500 rounded-full"></span>
-                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-              </div>
+            <div className="flex flex-col gap-1.5 mt-2">
+              <label htmlFor="scheduleAt" className="text-[12px] font-bold text-gray-600">
+                Schedule for (leave empty to publish now)
+              </label>
+              <input
+                id="scheduleAt"
+                type="datetime-local"
+                value={scheduleAt}
+                min={minLocalInput()}
+                max={maxLocalInput()}
+                onChange={(e) => setScheduleAt(e.target.value)}
+                className="w-full h-9 px-3 rounded-xl bg-white border border-transparent outline-none text-xs shadow-sm focus:border-[#ef8b54] text-gray-800"
+              />
+              <p className="text-[10px] text-gray-500">Dates and times that have already passed can&apos;t be chosen.</p>
+            </div>
 
+            {error && <p className="text-xs font-semibold text-red-600">{error}</p>}
+
+            <div className="flex flex-col items-center gap-2 mt-2">
               <div className="flex items-center gap-2.5 w-full justify-center">
                 <button
                   type="button"
-                  onClick={() => {
-                    setHandlestate(false);
-                    if(isFreelancer){
-                      router.push("/freelancer/content")
-                    }else if(isInfluencer){
-                      router.push("/influencer/content")
-                    }else{
-                      router.push("/admin/content")
-                    }
-                  }}
-                  className={`${buttonVariants({ variant: 'outline' })} px-4 py-1.5 min-[3840px]:px-5 min-[3840px]:py-2 text-[11px] min-[3840px]:text-xs font-bold min-w-[90px] shadow-xs cursor-pointer`}
+                  disabled={busy !== null}
+                  onClick={() => submit("schedule")}
+                  className={`${buttonVariants({ variant: 'outline' })} px-4 py-1.5 min-[3840px]:px-5 min-[3840px]:py-2 text-[11px] min-[3840px]:text-xs font-bold min-w-[90px] shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed`}
                 >
-                  Schedule
+                  {busy === "schedule" ? "Scheduling…" : "Schedule"}
                 </button>
                 <button
                   type="button"
-                  className={`${buttonVariants({ variant: 'default' })} px-6 py-1.5 min-[3840px]:px-7 min-[3840px]:py-2 text-white text-[11px] min-[3840px]:text-xs font-bold shadow-md transition-colors min-w-[100px] cursor-pointer`}
+                  disabled={busy !== null}
+                  onClick={() => submit("publish")}
+                  className={`${buttonVariants({ variant: 'default' })} px-6 py-1.5 min-[3840px]:px-7 min-[3840px]:py-2 text-white text-[11px] min-[3840px]:text-xs font-bold shadow-md transition-colors min-w-[100px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed`}
                 >
-                  Publish
+                  {busy === "publish" ? "Publishing…" : "Publish"}
                 </button>
               </div>
             </div>
@@ -228,4 +346,3 @@ export function CreatenewPost() {
     </div>
   );
 }
-
