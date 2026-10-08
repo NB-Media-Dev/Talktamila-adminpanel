@@ -2,12 +2,13 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, MapPin, Settings } from "lucide-react";
+import { LayoutGrid, Loader2, MapPin, Settings } from "lucide-react";
 import { userService } from "@/services/user.service";
 import type { ProfileData } from "@/types/Auth";
 import { buttonVariants } from "@/components/ui/Button";
 import DiscoverPeople from "@/components/profile/DiscoverPeople";
 import FollowListModal from "@/components/profile/FollowListModal";
+import ProfilePosts from "@/components/profile/ProfilePosts";
 
 const LIVE_COUNTS_POLL_MS = 8000;
 
@@ -160,7 +161,23 @@ export default function ProfileView() {
         </div>
       </div>
 
-      {/* "Discover people" — follow suggestions, right after the profile card */}
+      {/* Posts grid, like Instagram: sits right under the profile header */}
+      <div className="bg-white rounded-3xl shadow-sm border border-orange-100 overflow-hidden">
+        <div className="flex border-b border-orange-100">
+          <div className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-bold uppercase tracking-wide border-b-2 border-[#FF6B35] text-gray-900">
+            <LayoutGrid className="w-4 h-4" />
+            Posts
+          </div>
+        </div>
+        <ProfilePosts
+          username={profile.username}
+          refreshKey={profile.posts_count}
+          isMe
+          onChanged={refreshProfile}
+        />
+      </div>
+
+      {/* "Discover people" — follow suggestions */}
       <DiscoverPeople onFollowChange={refreshProfile} />
 
       {listModalTab && (

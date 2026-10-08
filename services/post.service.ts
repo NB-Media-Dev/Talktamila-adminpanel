@@ -11,6 +11,14 @@ export const postService = {
     return apiClient<FeedResponse>(`${BASE}?${qs.toString()}`);
   },
 
+  /** Published posts of one person, newest first (for the profile grid). */
+  getUserPosts(username: string, limit = 30, offset = 0): Promise<FeedResponse> {
+    const qs = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+    return apiClient<FeedResponse>(
+      `/api/v1/users/by-username/${encodeURIComponent(username)}/posts?${qs.toString()}`,
+    );
+  },
+
   create(input: CreatePostInput): Promise<FeedResponse> {
     const fd = new FormData();
     fd.append("post_type", input.postType);

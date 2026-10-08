@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Camera,
   Info,
   LayoutGrid,
   Link2,
@@ -18,6 +17,7 @@ import { goBack as historyBack } from "@/lib/navigation";
 import { getInitials } from "@/lib/avatar";
 import { buttonVariants } from "@/components/ui/Button";
 import FollowListModal from "@/components/profile/FollowListModal";
+import ProfilePosts from "@/components/profile/ProfilePosts";
 import { useMessagesBase } from "@/hooks/useMessagesBase";
 import { useProfileLink } from "@/hooks/useProfileLink";
 import type { PublicProfileData } from "@/types/Auth";
@@ -328,13 +328,11 @@ export default function PublicProfileView({ username }: { username: string }) {
         </div>
 
         {tab === "posts" && (
-          <div className="flex flex-col items-center text-center px-6 py-14">
-            <div className="w-16 h-16 rounded-full border-2 border-[#FF6B35] text-[#FF6B35] flex items-center justify-center">
-              <Camera className="w-7 h-7" />
-            </div>
-            <p className="mt-4 text-base font-bold text-gray-900">No posts yet</p>
-            <p className="text-sm text-gray-500 mt-1">Posts shared by @{profile.username} will appear here.</p>
-          </div>
+          <ProfilePosts
+            username={profile.username}
+            refreshKey={profile.posts_count}
+            onChanged={refresh}
+          />
         )}
 
         {tab === "about" && (
