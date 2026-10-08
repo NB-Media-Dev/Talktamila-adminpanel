@@ -20,17 +20,30 @@ export interface Poll {
   my_vote_option_id: number | null;
 }
 
+export type PostStatus = "published" | "scheduled";
+
 export interface Post {
   post_id: number;
   author_id: number;
   post_type: PostType;
+  status: PostStatus;
   content?: string | null;
   media_type?: "image" | "video" | null;
   media_url?: string | null;
   gif_url?: string | null;
   poll?: Poll | null;
   created_at: string; // ISO-8601 UTC, ends with "Z"
+  scheduled_at?: string | null; // when it is due to go live (UTC, "Z")
+  published_at?: string | null; // null while still scheduled
   can_delete: boolean;
+}
+
+export interface ScheduledListResponse {
+  items: Post[];
+  authors: Record<string, PostAuthor>;
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 export interface FeedResponse {
@@ -46,6 +59,8 @@ export interface CreatePostInput {
   media?: File;
   gifUrl?: string;
   pollOptions?: string[];
+  /** ISO-8601 WITH timezone, e.g. new Date(...).toISOString(). 1 minute to 365 days ahead. Omit to post now. */
+  scheduledAt?: string;
 }
 
 // Keep these in sync with the limits in post_service.py

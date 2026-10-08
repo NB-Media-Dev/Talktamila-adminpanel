@@ -92,7 +92,7 @@ export const storyService = {
   },
 
   muteCreator: async (userId: number | string): Promise<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }> => {
-    return apiClient<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }>(`/api/v1/stories/users/${userId}/mute`, {
+    return apiClient<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }>(`/api/v1/stories/mute/${userId}`, {
       method: 'POST',
     });
   },
