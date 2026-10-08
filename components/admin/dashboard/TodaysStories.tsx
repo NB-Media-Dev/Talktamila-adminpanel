@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Image, { type StaticImageData } from "next/image";
-import { Zap, ChevronDown, ChevronUp, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Plus } from "lucide-react";
 
 import { getInitials, initialsAvatar } from "@/lib/avatar";
 import Addstories from "./Addstories";
@@ -94,6 +94,10 @@ export default function TodayStories() {
   const [allStoryUsers, setAllStoryUsers] = useState<StoryUser[]>([]);
   const [myStoryUser, setMyStoryUser] = useState<StoryUser | null>(null);
 
+  const storiesScrollRef = React.useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
+  const [canScrollRight, setCanScrollRight] = useState<boolean>(false);
+
   const currentUser = (authUser as { user?: unknown })?.user || authUser || null;
 
   const fetchStories = useCallback(async () => {
@@ -177,6 +181,42 @@ export default function TodayStories() {
   }, [allStoryUsers]);
 
   const hasMyActiveStory = Boolean(myStoryUser?.slides?.length);
+
+  const checkScroll = useCallback(() => {
+    const el = storiesScrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 2);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+  }, []);
+
+  const handleScroll = (direction: "left" | "right") => {
+    const el = storiesScrollRef.current;
+    if (!el) return;
+    const scrollAmount = 240;
+    el.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    const el = storiesScrollRef.current;
+    if (!el) return;
+
+    checkScroll();
+
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+
+    const timer = setTimeout(checkScroll, 150);
+
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+      clearTimeout(timer);
+    };
+  }, [checkScroll, feedUsers, allStoryUsers]);
 
   const openPreview = (userIndex: number) => {
     setSelectedUserIndex(userIndex);
@@ -290,20 +330,46 @@ export default function TodayStories() {
       {/* ── Desktop Horizontal View ── */}
       <div className="hidden sm:flex sm:flex-col sm:relative sm:top-0 sm:right-0 sm:z-0 sm:w-full sm:max-w-full sm:bg-white sm:rounded-[32px] sm:p-5 sm:shadow-[0_4px_24px_rgba(0,0,0,0.03)] sm:border sm:border-[#FFEFE0] sm:overflow-hidden">
         <div className="flex items-center justify-between mb-2 py-2">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-orange-50 text-[#FF6B35]">
-              <Zap className="w-5 h-5 fill-orange-400 stroke-orange-200" />
-            </div>
-            <h2 className="text-lg font-bold text-gray-900 tracking-tight">
-              Today&apos;s Stories
-            </h2>
+          <h2 className="text-lg font-bold text-gray-900 tracking-tight">
+            Today&apos;s Stories
+          </h2>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => handleScroll("left")}
+              disabled={!canScrollLeft}
+              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-all ${
+                canScrollLeft
+                  ? "bg-white hover:bg-[#FFF4EC] text-[#FF6B35] border-[#FFD9C4] cursor-pointer shadow-xs active:scale-90"
+                  : "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed opacity-40"
+              }`}
+              title="Scroll left"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleScroll("right")}
+              disabled={!canScrollRight}
+              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-all ${
+                canScrollRight
+                  ? "bg-white hover:bg-[#FFF4EC] text-[#FF6B35] border-[#FFD9C4] cursor-pointer shadow-xs active:scale-90"
+                  : "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed opacity-40"
+              }`}
+              title="Scroll right"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-          <button className="text-sm text-[#FF6B35] hover:underline bg-transparent border-none cursor-pointer">
-            View all
-          </button>
         </div>
 
-        <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-1 mb-3 w-full max-w-full">
+        <div
+          ref={storiesScrollRef}
+          className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-1 mb-3 w-full max-w-full scroll-smooth"
+        >
           {/* Your Story */}
           <div className="flex flex-col items-center gap-1.5 shrink-0">
             <StoryAvatar
