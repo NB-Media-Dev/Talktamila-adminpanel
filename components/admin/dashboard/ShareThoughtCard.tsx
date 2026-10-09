@@ -5,7 +5,10 @@ import { buttonVariants } from "@/components/ui/Button";
 import { islandMoments } from "@/public/Fonts/Fonts";
 import { Pencil, Image as ImageIcon, Video, X } from "lucide-react";
 import PostComposer, { type ComposerMode } from "./PostComposer";
-import { clearThought, saveThought, useThought, type Thought } from "@/lib/thoughtStore";
+import { clearThought, saveThought, useThought, type Thought, type ThoughtInput } from "@/lib/thoughtStore";
+import { notifyPostsChanged, postService } from "@/services/post.service";
+import { canCreatePosts } from "@/lib/postPermissions";
+import { useAuthuser } from "@/hooks/useAuthuser";
 
 // short text shown in the card
 function thoughtText(t: Thought): string {
@@ -38,9 +41,42 @@ function ThoughtThumb({ t }: { t: Thought }) {
 
 export default function ShareThoughtCard() {
   const thought = useThought();
-  const [composer, setComposer] = useState<{ mode: ComposerMode; openEmoji?: boolean } | null>(null);
+  const { user } = useAuthuser();
+  const authUser = user as any;
+  const me = authUser?.user || authUser || null;
+  const canPost = canCreatePosts(me?.role);
 
-  const open = (mode: ComposerMode, openEmoji = false) => setComposer({ mode, openEmoji });
+  const [composer, setComposer] = useState<{ mode: ComposerMode; openEmoji?: boolean } | null>(null);
+  const [isPosting, setIsPosting] = useState(false);
+
+  const open = (mode: ComposerMode, openEmoji = false) => {
+    if (!canPost) {
+      alert("Posting is currently limited to administrators.");
+      return;
+    }
+    setComposer({ mode, openEmoji });
+  };
+
+  const handleThoughtSubmit = async (input: ThoughtInput) => {
+    setIsPosting(true);
+    try {
+      await postService.create({
+        postType: input.kind,
+        content: input.text || undefined,
+        media: input.file,
+        gifUrl: input.gifUrl,
+        pollOptions: input.pollOptions,
+      });
+      clearThought();
+      notifyPostsChanged();
+    } catch (err: any) {
+      console.error("Failed to publish post:", err);
+      saveThought(input);
+      alert(err?.message || "Failed to publish post. Please try again.");
+    } finally {
+      setIsPosting(false);
+    }
+  };
 
   return (
     <>
@@ -216,8 +252,15 @@ export default function ShareThoughtCard() {
 
             <button
               type="button"
-              onClick={() => open("text")}
-              title="Write a thought"
+              disabled={isPosting}
+              onClick={() => {
+                if (thought) {
+                  handleThoughtSubmit(thought);
+                } else {
+                  open("text");
+                }
+              }}
+              title="Post thought"
               className={`
                ${buttonVariants({ variant: "default" })}
                 text-white
@@ -232,9 +275,10 @@ export default function ShareThoughtCard() {
                 active:scale-95
                 cursor-pointer
                 whitespace-nowrap
+                ${isPosting ? "opacity-60 cursor-not-allowed" : ""}
               `}
             >
-              Post
+              {isPosting ? "Posting..." : "Post"}
             </button>
           </div>
 
@@ -247,7 +291,7 @@ export default function ShareThoughtCard() {
         mode={composer.mode}
         openEmoji={composer.openEmoji}
         initial={thought}
-        onSubmit={saveThought}
+        onSubmit={handleThoughtSubmit}
         onClose={() => setComposer(null)}
       />
     )}
