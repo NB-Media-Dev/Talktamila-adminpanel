@@ -20,6 +20,7 @@ import FollowListModal from "@/components/profile/FollowListModal";
 import ProfilePosts from "@/components/profile/ProfilePosts";
 import { useMessagesBase } from "@/hooks/useMessagesBase";
 import { useProfileLink } from "@/hooks/useProfileLink";
+import { DEMO_POST_COUNT, isDemoRole } from "@/lib/demoPosts";
 import type { PublicProfileData } from "@/types/Auth";
 
 const LIVE_POLL_MS = 10000;
@@ -95,7 +96,7 @@ export default function PublicProfileView({ username }: { username: string }) {
   }, [refresh]);
 
   useEffect(() => {
-    if (profile?.is_me) router.replace(`${base}/profile`);
+    if (profile?.is_me) router.replace(`${base}/profile${window.location.search}`);
   }, [profile?.is_me, base, router]);
 
   async function toggleFollow() {
@@ -165,6 +166,8 @@ export default function PublicProfileView({ username }: { username: string }) {
     username: profile.username,
   });
   const joined = joinedLabel(profile.joined_at);
+  const demo = isDemoRole(profile.role);
+  const postsCount = demo ? DEMO_POST_COUNT : profile.posts_count;
 
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-5">
@@ -252,7 +255,7 @@ export default function PublicProfileView({ username }: { username: string }) {
             {/* Posts / Followers / Following */}
             <div className="flex justify-center sm:justify-start gap-8 mt-4">
               <div className="text-center sm:text-left">
-                <span className="block text-base font-bold text-gray-900">{profile.posts_count}</span>
+                <span className="block text-base font-bold text-gray-900">{postsCount}</span>
                 <span className="text-xs text-gray-500">Posts</span>
               </div>
               <button type="button" onClick={() => setListModalTab("followers")} className="text-center sm:text-left cursor-pointer">
@@ -331,6 +334,7 @@ export default function PublicProfileView({ username }: { username: string }) {
           <ProfilePosts
             username={profile.username}
             refreshKey={profile.posts_count}
+            demoRole={demo ? profile.role : undefined}
             onChanged={refresh}
           />
         )}

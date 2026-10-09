@@ -9,6 +9,8 @@ const avatar1 = "/Images/avatar1.png";
 import { FacebookPostPreview } from "./FacebookPostPreview";
 import { notifyPostsChanged, postService } from "@/services/post.service";
 import { POST_LIMITS, type PostType } from "@/types/Posts";
+import MusicsControl, { type MusicTrack } from "./MusicsControl";
+import { trackToPostMusic } from "@/lib/postMusic";
 import {
   errorMessage,
   localInputToIso,
@@ -59,6 +61,10 @@ export function CreatenewPost() {
   const [scheduleAt, setScheduleAt] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<"schedule" | "publish" | null>(null);
+  const [track, setTrack] = useState<MusicTrack | null>(null);
+  const [musicStart, setMusicStart] = useState(0);
+  const [commentsOff, setCommentsOff] = useState(false);
+  const [hideLikes, setHideLikes] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const isVideoFile = !!file && file.type.startsWith("video/");
@@ -126,6 +132,13 @@ export function CreatenewPost() {
 
     const postType: PostType = file ? (file.type.startsWith("video/") ? "video" : "image") : "text";
 
+    // Videos keep their own sound, so the song only goes on photos and text posts.
+    if (track && postType !== "video" && !track.previewUrl) {
+      setError("That song has no playable preview. Pick another one.");
+      return;
+    }
+    const music = track && postType !== "video" ? trackToPostMusic(track, musicStart) : undefined;
+
     setBusy(mode);
     try {
       await postService.create({
@@ -133,6 +146,9 @@ export function CreatenewPost() {
         content: text || undefined,
         media: file ?? undefined,
         scheduledAt,
+        music,
+        commentsDisabled: commentsOff,
+        hideLikeCount: hideLikes,
       });
       notifyPostsChanged();
       setHandlestate(false);
@@ -258,6 +274,41 @@ export function CreatenewPost() {
               >
                 {file ? "Change file" : "Browse Files"}
               </button>
+            </div>
+
+            <div className="flex flex-col gap-2 mt-0.5">
+              {isVideoFile ? (
+                <p className="text-[11px] text-gray-500">Videos keep their own sound, so a song can&apos;t be added.</p>
+              ) : (
+                <MusicsControl
+                  selectedTrack={track}
+                  musicStartTime={musicStart}
+                  onTrackChange={setTrack}
+                  onStartTimeChange={setMusicStart}
+                />
+              )}
+
+              <div className="flex flex-col gap-2.5 rounded-2xl bg-white p-3 shadow-sm">
+                <span className="text-[12px] font-bold text-gray-700">Advanced settings</span>
+                <label className="flex items-center justify-between gap-3 cursor-pointer">
+                  <span className="text-[12px] text-gray-700">Hide like count on this post</span>
+                  <input
+                    type="checkbox"
+                    checked={hideLikes}
+                    onChange={(e) => setHideLikes(e.target.checked)}
+                    className="h-4 w-4 accent-[#ef8b54]"
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-3 cursor-pointer">
+                  <span className="text-[12px] text-gray-700">Turn off commenting</span>
+                  <input
+                    type="checkbox"
+                    checked={commentsOff}
+                    onChange={(e) => setCommentsOff(e.target.checked)}
+                    className="h-4 w-4 accent-[#ef8b54]"
+                  />
+                </label>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-0.5">

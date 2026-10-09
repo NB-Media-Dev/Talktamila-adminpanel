@@ -2,15 +2,22 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, Loader2, MapPin, Settings } from "lucide-react";
+import { Archive, Bookmark, LayoutGrid, Loader2, MapPin, Settings } from "lucide-react";
 import { userService } from "@/services/user.service";
 import type { ProfileData } from "@/types/Auth";
 import { buttonVariants } from "@/components/ui/Button";
 import DiscoverPeople from "@/components/profile/DiscoverPeople";
 import FollowListModal from "@/components/profile/FollowListModal";
-import ProfilePosts from "@/components/profile/ProfilePosts";
+import ProfilePosts, { type ProfilePostsSource } from "@/components/profile/ProfilePosts";
+import { DEMO_POST_COUNT, isDemoRole } from "@/lib/demoPosts";
 
 const LIVE_COUNTS_POLL_MS = 8000;
+
+const TABS: { id: ProfilePostsSource; label: string; icon: React.ReactNode }[] = [
+  { id: "posts", label: "Posts", icon: <LayoutGrid className="w-4 h-4" /> },
+  { id: "saved", label: "Saved", icon: <Bookmark className="w-4 h-4" /> },
+  { id: "archived", label: "Archive", icon: <Archive className="w-4 h-4" /> },
+];
 
 export default function ProfileView() {
   const router = useRouter();
@@ -18,6 +25,7 @@ export default function ProfileView() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [listModalTab, setListModalTab] = useState<"followers" | "following" | null>(null);
+  const [tab, setTab] = useState<ProfilePostsSource>("posts");
 
   useEffect(() => {
     async function loadProfile() {
@@ -77,6 +85,8 @@ export default function ProfileView() {
     "?";
 
   const fullName = `${profile.first_name} ${profile.last_name}`.trim();
+  const demo = isDemoRole(profile.role);
+  const postsCount = demo ? DEMO_POST_COUNT : profile.posts_count;
 
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-5">
@@ -118,7 +128,7 @@ export default function ProfileView() {
             <div className="flex justify-center sm:justify-start gap-8 mt-4">
               <div className="text-center sm:text-left">
                 <span className="block text-base font-bold text-gray-900">
-                  {profile.posts_count}
+                  {postsCount}
                 </span>
                 <span className="text-xs text-gray-500">Posts</span>
               </div>
@@ -161,18 +171,34 @@ export default function ProfileView() {
         </div>
       </div>
 
-      {/* Posts grid, like Instagram: sits right under the profile header */}
+      {/* Posts / Saved / Archive, like Instagram: sits right under the profile header */}
       <div className="bg-white rounded-3xl shadow-sm border border-orange-100 overflow-hidden">
         <div className="flex border-b border-orange-100">
-          <div className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-bold uppercase tracking-wide border-b-2 border-[#FF6B35] text-gray-900">
-            <LayoutGrid className="w-4 h-4" />
-            Posts
-          </div>
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              aria-pressed={tab === t.id}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-bold uppercase tracking-wide border-b-2 transition-colors cursor-pointer ${
+                tab === t.id ? "border-[#FF6B35] text-gray-900" : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              {t.icon}
+              {t.label}
+            </button>
+          ))}
         </div>
+        {tab !== "posts" && (
+          <p className="px-4 pt-3 text-[11px] text-gray-400 text-center">Only you can see this.</p>
+        )}
         <ProfilePosts
+          key={tab}
           username={profile.username}
-          refreshKey={profile.posts_count}
+          source={tab}
+          refreshKey={tab === "posts" ? profile.posts_count : undefined}
           isMe
+          demoRole={demo ? profile.role : undefined}
           onChanged={refreshProfile}
         />
       </div>
