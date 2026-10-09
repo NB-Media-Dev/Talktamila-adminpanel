@@ -13,7 +13,6 @@ interface LogoutConfirmDialogProps {
 export default function LogoutConfirmDialog({ open, onCancel, onConfirm }: LogoutConfirmDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  // Start on "Cancel" so an accidental Enter never logs the user out.
   useEffect(() => {
     if (open) cancelRef.current?.focus();
   }, [open]);
@@ -29,8 +28,6 @@ export default function LogoutConfirmDialog({ open, onCancel, onConfirm }: Logou
 
   if (!open || typeof document === "undefined") return null;
 
-  // Portal to <body>: the sticky navbar uses backdrop-blur, which would otherwise
-  // trap a fixed overlay inside the header instead of covering the screen.
   return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"

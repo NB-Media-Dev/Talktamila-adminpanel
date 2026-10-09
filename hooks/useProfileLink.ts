@@ -4,11 +4,6 @@ import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthRole } from './useAuthRole';
 
-/**
- * Where "visit this person's profile" lives. Like the messages page, it sits under
- * the viewer's own role area (proxy.ts keeps the roles apart):
- *   /influencer/u/[username], /freelancer/u/[username], /admin/u/[username]
- */
 export function useProfileLink() {
   const router = useRouter();
   const { isInfluencer, isFreelancer } = useAuthRole();

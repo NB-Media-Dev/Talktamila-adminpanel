@@ -6,7 +6,6 @@ import { buttonVariants } from "@/components/ui/Button";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { TableSkeleton } from "@/components/ui/Skeletonloading";
 
-// Mock data — this is where a real GET /superadmin/admins call will plug in later.
 type AdminRow = {
   id: string;
   name: string;
@@ -29,7 +28,6 @@ export function AdminManagement() {
   UsetimeoutLoader(setIsLoading);
 
   // Placeholder toggle — swap this for a real PATCH /superadmin/admins/{id}
-  // call once the backend endpoint exists. Kept local-only for now so the
   // UI is demonstrable without a live API.
   const toggleStatus = (id: string) => {
     setAdmins((prev) =>

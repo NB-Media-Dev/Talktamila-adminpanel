@@ -79,13 +79,11 @@ export interface StorySlide {
   imageUrl: StaticImageData | string;
   media_url?: string;
   media_type?: string;
-  /** Human-readable text content for this slide frame (e.g. "good", "vanakamk", "hi bro") */
   content?: string;
   caption?: string;
   duration?: number;
   liked?: boolean;
   likes_count?: number;
-  /** View count scoped to this individual slide — NOT the parent story group */
   views_count?: number;
   created_at?: string;
   musicTrack?: string;
@@ -104,20 +102,14 @@ export interface StorySlide {
   mentions?: StoryMentionItem[];
 }
 
-/**
- * Represents a story group (parent container) that holds multiple individual slides.
- * - `story_id` : Shared parent ID across all slides in this group.
- * - `slides`   : Array of `StorySlide` elements, each with their own unique `id` and `views_count`.
- */
 export interface StoryGroup {
-  /** Shared parent identifier for this story group (common across all slides) */
   story_id: number;
   username: string;
   slides: StorySlide[];
 }
 
 export interface UserStoryGroup {
-  story_id?: number;       // The single common ID for the entire story post / group
+  story_id?: number;
   id: number;              // The common parental story identifier
   username: string;
   avatar: StaticImageData | string;

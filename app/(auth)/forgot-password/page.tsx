@@ -56,7 +56,6 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
     try {
       await authService.verifyOtp({ identifier, otp });
-      // The reset endpoint needs the code again, so keep it out of the URL.
       sessionStorage.setItem("reset_otp", otp);
       router.push(`/reset-password?identifier=${encodeURIComponent(identifier)}`);
     } catch (err) {

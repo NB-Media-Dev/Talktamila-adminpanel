@@ -80,10 +80,16 @@ export default function Navbar() {
     return "/admin/profile";
   };
 
+  const getSettingsPath = () => {
+    if (isInfluencer) return "/influencer/profile/settings";
+    if (isFreelancer) return "/freelancer/profile/settings";
+    return "/admin/profile/settings";
+  };
+
   const getWalletPath = () => {
     if (isInfluencer) return "/influencer";
     if (isFreelancer) return "/freelancer";
-    return "/admin/reports";
+    return "/admin/wallet";
   };
 
   const handleProfileNavigation = (path: string, tab?: string) => {
@@ -150,7 +156,6 @@ export default function Navbar() {
       className="absolute inset-0 w-full h-full object-cover"
     />
   );
-
   const renderDropdownMenu = () => (
     <div className="absolute right-0 top-full mt-2 w-56 sm:w-60 bg-white rounded-2xl shadow-xl border border-orange-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
       <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FDEEE2]/60 mb-1 border border-orange-100/40">
@@ -188,7 +193,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          onClick={() => handleProfileNavigation(getUserPath())}
+          onClick={() => handleProfileNavigation(getSettingsPath())}
           className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gray-700 hover:text-[#FF6B35] hover:bg-orange-50/80 rounded-xl transition-colors w-full text-left cursor-pointer"
         >
           <Settings className="w-4 h-4 text-[#FF6B35]" />

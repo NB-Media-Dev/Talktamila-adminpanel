@@ -10,7 +10,6 @@ interface SidebarCardProps {
   isLoading?: boolean;
   skeleton?: React.ReactNode;
   className?: string;
-  /** Makes the action label a real, keyboard-focusable button. */
   onActionClick?: () => void;
 }
 

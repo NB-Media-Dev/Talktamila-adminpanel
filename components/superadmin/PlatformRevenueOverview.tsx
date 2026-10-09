@@ -6,8 +6,6 @@ import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 
 // Mock data — swap for GET /superadmin/revenue-overview once it exists.
-// This is the money view a regular Admin should NOT see: revenue across
-// every influencer + freelancer combined, not just what they personally manage.
 export function PlatformRevenueOverview() {
   const [isLoading, setIsLoading] = useState(true);
   UsetimeoutLoader(setIsLoading);

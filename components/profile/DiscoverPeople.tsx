@@ -16,16 +16,6 @@ function formatRole(role?: string | null): string {
   return role.replace(/[_-]+/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
 }
 
-/**
- * "Discover people" strip for the profile page — built on the existing
- * Cardlayout / Button / color-token pattern already used across the
- * dashboard, so it sits visually in line with the rest of the app.
- *
- * Depends on:
- *   GET    /api/v1/stories/suggestions   <- does NOT exist yet, will 404
- *   POST   /api/v1/stories/follow/{id}   <- exists (StoryService.follow_user)
- *   DELETE /api/v1/stories/follow/{id}   <- exists (StoryService.unfollow_user)
- */
 export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: () => void }) {
   const { openProfile } = useProfileLink();
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
@@ -35,7 +25,6 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
   const [dismissedIds, setDismissedIds] = useState<Set<number>>(new Set());
   const [showAll, setShowAll] = useState(false);
 
-  // Left/right arrows so the strip can be scrolled with a mouse on a PC.
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -113,7 +102,6 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
     setDismissedIds((prev) => new Set(prev).add(userId));
   }
 
-  // Nothing to suggest, an error, and not loading — don't take up space.
   if (!isLoading && (loadError || visible.length === 0)) return null;
 
   return (

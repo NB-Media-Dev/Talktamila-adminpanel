@@ -23,13 +23,6 @@ const REPORT_REASONS = [
   "Something else",
 ];
 
-/**
- * The 3-dot menu that sits next to the voice / video call buttons in the chat header
- * (Instagram-style): View profile, Search in chat, Mute, Block, Report, Delete chat.
- *
- * Every action is async. If a request fails, the message is shown inside the
- * dialog (block / report / delete) or through `onError` (mute / unblock).
- */
 export default function ChatHeaderMenu({
   name,
   muted,
@@ -46,7 +39,6 @@ export default function ChatHeaderMenu({
 }: {
   name: string;
   muted: boolean;
-  /** true when I have blocked this person */
   blocked: boolean;
   disabled?: boolean;
   onViewProfile: () => void;
@@ -90,7 +82,6 @@ export default function ChatHeaderMenu({
     setDialog(d);
   }
 
-  /** Actions with no confirmation (mute / unmute / unblock). */
   async function quick(fn: () => Promise<void>) {
     setOpen(false);
     if (busy) return;
@@ -104,7 +95,6 @@ export default function ChatHeaderMenu({
     }
   }
 
-  /** Actions confirmed in a dialog (block / report / delete chat). */
   async function confirmDialog(fn: () => Promise<void>, doneNotice?: string) {
     if (busy) return;
     setBusy(true);

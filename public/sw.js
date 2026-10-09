@@ -1,9 +1,3 @@
-/* Talk Tamila - message notifications (service worker).
- *
- * The browser wakes this file up when the server pushes a notification, even when
- * the website is closed. It shows "Name: message" like Instagram, and opens that chat
- * when you tap it.
- */
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
@@ -21,7 +15,6 @@ self.addEventListener("push", (event) => {
     body: data.body || "You have a new message",
     icon: data.icon || "/icons/icon-192.png",
     badge: data.badge || "/icons/badge-96.png",
-    // Same tag = a newer message from the same person replaces the older pop-up.
     tag: data.tag || "tt-message",
     renotify: true,
     data: { url: data.url || "/" },
@@ -29,7 +22,6 @@ self.addEventListener("push", (event) => {
 
   event.waitUntil(
     (async () => {
-      // If you are looking at the app right now, skip the pop-up (the red dot is enough).
       const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
       const lookingAtApp = windows.some((w) => w.visibilityState === "visible" && w.focused);
       if (lookingAtApp) return;

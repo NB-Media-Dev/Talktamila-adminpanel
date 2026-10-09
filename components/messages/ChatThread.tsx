@@ -46,7 +46,6 @@ const POLL_MS = 3000;
 
 const QUICK_REACTIONS = ["❤️", "😂", "😮", "😢", "🙏", "👍"];
 
-/** Shown above a story reply / reaction so the message has context. */
 function StoryContextCard({ m }: { m: ChatMessage }) {
   const label =
     m.kind === "story_reply"
@@ -79,7 +78,6 @@ function roleLabel(role?: string | null) {
   return role.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/** Mount this with key={userId} so switching chats starts from a clean state. */
 export default function ChatThread({
   userId,
   onBack,
@@ -87,11 +85,9 @@ export default function ChatThread({
 }: {
   userId: number;
   onBack: () => void;
-  /** Called after messages are read/sent so the inbox can refresh. */
   onActivity: () => void;
 }) {
   const [partner, setPartner] = useState<ChatUser | null>(null);
-  // Message-request status: are they asking to message me, or am I waiting on them?
   const [request, setRequest] = useState<RequestState | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,10 +98,8 @@ export default function ChatThread({
   const [draft, setDraft] = useState("");
   const [sendError, setSendError] = useState<string | null>(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
-  // Which message has its reaction bar open, and whether the full emoji list is showing.
   const [reactFor, setReactFor] = useState<number | null>(null);
   const [reactFull, setReactFull] = useState(false);
-  // Message actions (Copy / Unsend): which message has its menu open, and the unsend confirmation.
   const [menuFor, setMenuFor] = useState<number | null>(null);
   const [confirmUnsendId, setConfirmUnsendId] = useState<number | null>(null);
   const [unsending, setUnsending] = useState(false);
@@ -124,7 +118,6 @@ export default function ChatThread({
   const prevHeightRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
   const loadedRef = useRef(false);
-  // Messages with a reaction request in flight - polling must not overwrite these.
   const reactBusy = useRef<Set<number>>(new Set());
   // Long-press timer (touch screens) for opening a message's menu.
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -161,7 +154,6 @@ export default function ChatThread({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  // Live updates: poll for anything newer than what we have (pauses in background tabs).
   useEffect(() => {
     const id = setInterval(async () => {
       if (document.hidden || !loadedRef.current) return;
@@ -190,8 +182,6 @@ export default function ChatThread({
             return changed ? next : prev;
           });
         }
-        // Messages unsent since the last check: anything we hold in the polled range
-        // that the server no longer has. Newer / older ids are left alone.
         if (res.existing_ids && knownMin !== undefined) {
           const alive = new Set(res.existing_ids);
           setMessages((prev) => {
@@ -202,7 +192,6 @@ export default function ChatThread({
           });
         }
         setLastReadId(res.last_read_by_other_id);
-        // Picks up "they accepted my request" / "I can send again" without a reload.
         if (res.request) setRequest(res.request);
       } catch {
         /* transient - try again next tick */
@@ -212,7 +201,6 @@ export default function ChatThread({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  // Keep the view pinned to the newest message, or hold position after loading older ones.
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -277,7 +265,6 @@ export default function ChatThread({
     }
   }
 
-  /** In this 1:1 chat, any reaction from someone other than the partner is mine. */
   const withMyReaction = (list: MessageReaction[], emoji: string | null): MessageReaction[] => {
     const theirs = list.filter((r) => r.user_id === userId);
     return emoji ? [...theirs, { user_id: -1, emoji }] : theirs;
@@ -332,7 +319,6 @@ export default function ChatThread({
     }
   }
 
-  /** Unsend = delete for everyone. Only my own messages; the server double-checks. */
   async function confirmUnsend() {
     const id = confirmUnsendId;
     if (id === null || unsending) return;
@@ -359,7 +345,6 @@ export default function ChatThread({
   const callBlocked = !!(partner?.blocked_by_me || partner?.blocked_me);
   const partnerName = partner ? partner.full_name || `@${partner.username}` : "this user";
 
-  // ---- Search in chat: looks through the messages loaded in this chat ----
   const matchIds = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!searchOpen || !q) return [] as number[];
@@ -385,7 +370,6 @@ export default function ChatThread({
     setQuery("");
   }
 
-  // ---- Header menu actions (each one throws on failure; the menu shows the error) ----
   async function toggleMute() {
     if (!partner) return;
     const next = !partner.muted;
@@ -418,10 +402,8 @@ export default function ChatThread({
     onBack();
   }
 
-  // ---- Message request actions (Accept / Delete / Block bar) ----
   async function acceptRequest() {
     await messageService.acceptRequest(userId);
-    // Now a normal chat: show the composer right away and refresh the inbox.
     setRequest((r) => (r ? { ...r, is_request: false } : r));
     onActivity();
   }
@@ -474,7 +456,6 @@ export default function ChatThread({
           <div className="h-9 w-40 rounded-full bg-orange-100/60 animate-pulse" />
         )}
 
-        {/* Voice and video call - available from the very first message */}
         <div className="ml-auto flex items-center gap-1 shrink-0">
           <button
             type="button"

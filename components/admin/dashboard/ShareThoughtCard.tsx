@@ -1,11 +1,49 @@
 "use client";
 
+import { useState } from "react";
 import { buttonVariants } from "@/components/ui/Button";
 import { islandMoments } from "@/public/Fonts/Fonts";
-import { Pencil, Image as ImageIcon, Video } from "lucide-react";
+import { Pencil, Image as ImageIcon, Video, X } from "lucide-react";
+import PostComposer, { type ComposerMode } from "./PostComposer";
+import { clearThought, saveThought, useThought, type Thought } from "@/lib/thoughtStore";
+
+// short text shown in the card
+function thoughtText(t: Thought): string {
+  switch (t.kind) {
+    case "poll":
+      return `${t.text} · Poll (${t.pollOptions?.length ?? 0} options)`;
+    case "image":
+      return t.text || "Photo";
+    case "video":
+      return t.text || "Video";
+    case "gif":
+      return t.text || "GIF";
+    default:
+      return t.text;
+  }
+}
+
+function ThoughtThumb({ t }: { t: Thought }) {
+  const box = "w-9 h-9 sm:w-12 sm:h-12 rounded-lg object-cover border border-[#FFEFE0] bg-gray-50 shrink-0";
+  if (t.kind === "image" && t.mediaUrl)
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={t.mediaUrl} alt="Your photo" className={box} />;
+  if (t.kind === "gif" && t.gifUrl)
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={t.gifUrl} alt="Your GIF" className={box} />;
+  if (t.kind === "video" && t.mediaUrl)
+    return <video src={t.mediaUrl} muted playsInline preload="metadata" className={box} />;
+  return null;
+}
 
 export default function ShareThoughtCard() {
+  const thought = useThought();
+  const [composer, setComposer] = useState<{ mode: ComposerMode; openEmoji?: boolean } | null>(null);
+
+  const open = (mode: ComposerMode, openEmoji = false) => setComposer({ mode, openEmoji });
+
   return (
+    <>
     <div className={`@container w-full max-w-[24rem] mx-auto select-none p-0.5 sm:p-1 ${islandMoments.variable}`}>
       <div className="relative w-full">
 
@@ -57,8 +95,9 @@ export default function ShareThoughtCard() {
               transition-transform duration-200 
               active:scale-90 hover:scale-110
             "
-            title="Edit thought"
-            aria-label="Edit thought"
+            title="Write a thought"
+            aria-label="Write a thought"
+            onClick={() => open("text")}
           >
             <Pencil
               className="w-3.5 h-3.5 sm:w-5.5 sm:h-5.5 text-white transform -rotate-12 drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.25)]"
@@ -78,9 +117,37 @@ export default function ShareThoughtCard() {
               Thoughts...
             </h2>
 
-            <p className="text-[11px] sm:text-[14px] text-[#3A3A3C] font-sans font-normal mt-1 sm:mt-4 truncate">
-              New Thought Incoming...
-            </p>
+            {thought ? (
+              <div className="flex items-center gap-2 mt-1 sm:mt-3">
+                <button
+                  type="button"
+                  onClick={() => open(thought.kind)}
+                  title="Edit your thought"
+                  className="flex-1 min-w-0 text-left text-[11px] sm:text-[14px] text-[#3A3A3C] font-sans font-normal leading-snug line-clamp-2 break-words cursor-text"
+                >
+                  {thoughtText(thought)}
+                </button>
+                <ThoughtThumb t={thought} />
+                <button
+                  type="button"
+                  onClick={clearThought}
+                  title="Remove"
+                  aria-label="Remove your thought"
+                  className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 rounded-full bg-[#FFF6ED] text-[#E05D24] flex items-center justify-center hover:bg-[#FFEFE0] cursor-pointer"
+                >
+                  <X className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => open("text")}
+                title="Write a thought"
+                className="block w-full text-left text-[11px] sm:text-[14px] text-[#3A3A3C] font-sans font-normal mt-1 sm:mt-4 truncate cursor-text"
+              >
+                New Thought Incoming...
+              </button>
+            )}
           </div>
 
           <div className="relative z-10 flex items-center justify-between px-3.5 sm:px-6 pt-1 sm:pt-2 pb-3 sm:pb-4 mt-auto">
@@ -88,8 +155,9 @@ export default function ShareThoughtCard() {
             <div className="flex items-center gap-1.5 xs:gap-2.5 sm:gap-5 text-[#8E8E93]">
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Add Image"
+                onClick={() => open("image")}
                 aria-label="Add Image"
               >
                 <ImageIcon className="w-[17px] h-[17px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
@@ -97,8 +165,9 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Add Video"
+                onClick={() => open("video")}
                 aria-label="Add Video"
               >
                 <Video className="w-[17px] h-[17px] sm:w-[22px] sm:h-[22px]" strokeWidth={1.8} />
@@ -106,8 +175,9 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5`}
                 title="Create Poll"
+                onClick={() => open("poll")}
                 aria-label="Create Poll"
               >
                 <svg
@@ -126,8 +196,9 @@ export default function ShareThoughtCard() {
 
               <button
                 type="button"
-                className={`hover:${buttonVariants({ variant: 'hovericon' })} p-0.5`}
-                title="Add Emoji"
+                className={`${buttonVariants({ variant: 'hovericon' })} p-0.5`}
+                title="Add Emoji or GIF"
+                onClick={() => open("text", true)}
                 aria-label="Add Emoji"
               >
                 <svg
@@ -145,6 +216,8 @@ export default function ShareThoughtCard() {
 
             <button
               type="button"
+              onClick={() => open("text")}
+              title="Write a thought"
               className={`
                ${buttonVariants({ variant: "default" })}
                 text-white
@@ -168,5 +241,16 @@ export default function ShareThoughtCard() {
         </div>
       </div>
     </div>
+
+    {composer && (
+      <PostComposer
+        mode={composer.mode}
+        openEmoji={composer.openEmoji}
+        initial={thought}
+        onSubmit={saveThought}
+        onClose={() => setComposer(null)}
+      />
+    )}
+    </>
   );
 }

@@ -6,7 +6,6 @@ import { MessageCircle } from "lucide-react";
 import { messageService } from "@/services/message.service";
 import { useMessagesBase } from "@/hooks/useMessagesBase";
 
-/** Navbar chat button with an unread badge. Pass the same classes the old button used. */
 export default function MessageButton({ className = "" }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();

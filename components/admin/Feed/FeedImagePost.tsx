@@ -84,10 +84,10 @@ export default function FeedImagePost({ isLoading: propIsLoading }: FeedImagePos
       />
 
       <div className="text-[0.8125rem] text-gray-800 leading-relaxed font-normal">
-        சென்னை கடற்கரை சாலையில் புதிய மெட்ரோ வழித்தடப் பணிகள் துவக்கம்!{" "}
-        <span className="text-[#FF6B35] font-semibold cursor-pointer">#Chennai</span>{" "}
-        <span className="text-[#FF6B35] font-semibold cursor-pointer">#MetroUpdate</span>{" "}
-        <span className="text-[#FF6B35] font-semibold cursor-pointer">#News</span>
+        புதிய தமிழ் திரைப்படத்தின் போஸ்டர் இன்று வெளியானது!{" "}
+        <span className="text-[#FF6B35] font-semibold cursor-pointer">#TamilCinema</span>{" "}
+        <span className="text-[#FF6B35] font-semibold cursor-pointer">#NewMovie</span>{" "}
+        <span className="text-[#FF6B35] font-semibold cursor-pointer">#Poster</span>
       </div>
 
       <div className="w-full relative flex flex-col gap-2">
@@ -159,4 +159,3 @@ export default function FeedImagePost({ isLoading: propIsLoading }: FeedImagePos
     </div>
   );
 }
-

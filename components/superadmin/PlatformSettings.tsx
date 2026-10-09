@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { Settings2 } from "lucide-react";
 
-// Local-only toggle state for now — wire each of these to a real
 // PATCH /superadmin/settings endpoint once it exists. These are the
-// platform-wide switches only a Super Admin should be able to flip —
 // a regular Admin approves/rejects individual posts, but shouldn't be
 // able to change the rules everyone plays by.
 const initialSettings = [

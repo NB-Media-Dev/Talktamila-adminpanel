@@ -54,18 +54,12 @@ export const storyService = {
 
   // Views & Likes
 
-  /**
-   * Records a view for an individual slide frame.
-   * POSTs to: POST /api/v1/stories/${slideId}/view
-   * @param slideId - The unique `id` of the StorySlide being viewed.
-   */
   recordSlideView: async (slideId: number): Promise<{ success: boolean; views_count: number }> => {
     return apiClient<{ success: boolean; views_count: number }>(`/api/v1/stories/${slideId}/view`, {
       method: 'POST',
     });
   },
 
-  /** @deprecated Use recordSlideView(slide.id) for per-slide tracking. */
   recordView: async (storyId: number | string): Promise<{ success: boolean; views_count: number }> => {
     return apiClient<{ success: boolean; views_count: number }>(`/api/v1/stories/${storyId}/view`, {
       method: 'POST',
@@ -146,7 +140,7 @@ export const storyService = {
   },
 
   muteCreator: async (userId: number | string): Promise<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }> => {
-    return apiClient<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }>(`/api/v1/stories/users/${userId}/mute`, {
+    return apiClient<{ success: boolean; message: string; muted_user_id: number; is_muted: boolean }>(`/api/v1/stories/mute/${userId}`, {
       method: 'POST',
     });
   },

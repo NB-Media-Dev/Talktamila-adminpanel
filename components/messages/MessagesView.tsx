@@ -31,9 +31,7 @@ export default function MessagesView() {
   const [tab, setTab] = useState<Tab>("messages");
   const [pickerOpen, setPickerOpen] = useState(false);
   const summaryRef = useRef<MessageSummary | null>(null);
-  // Used once, so opening a link straight to a request chat lands on the Requests tab.
   const tabInitRef = useRef(false);
-  // 3-dot menu on an inbox row (fixed position so the scrolling list can't clip it).
   const [menu, setMenu] = useState<{ id: number; top: number; right: number } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Conversation["partner"] | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -49,7 +47,6 @@ export default function MessagesView() {
     }
   }, []);
 
-  // Inbox: load once, then poll the tiny summary and only refetch when something changed.
   useEffect(() => {
     loadConversations();
     const tick = async () => {
@@ -75,7 +72,6 @@ export default function MessagesView() {
     return () => clearInterval(id);
   }, [loadConversations]);
 
-  // Split the inbox: mutual follows (and accepted chats) vs message requests.
   const primary = useMemo(() => conversations.filter((c) => !c.is_request), [conversations]);
   const requests = useMemo(() => conversations.filter((c) => !!c.is_request), [conversations]);
   const requestsUnread = requests.some((c) => c.is_unread ?? c.unread_count > 0);
@@ -87,13 +83,11 @@ export default function MessagesView() {
 
   useEffect(() => {
     if (loading) return;
-    // First load: a link to a request chat should open on the Requests tab.
     if (!tabInitRef.current) {
       tabInitRef.current = true;
       if (activeConversation?.is_request) setTab("requests");
       return;
     }
-    // The open chat was just accepted: follow it over to the main Messages tab.
     if (tab === "requests" && activeConversation && !activeConversation.is_request) {
       setTab("messages");
     }
@@ -120,7 +114,6 @@ export default function MessagesView() {
     const makeUnread = !(c.is_unread ?? c.unread_count > 0);
     setMenu(null);
     setActionError(null);
-    // Update the row right away; put it back if the server says no.
     setConversations((prev) =>
       prev.map((x) =>
         x.partner.user_id === id
@@ -141,7 +134,6 @@ export default function MessagesView() {
     const id = c.partner.user_id;
     setMenu(null);
     setActionError(null);
-    // Move the row to the main inbox right away; put it back if the server says no.
     setConversations((prev) =>
       prev.map((x) => (x.partner.user_id === id ? { ...x, is_request: false } : x))
     );
@@ -428,7 +420,6 @@ export default function MessagesView() {
         </>
       )}
 
-      {/* Delete chat: confirmed once, deletes for me only (the other person keeps their copy) */}
       {confirmDelete && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"

@@ -38,10 +38,6 @@ const STYLES: Record<Variant, { wrap: string; talk: string; tamila: string; dot:
 
 const ANIMATIONS = ["tt-anim-quake", "tt-anim-flip", "tt-anim-jelly"] as const;
 
-/**
- * The Talk Tamila wordmark. Tap/click it and one of three animations plays at random
- * (earthquake shake then fall, bounce + flip, rainbow jelly) - never the same one twice in a row.
- */
 export default function AnimatedLogo({
   variant,
   interactive = true,

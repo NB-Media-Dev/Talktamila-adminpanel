@@ -4,12 +4,6 @@ import { useEffect, useState } from "react";
 import { Bell, X } from "lucide-react";
 import { dismissPrompt, enablePush, shouldShowPrompt, syncPushIfAllowed } from "@/lib/push";
 
-/**
- * Instagram-style message notifications.
- * - Already allowed: quietly keeps this browser registered for the logged-in person.
- * - Not decided yet: shows a small "Turn on notifications" card once in a while.
- * Renders nothing when the browser can't do notifications.
- */
 export default function MessageNotifications() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [busy, setBusy] = useState(false);

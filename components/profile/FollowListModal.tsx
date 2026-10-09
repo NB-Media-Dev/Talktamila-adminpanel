@@ -11,7 +11,6 @@ interface FollowListModalProps {
   userId: number;
   initialTab: "followers" | "following";
   onClose: () => void;
-  /** Called after a successful follow/unfollow so the profile counts can refresh. */
   onChanged?: () => void;
 }
 
@@ -66,7 +65,6 @@ export default function FollowListModal({
         ? await userService.unfollowUser(user.user_id)
         : await userService.followUser(user.user_id);
 
-      // Keep the row in the list: after "Unfollow" it flips to "Follow", so it can be undone.
       setList((prev) =>
         prev.map((u) =>
           u.user_id === user.user_id

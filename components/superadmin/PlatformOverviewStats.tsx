@@ -5,8 +5,6 @@ import { useState } from "react";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { StatsCardSkeleton } from "@/components/ui/Skeletonloading";
 
-// Mock data — replace with a real API call once /superadmin endpoints exist.
-// Each card answers one question a Super Admin needs at a glance.
 const stats = [
   {
     label: "Total Users",

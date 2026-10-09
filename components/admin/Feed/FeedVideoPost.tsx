@@ -54,10 +54,10 @@ export default function FeedVideoPost({ isLoading: propIsLoading }: FeedVideoPos
       />
 
       <div className="text-[0.8125rem] text-gray-800 leading-relaxed font-normal">
-        சென்னை கடற்கரை சாலையில் புதிய மெட்ரோ வழித்தடப் பணிகள் துவக்கம்!{" "}
-        <span className="text-[#FF6B35] font-semibold cursor-pointer">#Chennai</span>{" "}
-        <span className="text-[#FF6B35] font-semibold cursor-pointer">#MetroUpdate</span>{" "}
-        <span className="text-[#FF6B35] font-semibold cursor-pointer">#News</span>
+        இன்றைய முக்கிய செய்திகள் - ஒரு நிமிட வீடியோவில்!{" "}
+        <span className="text-[#FF6B35] font-semibold cursor-pointer">#TamilNews</span>{" "}
+        <span className="text-[#FF6B35] font-semibold cursor-pointer">#Today</span>{" "}
+        <span className="text-[#FF6B35] font-semibold cursor-pointer">#Video</span>
       </div>
 
       <div className="w-full aspect-[16/9] min-h-[260px] max-h-[360px] rounded-[24px] overflow-hidden relative border border-[#FFEFE0] group cursor-pointer">
@@ -106,4 +106,3 @@ export default function FeedVideoPost({ isLoading: propIsLoading }: FeedVideoPos
     </div>
   );
 }
-

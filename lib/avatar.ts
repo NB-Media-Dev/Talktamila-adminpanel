@@ -1,8 +1,3 @@
-/**
- * One default avatar for the whole app: the user's initials on a soft orange
- * background. Used by the navbar, story circles, discover cards and anywhere
- * else a user has not uploaded a profile photo.
- */
 
 type InitialsInput = {
   firstName?: string | null;
@@ -24,7 +19,6 @@ export function getInitials({ firstName, lastName, name, username }: InitialsInp
   return "?";
 }
 
-/** A small SVG picture of the initials, usable anywhere an <img src> is expected. */
 export function initialsAvatar(initials: string): string {
   const safe = initials.replace(/[^\p{L}\p{M}\p{N}?]/gu, "").slice(0, 3) || "?";
   const svg =

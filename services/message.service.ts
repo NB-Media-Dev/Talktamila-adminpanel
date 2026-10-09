@@ -17,7 +17,6 @@ export const messageService = {
   conversations: (): Promise<Conversation[]> =>
     apiClient<Conversation[]>('/api/v1/messages/conversations', { method: 'GET' }),
 
-  /** Everyone except me. Used by "See all" and the "New message" picker. */
   people: (q = '', limit = 30, offset = 0): Promise<ChatUser[]> => {
     const params = new URLSearchParams();
     if (q.trim()) params.set('q', q.trim());
@@ -46,12 +45,10 @@ export const messageService = {
     return apiClient<ChatMessage>(`/api/v1/messages/thread/${userId}`, {
       method: 'POST',
       body: JSON.stringify({ body }),
-      // Tells the backend which browser is sending, so it never notifies the sender's own browser.
       headers: pushEndpoint ? { 'X-Push-Endpoint': pushEndpoint } : undefined,
     });
   },
 
-  /** Set my reaction on a message I sent or received (replaces my previous one). */
   react: (messageId: number, emoji: string): Promise<ReactionUpdate> =>
     apiClient<ReactionUpdate>(`/api/v1/messages/${messageId}/reaction`, {
       method: 'PUT',
@@ -61,25 +58,20 @@ export const messageService = {
   unreact: (messageId: number): Promise<ReactionUpdate> =>
     apiClient<ReactionUpdate>(`/api/v1/messages/${messageId}/reaction`, { method: 'DELETE' }),
 
-  /** Mark a chat as read without opening it (inbox 3-dot menu). */
   markRead: (userId: number): Promise<{ success: boolean }> =>
     apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}/read`, { method: 'POST' }),
 
-  /** Mark a chat as unread (inbox 3-dot menu). The other person's "Seen" status is not affected. */
   markUnread: (userId: number): Promise<{ success: boolean }> =>
     apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}/unread`, { method: 'POST' }),
 
-  /** Accept a message request: the chat moves from Requests to the main inbox. */
   acceptRequest: (userId: number): Promise<{ success: boolean; accepted: boolean }> =>
     apiClient<{ success: boolean; accepted: boolean }>(`/api/v1/messages/thread/${userId}/accept`, {
       method: 'POST',
     }),
 
-  /** Delete a chat for me only - the other person keeps their copy. */
   deleteChat: (userId: number): Promise<{ success: boolean }> =>
     apiClient<{ success: boolean }>(`/api/v1/messages/thread/${userId}`, { method: 'DELETE' }),
 
-  /** Block this person: neither of you can message or call the other. */
   block: (userId: number): Promise<{ success: boolean; blocked: boolean }> =>
     apiClient<{ success: boolean; blocked: boolean }>(`/api/v1/messages/thread/${userId}/block`, {
       method: 'POST',
@@ -90,7 +82,6 @@ export const messageService = {
       method: 'DELETE',
     }),
 
-  /** Mute a chat: it stops counting in the unread badge. */
   mute: (userId: number): Promise<{ success: boolean; muted: boolean }> =>
     apiClient<{ success: boolean; muted: boolean }>(`/api/v1/messages/thread/${userId}/mute`, {
       method: 'POST',
@@ -107,7 +98,6 @@ export const messageService = {
       body: JSON.stringify({ reason }),
     }),
 
-  /** Unsend (delete for everyone) a message I sent. */
   unsend: (messageId: number): Promise<UnsendResult> =>
     apiClient<UnsendResult>(`/api/v1/messages/${messageId}`, { method: 'DELETE' }),
 };

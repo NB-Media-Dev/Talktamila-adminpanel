@@ -6,7 +6,6 @@ import UserAvatar from "@/components/messages/UserAvatar";
 import { formatDuration } from "@/components/messages/chatUtils";
 import type { CallState } from "./CallProvider";
 
-/** Points a <video> element at a MediaStream. */
 function useStream(stream: MediaStream | null) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
@@ -108,7 +107,6 @@ export default function CallOverlay({
       aria-label={`Call with ${name}`}
       className="fixed inset-0 z-[100] flex flex-col overflow-hidden text-white bg-[linear-gradient(160deg,#E6703A,#FFA663)]"
     >
-      {/* Remote media. Audio calls keep the element only to play the sound. */}
       <video
         ref={remoteRef}
         autoPlay

@@ -23,8 +23,6 @@ export function setAuthToken(token: string, maxAgeSeconds: number =30*60) {
   setCookie('tt_token', token, maxAgeSeconds);
 }
 
-// Role is stored only so proxy.ts can pick the right dashboard when redirecting.
-// It is NOT a security boundary - the backend enforces roles on every API call.
 export function setAuthRole(role: string, maxAgeSeconds: number = 7 * 24 * 60 * 60) {
   setCookie('tt_role', role.toLowerCase(), maxAgeSeconds);
 }

@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Camera,
   Info,
   LayoutGrid,
   Link2,
@@ -18,6 +17,7 @@ import { goBack as historyBack } from "@/lib/navigation";
 import { getInitials } from "@/lib/avatar";
 import { buttonVariants } from "@/components/ui/Button";
 import FollowListModal from "@/components/profile/FollowListModal";
+import ProfilePosts from "@/components/profile/ProfilePosts";
 import { useMessagesBase } from "@/hooks/useMessagesBase";
 import { useProfileLink } from "@/hooks/useProfileLink";
 import type { PublicProfileData } from "@/types/Auth";
@@ -37,11 +37,6 @@ function joinedLabel(iso: string | null) {
   return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
-/**
- * What you see when you open someone else's profile (Instagram-style):
- * avatar, username, Posts / Followers / Following, Follow + Message buttons,
- * bio, and a Posts / About tab area. Uses the same card look as your own profile.
- */
 export default function PublicProfileView({ username }: { username: string }) {
   const router = useRouter();
   const messagesBase = useMessagesBase();
@@ -59,8 +54,6 @@ export default function PublicProfileView({ username }: { username: string }) {
   const [copied, setCopied] = useState(false);
   const busyRef = useRef(false);
 
-  // Load when the page opens. (The route page gives this component key={username},
-  // so opening another person from here starts fresh with a new load.)
   useEffect(() => {
     let cancelled = false;
     userService
@@ -79,7 +72,6 @@ export default function PublicProfileView({ username }: { username: string }) {
     };
   }, [username]);
 
-  // Quiet refresh (no spinner) - keeps counts and the Follow button current.
   const refresh = useCallback(async () => {
     if (busyRef.current) return;
     try {
@@ -102,7 +94,6 @@ export default function PublicProfileView({ username }: { username: string }) {
     };
   }, [refresh]);
 
-  // Opening your own name (e.g. from a followers list) goes to your own profile page.
   useEffect(() => {
     if (profile?.is_me) router.replace(`${base}/profile`);
   }, [profile?.is_me, base, router]);
@@ -337,13 +328,11 @@ export default function PublicProfileView({ username }: { username: string }) {
         </div>
 
         {tab === "posts" && (
-          <div className="flex flex-col items-center text-center px-6 py-14">
-            <div className="w-16 h-16 rounded-full border-2 border-[#FF6B35] text-[#FF6B35] flex items-center justify-center">
-              <Camera className="w-7 h-7" />
-            </div>
-            <p className="mt-4 text-base font-bold text-gray-900">No posts yet</p>
-            <p className="text-sm text-gray-500 mt-1">Posts shared by @{profile.username} will appear here.</p>
-          </div>
+          <ProfilePosts
+            username={profile.username}
+            refreshKey={profile.posts_count}
+            onChanged={refresh}
+          />
         )}
 
         {tab === "about" && (
