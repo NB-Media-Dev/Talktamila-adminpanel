@@ -16,6 +16,7 @@ import { userService } from "@/services/user.service";
 import { goBack as historyBack } from "@/lib/navigation";
 import { getInitials } from "@/lib/avatar";
 import { buttonVariants } from "@/components/ui/Button";
+import DiscoverPeople from "@/components/profile/DiscoverPeople";
 import FollowListModal from "@/components/profile/FollowListModal";
 import ProfilePosts from "@/components/profile/ProfilePosts";
 import { useMessagesBase } from "@/hooks/useMessagesBase";
@@ -167,7 +168,7 @@ export default function PublicProfileView({ username }: { username: string }) {
   });
   const joined = joinedLabel(profile.joined_at);
   const demo = isDemoRole(profile.role);
-  const postsCount = demo ? DEMO_POST_COUNT : profile.posts_count;
+  const postsCount = demo ? DEMO_POST_COUNT + profile.posts_count : profile.posts_count;
 
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-5">
@@ -305,6 +306,9 @@ export default function PublicProfileView({ username }: { username: string }) {
           </div>
         )}
       </div>
+
+      {/* Discover people: right under their profile card */}
+      <DiscoverPeople excludeUserId={profile.user_id} onFollowChange={refresh} />
 
       {/* Tabs */}
       <div className="bg-white rounded-3xl shadow-sm border border-orange-100 overflow-hidden">

@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Bookmark, Heart, Loader2, MessageCircle, MoreHorizontal, Pin, Send } from "lucide-react";
 import { notifyPostsChanged, postService } from "@/services/post.service";
 import { userService } from "@/services/user.service";
 import { getInitials, initialsAvatar } from "@/lib/avatar";
 import { timeAgo } from "@/lib/timeAgo";
 import { useProfileLink } from "@/hooks/useProfileLink";
+import { useContenthook } from "@/hooks/useContent";
 import PostModal from "@/components/post/PostModal";
 import RichText from "@/components/post/RichText";
 import PostMusicPlayer from "@/components/post/PostMusicPlayer";
@@ -15,6 +16,7 @@ import PostComments from "@/components/post/PostComments";
 import PostShareSheet from "@/components/post/PostShareSheet";
 import PostEditModal from "@/components/post/PostEditModal";
 import PostInsightsModal from "@/components/post/PostInsightsModal";
+import PostCarousel from "@/components/post/PostCarousel";
 import PostLikersModal from "@/components/post/PostLikersModal";
 import { REPORT_REASONS, type FeedResponse, type Poll, type Post, type PostAuthor, type ReportReason } from "@/types/Posts";
 
@@ -37,6 +39,22 @@ const viewedPosts = new Set<number>();
 
 const CAPTION_PREVIEW_CHARS = 140;
 
+// Instagram-style numbers: 987, 1,234, 12.3K, 1.2M
+function fmtCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (n >= 10_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  return n.toLocaleString();
+}
+
+// Instagram-style picture frame: it follows the picture's own shape, but is never
+// taller than 4:5 and never wider than 1.91:1. Anything outside that is cropped.
+const MIN_RATIO = 4 / 5;
+const MAX_RATIO = 1.91;
+function clampRatio(width: number, height: number): number {
+  if (!width || !height) return 1;
+  return Math.min(MAX_RATIO, Math.max(MIN_RATIO, width / height));
+}
+
 export default function PostCard({
   post,
   author,
@@ -47,6 +65,7 @@ export default function PostCard({
   defaultShowComments = false,
 }: PostCardProps) {
   const { openProfile } = useProfileLink();
+  const content = useContext(useContenthook);
   const [p, setP] = useState<Post>(post);
   const pRef = useRef<Post>(post);
   const onUpdatedRef = useRef(onUpdated);
@@ -57,6 +76,13 @@ export default function PostCard({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [modal, setModal] = useState<ModalName>(null);
+
+  // Opens the same Analytics popup for every post (the page that already exists).
+  // If the page has no popup host, fall back to the post's own insights popup.
+  const openAnalytics = () => {
+    if (content) content.setAnalyticsState(true);
+    else setModal("insights");
+  };
   const [showComments, setShowComments] = useState(defaultShowComments);
   const [captionOpen, setCaptionOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -65,6 +91,7 @@ export default function PostCard({
   const [message, setMessage] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [burst, setBurst] = useState(0);
+  const [mediaRatio, setMediaRatio] = useState(1);
   const [reportReason, setReportReason] = useState<ReportReason | null>(null);
   const [reporting, setReporting] = useState(false);
 
@@ -371,12 +398,10 @@ export default function PostCard({
         </>
       );
     }
-    return button(
-      <b className="font-bold text-gray-900">
-        {likeCount.toLocaleString()} {likeCount === 1 ? "like" : "likes"}
-      </b>
-    );
+    // Plain "N likes" is shown beside the heart, like Instagram.
+    return null;
   };
+  const likesNode = interactive ? likesLine() : null;
 
   const body = (
     <>
@@ -386,35 +411,57 @@ export default function PostCard({
         </div>
       )}
 
-      {p.post_type === "image" && p.media_url && (
-        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5 flex items-center justify-center">
+      {p.post_type === "image" && p.media_url && (p.media_urls?.length ?? 0) > 1 && (
+        <PostCarousel urls={p.media_urls!.map((u) => postService.mediaSrc(u))} alt="Post picture" />
+      )}
+
+      {p.post_type === "image" && p.media_url && (p.media_urls?.length ?? 0) <= 1 && (
+        <div
+          className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5"
+          style={{ aspectRatio: mediaRatio }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={postService.mediaSrc(p.media_url)}
             alt="Post image"
             loading="lazy"
             draggable={false}
-            className="w-full h-auto max-h-[550px] object-contain"
+            onLoad={(e) => setMediaRatio(clampRatio(e.currentTarget.naturalWidth, e.currentTarget.naturalHeight))}
+            className="w-full h-full object-cover"
           />
         </div>
       )}
 
       {p.post_type === "video" && p.media_url && (
-        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-black">
+        <div
+          className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-black"
+          style={{ aspectRatio: mediaRatio }}
+        >
           <video
             src={postService.mediaSrc(p.media_url)}
             controls
             playsInline
             preload="metadata"
-            className="w-full max-h-[480px]"
+            onLoadedMetadata={(e) => setMediaRatio(clampRatio(e.currentTarget.videoWidth, e.currentTarget.videoHeight))}
+            className="w-full h-full object-contain"
           />
         </div>
       )}
 
       {p.post_type === "gif" && p.gif_url && (
-        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5 flex items-center justify-center">
+        <div
+          className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5"
+          style={{ aspectRatio: mediaRatio }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={p.gif_url} alt="GIF" loading="lazy" draggable={false} className="w-full h-auto max-h-[480px] object-contain" />
+          <img
+            src={p.gif_url}
+            alt="GIF"
+            loading="lazy"
+            draggable={false}
+            onLoad={(e) => setMediaRatio(clampRatio(e.currentTarget.naturalWidth, e.currentTarget.naturalHeight))}
+            className="w-full h-full object-cover"
+          />
         </div>
       )}
     </>
@@ -423,7 +470,7 @@ export default function PostCard({
   return (
     <article
       ref={rootRef}
-      className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3 sm:gap-3.5"
+      className="w-full max-w-[540px] mx-auto bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3 sm:gap-3.5"
     >
       <style>{`@keyframes ttHeart{0%{transform:scale(.2);opacity:0}25%{transform:scale(1.25);opacity:1}60%{transform:scale(1);opacity:1}100%{transform:scale(1.1);opacity:0}}`}</style>
 
@@ -486,7 +533,7 @@ export default function PostCard({
                 toggleFollow,
                 report: () => setModal("report"),
                 edit: () => setModal("edit"),
-                insights: () => setModal("insights"),
+                analytics: openAnalytics,
                 toggleArchive,
                 togglePin,
                 toggleHideLikes,
@@ -564,38 +611,59 @@ export default function PostCard({
         </div>
       )}
 
-      {/* action row */}
+      {/* action row: each icon has its number beside it, like Instagram */}
       {interactive ? (
-        <div className="flex items-center gap-1 -mx-1">
-          <button
-            type="button"
-            onClick={() => toggleLike()}
-            aria-label={p.liked_by_me ? "Unlike" : "Like"}
-            aria-pressed={Boolean(p.liked_by_me)}
-            className="p-1.5 rounded-full hover:bg-orange-50 transition-transform active:scale-90 cursor-pointer"
-          >
-            <Heart className={`w-6 h-6 ${p.liked_by_me ? "fill-red-500 text-red-500" : "text-gray-800"}`} />
-          </button>
+        <div className="flex items-center gap-3 -mx-1">
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={() => toggleLike()}
+              aria-label={p.liked_by_me ? "Unlike" : "Like"}
+              aria-pressed={Boolean(p.liked_by_me)}
+              className="p-1.5 rounded-full hover:bg-orange-50 transition-transform active:scale-90 cursor-pointer"
+            >
+              <Heart className={`w-6 h-6 ${p.liked_by_me ? "fill-red-500 text-red-500" : "text-gray-800"}`} />
+            </button>
+            {likeCount != null && likeCount > 0 && (
+              <button
+                type="button"
+                onClick={() => canSeeLikers && setModal("likers")}
+                aria-label={`${likeCount} ${likeCount === 1 ? "like" : "likes"}`}
+                className={`-ml-0.5 text-[13px] font-semibold text-gray-900 ${canSeeLikers ? "cursor-pointer" : "cursor-default"}`}
+              >
+                {fmtCount(likeCount)}
+              </button>
+            )}
+          </div>
+
           <button
             type="button"
             onClick={() => setShowComments((v) => !v)}
             aria-label="Comments"
             aria-expanded={showComments}
-            className="p-1.5 rounded-full hover:bg-orange-50 cursor-pointer"
+            className="flex items-center rounded-full cursor-pointer"
           >
-            <MessageCircle className={`w-6 h-6 ${showComments ? "text-[#FF6B35]" : "text-gray-800"}`} />
+            <span className="p-1.5 rounded-full hover:bg-orange-50">
+              <MessageCircle className={`w-6 h-6 ${showComments ? "text-[#FF6B35]" : "text-gray-800"}`} />
+            </span>
+            {!p.comments_disabled && commentCount > 0 && (
+              <span className="-ml-0.5 text-[13px] font-semibold text-gray-900">{fmtCount(commentCount)}</span>
+            )}
           </button>
+
           <button
             type="button"
             onClick={() => setModal("share")}
             aria-label="Share"
-            className="p-1.5 rounded-full hover:bg-orange-50 cursor-pointer"
+            className="flex items-center rounded-full cursor-pointer"
           >
-            <Send className="w-6 h-6 text-gray-800" />
+            <span className="p-1.5 rounded-full hover:bg-orange-50">
+              <Send className="w-6 h-6 text-gray-800" />
+            </span>
+            {(p.share_count ?? 0) > 0 && (
+              <span className="-ml-0.5 text-[13px] font-semibold text-gray-900">{fmtCount(p.share_count ?? 0)}</span>
+            )}
           </button>
-          {(p.share_count ?? 0) > 0 && (
-            <span className="text-[12px] text-[#8E8E93] font-semibold -ml-0.5">{(p.share_count ?? 0).toLocaleString()}</span>
-          )}
           {!isOwner && (
             <button
               type="button"
@@ -610,10 +678,10 @@ export default function PostCard({
           {isOwner && (
             <button
               type="button"
-              onClick={() => setModal("insights")}
+              onClick={openAnalytics}
               className="ml-auto px-3 py-1 rounded-full border border-[#FFEFE0] text-[11px] font-bold text-[#9b4811] hover:bg-[#FFF6ED] cursor-pointer"
             >
-              View insights
+              Analytics
             </button>
           )}
         </div>
@@ -627,7 +695,7 @@ export default function PostCard({
 
       {/* likes + caption */}
       <div className="flex flex-col gap-1 text-[13px] text-gray-700 leading-snug">
-        {interactive && <div>{likesLine()}</div>}
+        {interactive && likesNode && <div>{likesNode}</div>}
         {isOwner && p.hide_like_count && likeCount != null && (
           <span className="text-[11px] text-[#8E8E93]">Like count is hidden from other people.</span>
         )}

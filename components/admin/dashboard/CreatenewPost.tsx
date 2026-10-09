@@ -1,12 +1,13 @@
 "use client"
 import { useContext, useEffect, useRef, useState } from "react";
-import { Sparkle, UploadCloud, MoveLeft, X } from "lucide-react";
+import { Sparkle, UploadCloud, MoveLeft, X, Pencil, ChevronLeft } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
 import { buttonVariants } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { LivePreviewloading } from "@/components/ui/Skeletonloading";
 const avatar1 = "/Images/avatar1.png";
 import { FacebookPostPreview } from "./FacebookPostPreview";
+import PostImageEditor from "./PostImageEditor";
 import { notifyPostsChanged, postService } from "@/services/post.service";
 import { POST_LIMITS, type PostType } from "@/types/Posts";
 import MusicsControl, { type MusicTrack } from "./MusicsControl";
@@ -29,6 +30,12 @@ const platformList = [
   { id: "LinkedIn", name: "LinkedIn" },
   { id: "Telegram", name: "Telegram" },
 ];
+
+interface Slide {
+  file: File;
+  original: File;
+  edited: boolean;
+}
 
 function fileProblem(file: File): string | null {
   const isImage = (POST_LIMITS.imageTypes as readonly string[]).includes(file.type);
@@ -56,8 +63,12 @@ export function CreatenewPost() {
 
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // Up to 10 photos (a carousel) or one video. The first slide is the cover.
+  // `original` is the photo exactly as it was chosen, so the editor can always start again from it.
+  const [slides, setSlides] = useState<Slide[]>([]);
+  const [active, setActive] = useState(0);
+  const [thumbs, setThumbs] = useState<string[]>([]);
+  const [editorOpen, setEditorOpen] = useState(false);
   const [scheduleAt, setScheduleAt] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<"schedule" | "publish" | null>(null);
@@ -67,18 +78,22 @@ export function CreatenewPost() {
   const [hideLikes, setHideLikes] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
+  const current = slides[active] ?? null;
+  const file = slides[0]?.file ?? null;
+  const originalFile = current?.original ?? null;
+  const edited = !!current?.edited;
+  const previewUrl = thumbs[active] || null;
   const isVideoFile = !!file && file.type.startsWith("video/");
+  const photoCount = isVideoFile ? 0 : slides.length;
+  // Photos can be edited (GIFs can't: editing would flatten the animation).
+  const canEditPhoto = !!current && current.file.type.startsWith("image/") && current.original.type !== "image/gif";
 
-  // Show the chosen image in the preview, and free the memory when it changes.
+  // Small pictures for the preview and the slide strip. Freed again when the slides change.
   useEffect(() => {
-    if (!file || !file.type.startsWith("image/")) {
-      setPreviewUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
+    const urls = slides.map((s) => (s.file.type.startsWith("image/") ? URL.createObjectURL(s.file) : ""));
+    setThumbs(urls);
+    return () => urls.forEach((u) => u && URL.revokeObjectURL(u));
+  }, [slides]);
 
   const togglePlatform = (platformId: string) => {
     setSelectedPlatforms((prev) =>
@@ -86,15 +101,67 @@ export function CreatenewPost() {
     );
   };
 
-  const chooseFile = (picked: File | null | undefined) => {
-    if (!picked) return;
-    const problem = fileProblem(picked);
-    if (problem) {
-      setError(problem);
+  const chooseFiles = (picked: FileList | File[] | null | undefined) => {
+    const list = Array.from(picked ?? []);
+    if (list.length === 0) return;
+    for (const f of list) {
+      const problem = fileProblem(f);
+      if (problem) {
+        setError(problem);
+        return;
+      }
+    }
+    const video = list.find((f) => f.type.startsWith("video/"));
+    if (video) {
+      if (list.length > 1) {
+        setError("A video has to be posted on its own. Choose one video, or several photos.");
+        return;
+      }
+      setError(null);
+      setSlides([{ file: video, original: video, edited: false }]);
+      setActive(0);
+      setEditorOpen(false);
       return;
     }
-    setError(null);
-    setFile(picked);
+    // Photos are added after the ones already chosen (a video is replaced).
+    const keep = isVideoFile ? [] : slides;
+    const room = POST_LIMITS.maxCarousel - keep.length;
+    if (room <= 0) {
+      setError(`A post can have at most ${POST_LIMITS.maxCarousel} photos.`);
+      return;
+    }
+    const added: Slide[] = list.slice(0, room).map((f) => ({ file: f, original: f, edited: false }));
+    setError(
+      list.length > room
+        ? `Only ${POST_LIMITS.maxCarousel} photos fit in one post, so the extra ones were left out.`
+        : null,
+    );
+    setSlides([...keep, ...added]);
+    setActive(keep.length);
+    setEditorOpen(false);
+  };
+
+  const removeFile = () => {
+    setSlides([]);
+    setActive(0);
+    setEditorOpen(false);
+  };
+
+  const removeSlide = (index: number) => {
+    setSlides((prev) => prev.filter((_, i) => i !== index));
+    setActive((prev) => Math.max(0, Math.min(index < prev ? prev - 1 : prev, slides.length - 2)));
+    setEditorOpen(false);
+  };
+
+  // Move a photo one place earlier (moving it to place 1 makes it the cover).
+  const moveSlideEarlier = (index: number) => {
+    if (index <= 0) return;
+    setSlides((prev) => {
+      const next = [...prev];
+      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      return next;
+    });
+    setActive(index - 1);
   };
 
   const handleNext = () => {
@@ -145,6 +212,7 @@ export function CreatenewPost() {
         postType,
         content: text || undefined,
         media: file ?? undefined,
+        extraMedia: postType === "image" ? slides.slice(1).map((s) => s.file) : undefined,
         scheduledAt,
         music,
         commentsDisabled: commentsOff,
@@ -160,6 +228,56 @@ export function CreatenewPost() {
   };
 
   const isPreviewLoading = step === "loading";
+
+  // The row of small pictures: tap to choose, X to remove, arrow to move earlier.
+  const slideStrip =
+    slides.length > 1 ? (
+      <div className="flex gap-2 overflow-x-auto py-1 max-w-full">
+        {slides.map((slide, i) => (
+          <div key={`${slide.original.name}-${slide.original.lastModified}-${slide.original.size}-${i}`} className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setActive(i);
+                setEditorOpen(false);
+              }}
+              aria-label={`Photo ${i + 1}`}
+              className={`block h-14 w-14 overflow-hidden rounded-lg border-2 bg-[#fff0e7] cursor-pointer ${
+                i === active ? "border-[#ef8b54]" : "border-transparent"
+              }`}
+            >
+              {thumbs[i] ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={thumbs[i]} alt="" className="h-full w-full object-cover" />
+              ) : null}
+            </button>
+            <button
+              type="button"
+              onClick={() => removeSlide(i)}
+              aria-label={`Remove photo ${i + 1}`}
+              className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gray-800 text-white cursor-pointer"
+            >
+              <X size={10} />
+            </button>
+            {i > 0 && (
+              <button
+                type="button"
+                onClick={() => moveSlideEarlier(i)}
+                aria-label={`Move photo ${i + 1} earlier`}
+                className="absolute -bottom-1.5 -left-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-gray-800 shadow cursor-pointer"
+              >
+                <ChevronLeft size={10} />
+              </button>
+            )}
+            {i === 0 && (
+              <span className="absolute bottom-0 left-0 right-0 bg-black/55 text-center text-[8px] font-bold text-white rounded-b-lg">
+                Cover
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    ) : null;
 
   return (
     <div className="fixed inset-0 top-[52px] xs:top-[40px] sm:top-[20px] md:top-0 bg-black/50 backdrop-blur-xs flex items-start md:items-center justify-center p-0 md:p-4 z-40">
@@ -232,8 +350,9 @@ export function CreatenewPost() {
               type="file"
               accept={[...POST_LIMITS.imageTypes, ...POST_LIMITS.videoTypes].join(",")}
               className="hidden"
+              multiple
               onChange={(e) => {
-                chooseFile(e.target.files?.[0]);
+                chooseFiles(e.target.files);
                 e.target.value = "";
               }}
             />
@@ -241,7 +360,7 @@ export function CreatenewPost() {
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 e.preventDefault();
-                chooseFile(e.dataTransfer.files?.[0]);
+                chooseFiles(e.dataTransfer.files);
               }}
               className="border-2 border-dashed border-orange-200 bg-white rounded-2xl p-2.5 min-[2560px]:p-3 min-[3840px]:p-4 text-center flex flex-col items-center justify-center gap-1 min-[3840px]:gap-1.5 shadow-sm transition-colors hover:border-orange-300"
             >
@@ -250,20 +369,23 @@ export function CreatenewPost() {
               </div>
               {file ? (
                 <>
-                  <p className="text-xs min-[3840px]:text-sm font-bold text-gray-800 max-w-[260px] truncate">{file.name}</p>
+                  <p className="text-xs min-[3840px]:text-sm font-bold text-gray-800 max-w-[260px] truncate">
+                    {isVideoFile ? file.name : photoCount === 1 ? file.name : `${photoCount} photos (carousel)`}
+                  </p>
+                  {slideStrip}
                   <button
                     type="button"
-                    onClick={() => setFile(null)}
+                    onClick={removeFile}
                     className="text-[10px] font-bold text-red-500 hover:text-red-600 cursor-pointer"
                   >
-                    Remove file
+                    {photoCount > 1 ? "Remove all" : "Remove file"}
                   </button>
                 </>
               ) : (
                 <>
                   <p className="text-xs min-[3840px]:text-sm font-bold text-gray-800">Drag and drop files here</p>
                   <p className="text-[10px] min-[3840px]:text-xs text-gray-400 max-w-[280px]">
-                    JPG, PNG, WEBP, GIF (max 5 MB) or MP4, WEBM, MOV (max 25 MB)
+                    Up to {POST_LIMITS.maxCarousel} photos for a carousel (JPG, PNG, WEBP, GIF, max 5 MB each) or one MP4, WEBM, MOV video (max 25 MB)
                   </p>
                 </>
               )}
@@ -272,7 +394,7 @@ export function CreatenewPost() {
                 onClick={() => fileInput.current?.click()}
                 className="mt-0.5 px-4 py-1.5 min-[3840px]:px-5 min-[3840px]:py-2 bg-[#ef8b54] text-white text-[10px] min-[3840px]:text-xs font-bold rounded-xl hover:bg-[#d9723a] transition-all shadow-md active:scale-95 cursor-pointer"
               >
-                {file ? "Change file" : "Browse Files"}
+                {!file ? "Browse Files" : isVideoFile ? "Change file" : photoCount >= POST_LIMITS.maxCarousel ? "Add more (full)" : "Add more photos"}
               </button>
             </div>
 
@@ -340,6 +462,42 @@ export function CreatenewPost() {
           </div>
 
           <div className={`flex flex-col gap-2 min-[3840px]:gap-3 ${step !== "edit" ? "block" : "hidden lg:flex"}`}>
+
+            {photoCount > 1 && (
+              <div className="rounded-xl bg-white p-2 shadow-sm">
+                <p className="text-[11px] font-bold text-gray-700 mb-1">
+                  Photo {active + 1} of {photoCount}. Tap one to preview or edit it.
+                </p>
+                {slideStrip}
+              </div>
+            )}
+
+            {/* Edit button: sits right above the preview */}
+            <button
+              type="button"
+              disabled={!canEditPhoto}
+              onClick={() => setEditorOpen(true)}
+              title={canEditPhoto ? "Edit photo" : "Add a photo (not a GIF or video) to edit it"}
+              className="flex items-center justify-center gap-2 w-full py-2 rounded-xl bg-white shadow-sm text-[12px] font-bold text-gray-800 hover:bg-orange-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Pencil className="w-3.5 h-3.5 text-[#ef8b54]" />
+              Edit photo
+              {edited && <span className="text-[10px] font-bold text-emerald-600">· Edited</span>}
+            </button>
+
+            {editorOpen && canEditPhoto && originalFile && (
+              <PostImageEditor
+                key={`${originalFile.name}-${originalFile.lastModified}-${originalFile.size}`}
+                file={originalFile}
+                onCancel={() => setEditorOpen(false)}
+                onApply={(next) => {
+                  setSlides((prev) =>
+                    prev.map((slide, i) => (i === active ? { ...slide, file: next, edited: true } : slide)),
+                  );
+                  setEditorOpen(false);
+                }}
+              />
+            )}
 
             {isPreviewLoading ? (
               <LivePreviewloading />

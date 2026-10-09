@@ -86,7 +86,7 @@ export default function ProfileView() {
 
   const fullName = `${profile.first_name} ${profile.last_name}`.trim();
   const demo = isDemoRole(profile.role);
-  const postsCount = demo ? DEMO_POST_COUNT : profile.posts_count;
+  const postsCount = demo ? DEMO_POST_COUNT + profile.posts_count : profile.posts_count;
 
   return (
     <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-5">
@@ -171,7 +171,10 @@ export default function ProfileView() {
         </div>
       </div>
 
-      {/* Posts / Saved / Archive, like Instagram: sits right under the profile header */}
+      {/* "Discover people" — follow suggestions, right under the profile card */}
+      <DiscoverPeople onFollowChange={refreshProfile} />
+
+      {/* Posts / Saved / Archive: below Discover people */}
       <div className="bg-white rounded-3xl shadow-sm border border-orange-100 overflow-hidden">
         <div className="flex border-b border-orange-100">
           {TABS.map((t) => (
@@ -202,9 +205,6 @@ export default function ProfileView() {
           onChanged={refreshProfile}
         />
       </div>
-
-      {/* "Discover people" — follow suggestions */}
-      <DiscoverPeople onFollowChange={refreshProfile} />
 
       {listModalTab && (
         <FollowListModal

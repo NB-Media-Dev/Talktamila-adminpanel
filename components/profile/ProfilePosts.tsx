@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Bookmark, Camera, Heart, Loader2, MessageCircle, Music, Pin, Video, X } from "lucide-react";
+import { Archive, Bookmark, Camera, Copy, Heart, Loader2, MessageCircle, Music, Pin, Video, X } from "lucide-react";
 import PostCard from "@/components/admin/Feed/PostCard";
 import { notifyPostsChanged, onPostsChanged, postService } from "@/services/post.service";
 import type { FeedResponse, Poll, Post, PostAuthor } from "@/types/Posts";
@@ -23,6 +23,8 @@ interface ProfilePostsProps {
   demoRole?: string;
   /** Called when the list of posts changed, so the page can refresh its counts. */
   onChanged?: () => void;
+  /** Used with demoRole: show nothing (no spinner / empty message) when there are no live posts. */
+  hideEmpty?: boolean;
 }
 
 function Tile({ post, onOpen }: { post: Post; onOpen: () => void }) {
@@ -79,6 +81,7 @@ function Tile({ post, onOpen }: { post: Post; onOpen: () => void }) {
       <span className="absolute top-2 right-2 flex items-center gap-1.5 text-white drop-shadow">
         {post.is_pinned && <Pin className="w-4 h-4 fill-current" />}
         {post.music && <Music className="w-4 h-4" />}
+        {(post.media_urls?.length ?? 0) > 1 && <Copy className="w-4 h-4" aria-label="Carousel" />}
         {post.post_type === "video" && <Video className="w-4 h-4" />}
         {post.post_type === "gif" && (
           <span className="rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold">GIF</span>
@@ -103,7 +106,13 @@ function Tile({ post, onOpen }: { post: Post; onOpen: () => void }) {
 
 export default function ProfilePosts(props: ProfilePostsProps) {
   if (props.demoRole && (props.source ?? "posts") === "posts") {
-    return <DemoPosts username={props.username} role={props.demoRole} />;
+    // Real posts first, the hard-coded sample posts underneath.
+    return (
+      <>
+        <LivePosts {...props} hideEmpty />
+        <DemoPosts username={props.username} role={props.demoRole} />
+      </>
+    );
   }
   return <LivePosts {...props} />;
 }
@@ -114,6 +123,7 @@ function LivePosts({
   refreshKey,
   isMe = false,
   onChanged,
+  hideEmpty = false,
 }: ProfilePostsProps) {
   const [first, setFirst] = useState<Post[]>([]);
   const [older, setOlder] = useState<Post[]>([]);
@@ -291,6 +301,8 @@ function LivePosts({
       document.body.style.overflow = previous;
     };
   }, [selectedId]);
+
+  if (hideEmpty && (loading || posts.length === 0)) return null;
 
   if (loading) {
     return (

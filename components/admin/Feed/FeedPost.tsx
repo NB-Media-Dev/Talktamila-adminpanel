@@ -9,6 +9,7 @@ import TodaysEvents from "../dashboard/TodaysEvents";
 import { FeedListSkeleton } from "@/components/ui/Skeletonloading";
 import { onPostsChanged, postService } from "@/services/post.service";
 import type { Poll, Post, PostAuthor } from "@/types/Posts";
+import { onFeedRefresh, onFeedScrollTop } from "@/lib/feedEvents";
 
 const PAGE_SIZE = 10;
 const REFRESH_MS = 20000;
@@ -25,11 +26,29 @@ export default function FeedPost() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const olderCountRef = useRef(0);
+  const refreshingRef = useRef(false);
   useEffect(() => {
     olderCountRef.current = older.length;
   }, [older.length]);
+
+  // The column that scrolls (set by the page with data-feed-scroll). On small
+  // screens that column does not scroll by itself, so we fall back to the window.
+  const getScrollRoot = useCallback((): HTMLElement | null => {
+    const el = wrapRef.current?.closest<HTMLElement>("[data-feed-scroll]") ?? null;
+    if (!el) return null;
+    const overflowY = window.getComputedStyle(el).overflowY;
+    return overflowY === "auto" || overflowY === "scroll" ? el : null;
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    const root = getScrollRoot();
+    if (root) root.scrollTo({ top: 0, behavior: "smooth" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [getScrollRoot]);
 
   const loadFirst = useCallback(async (silent: boolean) => {
     try {
@@ -49,6 +68,34 @@ export default function FeedPost() {
   useEffect(() => {
     loadFirst(false);
   }, [loadFirst]);
+
+  // Home button pressed twice: reload only the posts, from the very top.
+  const refreshFeed = useCallback(async () => {
+    if (refreshingRef.current) return;
+    refreshingRef.current = true;
+    setRefreshing(true);
+    scrollToTop();
+    try {
+      const res = await postService.getFeed(PAGE_SIZE);
+      olderCountRef.current = 0;
+      setOlder([]);
+      setHasMoreOlder(false);
+      setFirst(res.items);
+      setAuthors((prev) => ({ ...prev, ...res.authors }));
+      setHasMoreFirst(res.has_more);
+      setNextBeforeId(res.next_before_id);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not refresh the feed.");
+    } finally {
+      refreshingRef.current = false;
+      setRefreshing(false);
+    }
+  }, [scrollToTop]);
+
+  useEffect(() => onFeedRefresh(refreshFeed), [refreshFeed]);
+  // Home button pressed once while already on Home: just go back to the top.
+  useEffect(() => onFeedScrollTop(scrollToTop), [scrollToTop]);
 
   // A post was created, deleted or published somewhere in the app.
   useEffect(() => onPostsChanged(() => loadFirst(true)), [loadFirst]);
@@ -97,11 +144,12 @@ export default function FeedPost() {
       (entries) => {
         if (entries[0]?.isIntersecting) loadMore();
       },
-      { rootMargin: "400px" },
+      // root = the scrolling column (or the window on small screens)
+      { root: getScrollRoot(), rootMargin: "400px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [hasMore, loadMore, posts.length]);
+  }, [hasMore, loadMore, posts.length, getScrollRoot]);
 
   function handleDeleted(postId: number) {
     setFirst((prev) => prev.filter((p) => p.post_id !== postId));
@@ -119,14 +167,20 @@ export default function FeedPost() {
 
   if (loading) {
     return (
-      <div className="w-full">
+      <div ref={wrapRef} className="w-full">
         <FeedListSkeleton count={2} />
       </div>
     );
   }
 
   return (
-    <div className="w-full gap-6 flex flex-col">
+    <div ref={wrapRef} className="w-full gap-6 flex flex-col">
+      {refreshing && (
+        <div className="flex justify-center py-1">
+          <Loader2 className="w-5 h-5 text-brand animate-spin" />
+        </div>
+      )}
+
       {error && posts.length === 0 && (
         <div className="w-full bg-white rounded-[24px] border border-[#FFEFE0] p-6 text-center">
           <p className="text-sm text-red-600">{error}</p>

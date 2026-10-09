@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter, usePathname } from 'next/navigation';
 import { buttonVariants } from '../ui/Button';
@@ -12,6 +12,7 @@ import { Performanceacrossplatform } from "@/components/admin/dashboard/Performa
 
 import {  TrendingUp, UploadCloud, ClipboardCheck } from 'lucide-react';
 import { QuickStudio } from '../admin/dashboard/QuickStudio';
+import { emitFeedRefresh, emitFeedScrollTop } from '@/lib/feedEvents';
 
 
 export default function BottomNavigation() {
@@ -20,6 +21,7 @@ export default function BottomNavigation() {
   const router = useRouter();
   const pathname = usePathname();
   const { isMounted: mounted, isInfluencer, isFreelancer } = useAuthRole();
+  const lastHomeTapRef = useRef(0);
 
 
 
@@ -114,6 +116,24 @@ export default function BottomNavigation() {
                 } else if (isInfluencer) {
                   homeRoute = '/influencer';
                 }
+
+                const now = Date.now();
+                const isDoubleTap = now - lastHomeTapRef.current < 500;
+
+                // Already on Home: 1 tap = back to top, 2 quick taps = refresh the posts.
+                if (pathname === homeRoute) {
+                  if (isDoubleTap) {
+                    lastHomeTapRef.current = 0;
+                    emitFeedRefresh();
+                  } else {
+                    lastHomeTapRef.current = now;
+                    emitFeedScrollTop();
+                  }
+                  return;
+                }
+
+                // On another page: go Home. A quick second tap then refreshes the posts.
+                lastHomeTapRef.current = now;
                 router.replace(homeRoute);
               }}
 

@@ -48,6 +48,8 @@ export interface Post {
   content?: string | null;
   media_type?: "image" | "video" | null;
   media_url?: string | null;
+  /** Every picture of a carousel, in order (one entry for a normal photo post). */
+  media_urls?: string[];
   gif_url?: string | null;
   poll?: Poll | null;
   created_at: string; // ISO-8601 UTC, ends with "Z"
@@ -95,6 +97,8 @@ export interface CreatePostInput {
   postType: PostType;
   content?: string;
   media?: File;
+  /** Pictures 2, 3, ... of a carousel (the first picture is `media`). Photos only. */
+  extraMedia?: File[];
   gifUrl?: string;
   pollOptions?: string[];
   /** ISO-8601 WITH timezone, e.g. new Date(...).toISOString(). 1 minute to 365 days ahead. Omit to post now. */
@@ -219,6 +223,8 @@ export const POST_LIMITS = {
   contentLength: 5000,
   commentLength: 1000,
   imageBytes: 5 * 1024 * 1024,
+  /** Most pictures in one carousel post */
+  maxCarousel: 10,
   videoBytes: 25 * 1024 * 1024,
   pollMinOptions: 2,
   pollMaxOptions: 5,

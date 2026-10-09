@@ -16,7 +16,14 @@ function formatRole(role?: string | null): string {
   return role.replace(/[_-]+/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
 }
 
-export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: () => void }) {
+export default function DiscoverPeople({
+  onFollowChange,
+  excludeUserId,
+}: {
+  onFollowChange?: () => void;
+  // On someone else's profile, don't suggest that same person again.
+  excludeUserId?: number;
+}) {
   const { openProfile } = useProfileLink();
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +70,9 @@ export default function DiscoverPeople({ onFollowChange }: { onFollowChange?: ()
     };
   }, []);
 
-  const visible = suggestions.filter((s) => !dismissedIds.has(s.user_id));
+  const visible = suggestions.filter(
+    (s) => !dismissedIds.has(s.user_id) && s.user_id !== excludeUserId
+  );
 
   useEffect(() => {
     updateArrows();

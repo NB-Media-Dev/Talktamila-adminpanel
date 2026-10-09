@@ -2,8 +2,8 @@
 
 import React from "react";
 import {
-  Activity,
   Archive,
+  BarChart3,
   Bookmark,
   EyeOff,
   Flag,
@@ -26,7 +26,7 @@ export interface PostMenuActions {
   toggleFollow: () => void;
   report: () => void;
   edit: () => void;
-  insights: () => void;
+  analytics: () => void;
   toggleArchive: () => void;
   togglePin: () => void;
   toggleHideLikes: () => void;
@@ -89,7 +89,7 @@ export default function PostMoreMenu({ post, authorUsername, actions, onClose }:
         icon: <MessageCircle className={icon} />,
         onClick: actions.toggleComments,
       });
-      items.push({ key: "insights", label: "View insights", icon: <Activity className={icon} />, onClick: actions.insights });
+      items.push({ key: "analytics", label: "Analytics", icon: <BarChart3 className={icon} />, onClick: actions.analytics });
     }
     if (published) {
       items.push({ key: "share", label: "Share to…", icon: <Send className={icon} />, onClick: actions.share });

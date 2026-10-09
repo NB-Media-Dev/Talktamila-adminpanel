@@ -59,6 +59,7 @@ export const postService = {
     if (input.gifUrl) fd.append("gif_url", input.gifUrl);
     if (input.pollOptions) fd.append("poll_options", JSON.stringify(input.pollOptions));
     if (input.media) fd.append("media", input.media);
+    for (const extra of input.extraMedia ?? []) fd.append("more_media", extra);
     if (input.scheduledAt) fd.append("scheduled_at", input.scheduledAt);
     if (input.commentsDisabled) fd.append("comments_disabled", "true");
     if (input.hideLikeCount) fd.append("hide_like_count", "true");

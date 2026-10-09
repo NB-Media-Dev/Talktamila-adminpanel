@@ -120,7 +120,7 @@ export default function DemoPosts({ username, role }: DemoPostsProps) {
               {selected.kind === "image" && selected.imageUrl && (
                 <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={selected.imageUrl} alt={selected.caption} className="w-full h-auto max-h-[550px] object-cover" />
+                  <img src={selected.imageUrl} alt={selected.caption} className="w-full aspect-square object-cover" />
                 </div>
               )}
 
