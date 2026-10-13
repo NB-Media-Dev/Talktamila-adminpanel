@@ -1,12 +1,17 @@
 /**
  * Hard-coded sample posts for profiles that can't post yet (influencer, freelancer).
  *
+ * DISABLED: the backend demo seeder (python -m app.utils.demo_cli seed) now stores real,
+ * database-backed demo posts for these profiles, so showing these hard-coded ones as well
+ * would duplicate them and inflate the post counts. Set this back to
+ * ["influencer", "freelancer"] only if you want the old offline-less fallback.
+ *
  * TO MAKE THEM LIVE LATER:
  *   1. Add the roles to POST_CREATOR_ROLES in post_service.py (backend) and lib/postPermissions.ts.
  *   2. Empty DEMO_POST_ROLES below (set it to []).
  * Nothing else changes. The profile grids then load real posts from the API.
  */
-export const DEMO_POST_ROLES: string[] = ["influencer", "freelancer"];
+export const DEMO_POST_ROLES: string[] = [];
 
 export function isDemoRole(role?: string | null): boolean {
   return DEMO_POST_ROLES.includes((role || "").trim().toLowerCase());
