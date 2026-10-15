@@ -7,6 +7,7 @@ import type {
   Post,
   PostAuthor,
   PostComment,
+  PostInsights,
   ScheduledListResponse,
 } from "@/types/Posts";
 
@@ -254,6 +255,24 @@ export const postService = {
     } catch {
       return { success: true, post_id: postId };
     }
+  },
+
+  /** Pins a post to the top of the author's profile. */
+  pin(postId: number): Promise<FeedResponse> {
+    return apiClient<FeedResponse>(`${BASE}/${postId}/pin`, { method: "POST" });
+  },
+
+  unpin(postId: number): Promise<FeedResponse> {
+    return apiClient<FeedResponse>(`${BASE}/${postId}/pin`, { method: "DELETE" });
+  },
+
+  /** Hides a post from the feed without deleting it. */
+  archive(postId: number): Promise<FeedResponse> {
+    return apiClient<FeedResponse>(`${BASE}/${postId}/archive`, { method: "POST" });
+  },
+
+  getInsights(postId: number): Promise<PostInsights> {
+    return apiClient<PostInsights>(`${BASE}/${postId}/insights`);
   },
 
   vote(postId: number, optionId: number): Promise<Poll> {

@@ -142,3 +142,19 @@ export const POST_LIMITS = {
   imageTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
   videoTypes: ["video/mp4", "video/webm", "video/quicktime"],
 } as const;
+
+export interface PostInsights {
+  post_id: number;
+  status: PostStatus;
+  published_at?: string | null;
+  reach: number;
+  followers_reach: number;
+  non_followers_reach: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  saves: number;
+  engagement_rate: number | null;
+  poll_votes: number | null;
+  daily: { date: string; likes: number; comments: number }[];
+}

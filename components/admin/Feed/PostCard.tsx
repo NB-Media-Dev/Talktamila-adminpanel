@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Check, Copy, Eye, EyeOff, Flag, Image as ImageIcon, Loader2, MessageCircle, MessageSquare, MoreVertical, Pencil, Trash2, Video } from "lucide-react";
+import { Archive, BarChart3, Check, Copy, Eye, EyeOff, Flag, Image as ImageIcon, Loader2, MessageCircle, MessageSquare, MoreVertical, Pencil, Pin, PinOff, Trash2, Video } from "lucide-react";
 import { postService } from "@/services/post.service";
 import { getInitials, initialsAvatar } from "@/lib/avatar";
 import { InstagramIcon, YoutubeIcon } from "@/public/Svgicons/svgicons";
 import { FeedCardfooter } from "./FeedCardfooter";
 import PostEditModal from "@/components/post/PostEditModal";
+import PostInsightsModal from "@/components/post/PostInsightsModal";
 import type { Poll, Post, PostAuthor, PostComment } from "@/types/Posts";
 
 interface PostCardProps {
@@ -114,6 +115,12 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
   const [commentsDisabled, setCommentsDisabled] = useState(Boolean(post.comments_disabled));
   const [hideLikeCount, setHideLikeCount] = useState(Boolean(post.hide_like_count));
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [insightsOpen, setInsightsOpen] = useState(false);
+  const [isPinned, setIsPinned] = useState(Boolean(post.is_pinned));
+
+  useEffect(() => {
+    setIsPinned(Boolean(post.is_pinned));
+  }, [post.is_pinned]);
 
   useEffect(() => {
     setContent(post.content || "");
@@ -126,6 +133,29 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
   const handleEditClick = () => {
     setMenuOpen(false);
     setEditModalOpen(true);
+  };
+
+  const handleTogglePin = async () => {
+    setMenuOpen(false);
+    const next = !isPinned;
+    setIsPinned(next);
+    try {
+      if (next) await postService.pin(post.post_id);
+      else await postService.unpin(post.post_id);
+    } catch (err) {
+      setIsPinned(!next);
+      setMessage(err instanceof Error ? err.message : "Could not update the pin.");
+    }
+  };
+
+  const handleArchive = async () => {
+    setMenuOpen(false);
+    try {
+      await postService.archive(post.post_id);
+      onDeleted(post.post_id); // leaves the feed, same as a delete
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Could not archive this post.");
+    }
   };
 
   const handleToggleHideLikeCount = async () => {
@@ -312,6 +342,26 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
                     <button
                       type="button"
                       role="menuitem"
+                      onClick={handleTogglePin}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
+                    >
+                      {isPinned ? <PinOff className="w-4 h-4 text-[#FF6B35]" /> : <Pin className="w-4 h-4 text-[#FF6B35]" />}
+                      <span>{isPinned ? "Unpin from profile" : "Pin to your profile"}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleArchive}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
+                    >
+                      <Archive className="w-4 h-4 text-[#FF6B35]" />
+                      <span>Archive</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
                       onClick={handleEditClick}
                       className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
                     >
@@ -346,6 +396,19 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
                     >
                       <MessageCircle className="w-4 h-4 text-[#FF6B35]" />
                       <span>{commentsDisabled ? "Turn on commenting" : "Turn off commenting"}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setInsightsOpen(true);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
+                    >
+                      <BarChart3 className="w-4 h-4 text-[#FF6B35]" />
+                      <span>Analytics</span>
                     </button>
 
                     <div className="my-1 h-px bg-[#FFEFE0]" />
@@ -519,6 +582,10 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
         onSaveToggle={(currentlySaved?: boolean) => postService.toggleSave(post.post_id, currentlySaved).catch(() => {})}
         onShare={() => postService.recordShare(post.post_id)}
       />
+
+      {insightsOpen && (
+        <PostInsightsModal postId={post.post_id} onClose={() => setInsightsOpen(false)} />
+      )}
 
       {/* Edit Post Modal */}
       {editModalOpen && (
