@@ -385,6 +385,9 @@ export default function ProfileView() {
           </section>
         </main>
 
+        {/* ── follow suggestions ── */}
+        <DiscoverPeople onFollowChange={refreshProfile} />
+
         {/* ── posts grid ── */}
         <div className="overflow-hidden rounded-2xl border border-[#EFE6DC] bg-white">
           <div className="flex border-b border-[#EFE6DC]">
@@ -400,9 +403,6 @@ export default function ProfileView() {
             onChanged={refreshProfile}
           />
         </div>
-
-        {/* ── follow suggestions ── */}
-        <DiscoverPeople onFollowChange={refreshProfile} />
       </div>
 
       {listModalTab && (
