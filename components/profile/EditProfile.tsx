@@ -3,11 +3,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { goBack as historyBack } from "@/lib/navigation";
-import { ArrowLeft, Loader2, Eye, EyeOff } from "lucide-react";
+import {
+  X,
+  Camera,
+  Sparkles,
+  MapPin,
+  CheckCircle2,
+  AlertCircle,
+  Save,
+  Pencil,
+  Loader2,
+  Eye,
+  EyeOff,
+  Mail,
+  Phone,
+  KeyRound,
+} from "lucide-react";
 import { userService } from "@/services/user.service";
 import { authService } from "@/services/auth.service";
 import { useAuthuser } from "@/hooks/useAuthuser";
-import { buttonVariants } from "@/components/ui/Button";
 import AvatarEditor from "@/components/profile/AvatarEditor";
 import type { ProfileData } from "@/types/Auth";
 
@@ -23,6 +37,10 @@ const PASSWORD_MIN = 6;
 const USERNAME_RE = /^[A-Za-z0-9_.]{3,30}$/;
 const OTP_RESEND_SECONDS = 30;
 
+const fieldClass =
+  "w-full rounded-xl border border-[#EFE6DC] bg-[#FAF6F0]/60 px-3.5 py-2.5 text-xs font-semibold outline-none transition focus:border-[#FF5E13] focus:bg-white disabled:opacity-60";
+const labelClass = "mb-1.5 block text-xs font-bold text-[#766960]";
+
 function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -31,26 +49,6 @@ function readAsDataUrl(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
-
-function EditRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-2 sm:gap-6 py-4 border-b border-orange-100 last:border-b-0">
-      <label className="text-sm font-semibold text-gray-500 sm:text-right sm:pt-2">
-        {label}
-      </label>
-      <div>{children}</div>
-    </div>
-  );
-}
-
-const inputClass =
-  "w-full p-2.5 rounded-lg border border-orange-100 outline-none focus:border-brand transition-colors text-sm bg-orange-50/40";
 
 export default function EditProfile() {
   const router = useRouter();
@@ -269,16 +267,18 @@ export default function EditProfile() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
-        <Loader2 className="w-8 h-8 text-brand animate-spin" />
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45">
+        <Loader2 className="h-8 w-8 animate-spin text-[#FF5E13]" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="p-12 text-center text-gray-500">
-        {error || "Profile not found."}
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+        <div className="rounded-3xl bg-white p-8 text-center text-sm text-[#766960]">
+          {error || "Profile not found."}
+        </div>
       </div>
     );
   }
@@ -288,259 +288,469 @@ export default function EditProfile() {
     profile.username?.[0]?.toUpperCase() ||
     "?";
 
+  const hasUnsavedChanges =
+    avatarFile !== null ||
+    firstName !== (profile.first_name || "") ||
+    lastName !== (profile.last_name || "") ||
+    username !== (profile.username || "") ||
+    bio !== (profile.bio || "") ||
+    location !== (profile.location || "") ||
+    email !== (profile.email || "") ||
+    mobileNo !== (profile.mobile_no || "");
+
   return (
-    <div className="max-w-2xl mx-auto p-4 sm:p-6">
-      {/* Top bar */}
-      <div className="flex items-center gap-3 mb-4">
-        <button
-          type="button"
-          onClick={goBackToProfile}
-          aria-label="Back to profile"
-          className={`${buttonVariants({ variant: "outline" })} p-2`}
-        >
-          <ArrowLeft size={16} />
-        </button>
-      </div>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-3 sm:p-5"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && !pendingAvatar) goBackToProfile();
+      }}
+    >
+      <button
+        type="button"
+        className="absolute inset-0 cursor-default"
+        onClick={goBackToProfile}
+        aria-label="Close profile editor"
+      />
 
-      <div className="bg-white rounded-3xl shadow-sm border border-orange-100 p-6 sm:p-8">
-        {/* Avatar */}
-        <div className="flex flex-col items-center gap-3 pb-6 border-b border-orange-100">
-          <div className="w-20 h-20 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center">
-            {avatarPreview ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={avatarPreview}
-                alt="Profile"
-                className="w-full h-full object-cover"
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-profile-title"
+        className="relative z-10 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-[#EFE6DC] bg-white text-[#2B211B] shadow-2xl"
+      >
+        {/* Header */}
+        <header className="flex items-center justify-between border-b border-[#EFE6DC] bg-[#FAF6F0] px-5 py-4 sm:px-6">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FFDBD0] text-[#FF5000]">
+                <Pencil size={18} />
+              </div>
+              <h2
+                id="edit-profile-title"
+                className="text-lg font-bold tracking-tight"
+              >
+                Edit Profile
+              </h2>
+            </div>
+            <p className="mt-1 text-xs text-[#766960]">
+              Update your public profile, contact details, and bio.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={goBackToProfile}
+            aria-label="Close modal"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#EFE6DC] bg-white text-[#766960] transition hover:bg-[#FFF0E8] hover:text-[#FF5E13]"
+          >
+            <X size={17} />
+          </button>
+        </header>
+
+        <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5 sm:px-6">
+          {error && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700"
+            >
+              <AlertCircle size={16} className="mt-0.5 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* Banner + avatar */}
+          <div className="overflow-hidden rounded-[24px] border border-[#EFE6DC] shadow-sm">
+            <div className="h-24 bg-gradient-to-r from-[#FF5E13] to-[#FFAB7C]" />
+
+            <div className="bg-[#F7F3EE] px-4 pb-5 pt-3">
+              <div className="relative -mt-12 flex flex-wrap items-end justify-between gap-3 px-2">
+                <div className="flex items-end gap-3.5">
+                  <div className="relative h-[80px] w-[80px] shrink-0">
+                    <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-4 border-white bg-orange-100 shadow-md">
+                      {avatarPreview ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={avatarPreview}
+                          alt="Profile preview"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl font-bold text-[#FF5E13]">
+                          {initials}
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      aria-label="Change profile photo"
+                      className="absolute -bottom-0.5 -right-0.5 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#FF5E13] text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
+                    >
+                      <Camera size={13} />
+                    </button>
+                  </div>
+
+                  <div className="mb-0.5 flex flex-col gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="self-start rounded-lg border border-[#EFE6DC] bg-[#E6E2DD] px-3 py-1 text-xs font-bold text-[#2B211B] shadow-sm transition hover:bg-[#FAF6F0]"
+                    >
+                      Upload Photo
+                    </button>
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
+
+                    <span className="text-[10px] font-medium text-[#766960] opacity-90">
+                      JPG, PNG or WEBP, up to 8 MB
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Name */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="firstName" className={labelClass}>
+                First Name *
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                maxLength={NAME_MAX}
+                placeholder="First name"
+                className={fieldClass}
               />
-            ) : (
-              <span className="text-2xl font-bold text-brand">{initials}</span>
-            )}
+            </div>
+            <div>
+              <label htmlFor="lastName" className={labelClass}>
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                maxLength={NAME_MAX}
+                placeholder="Last name"
+                className={fieldClass}
+              />
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="text-sm font-semibold text-brand hover:underline"
-          >
-            Change profile photo
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleAvatarChange}
-            className="hidden"
-            accept="image/jpeg,image/png,image/webp"
-          />
-        </div>
 
-        {/* Rows */}
-        <EditRow label="Name">
-          <div className="flex gap-3">
+          {/* Username */}
+          <div>
+            <label htmlFor="username" className={labelClass}>
+              Username *
+            </label>
             <input
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="First name"
-              maxLength={NAME_MAX}
-              className={inputClass}
-            />
-            <input
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Last name"
-              maxLength={NAME_MAX}
-              className={inputClass}
-            />
-          </div>
-        </EditRow>
-
-        <EditRow label="Username">
-          <input
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value.replace(/\s/g, ""));
-              if (error) setError(null);
-            }}
-            maxLength={30}
-            autoComplete="username"
-            autoCapitalize="none"
-            spellCheck={false}
-            className={inputClass}
-          />
-          <p className="text-[11px] text-gray-400 mt-1">
-            3-30 characters: letters, numbers, dots and underscores.
-          </p>
-        </EditRow>
-
-        <EditRow label="Bio">
-          <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            maxLength={BIO_MAX}
-            rows={3}
-            className={inputClass}
-          />
-          <p className="text-right text-[11px] text-gray-400 mt-1">
-            {bio.length}/{BIO_MAX}
-          </p>
-        </EditRow>
-
-        <EditRow label="Location">
-          <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            maxLength={LOCATION_MAX}
-            placeholder="City, Country"
-            className={inputClass}
-          />
-        </EditRow>
-
-        <EditRow label="Email">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className={inputClass}
-          />
-        </EditRow>
-
-        <EditRow label="Phone number">
-          <input
-            type="tel"
-            value={mobileNo}
-            onChange={(e) => setMobileNo(e.target.value)}
-            placeholder="+91 98765 43210"
-            className={inputClass}
-          />
-        </EditRow>
-      </div>
-
-      {error && (
-        <div className="p-3 mt-4 bg-red-50 text-red-600 text-xs rounded-xl text-center border border-red-100">
-          {error}
-        </div>
-      )}
-
-      <div className="flex justify-end gap-2 mt-4">
-        <button
-          type="button"
-          onClick={goBackToProfile}
-          disabled={isSaving}
-          className={`${buttonVariants({ variant: "outline" })} px-4 py-2 text-sm font-bold disabled:opacity-50`}
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={isSaving}
-          className={`${buttonVariants({ variant: "default" })} flex items-center gap-1.5 px-5 py-2 text-sm font-bold disabled:opacity-50`}
-        >
-          {isSaving && <Loader2 size={14} className="animate-spin" />}
-          {isSaving ? "Saving..." : "Submit"}
-        </button>
-      </div>
-
-      {/* ── Change password — separate card, separate endpoint/state ── */}
-      <div className="bg-white rounded-3xl shadow-sm border border-orange-100 p-6 sm:p-8 mt-6">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-base font-bold text-gray-900">Change password</h2>
-          <button
-            type="button"
-            onClick={() => setShowPasswords((v) => !v)}
-            className="text-xs font-semibold text-brand hover:underline flex items-center gap-1"
-          >
-            {showPasswords ? <EyeOff size={13} /> : <Eye size={13} />}
-            {showPasswords ? "Hide" : "Show"}
-          </button>
-        </div>
-
-        <EditRow label="Current password">
-          <input
-            type={showPasswords ? "text" : "password"}
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            autoComplete="current-password"
-            className={inputClass}
-          />
-        </EditRow>
-
-        <EditRow label="New password">
-          <input
-            type={showPasswords ? "text" : "password"}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            autoComplete="new-password"
-            className={inputClass}
-          />
-        </EditRow>
-
-        <EditRow label="Confirm password">
-          <input
-            type={showPasswords ? "text" : "password"}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            autoComplete="new-password"
-            className={inputClass}
-          />
-        </EditRow>
-
-        <EditRow label="Email code">
-          <div className="flex gap-3">
-            <input
+              id="username"
               type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-              placeholder="6-digit code"
-              disabled={!otpSent}
-              className={`${inputClass} tracking-[0.3em] disabled:opacity-60`}
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value.replace(/\s/g, ""));
+                if (error) setError(null);
+              }}
+              maxLength={30}
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              placeholder="your_username"
+              className={fieldClass}
             />
+            <p className="mt-1 text-[10px] text-[#A59990]">
+              3-30 characters: letters, numbers, dots and underscores.
+            </p>
+          </div>
+
+          {/* Bio */}
+          <div>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <label
+                htmlFor="bio"
+                className="text-xs font-bold text-[#766960]"
+              >
+                Bio / Summary
+              </label>
+              <span
+                className={`rounded-full bg-[#F1EDE8] px-2 py-0.5 text-[10px] font-semibold ${
+                  bio.length >= BIO_MAX ? "text-red-600" : "text-[#695C51]"
+                }`}
+              >
+                {bio.length} / {BIO_MAX}
+              </span>
+            </div>
+
+            <textarea
+              id="bio"
+              rows={4}
+              maxLength={BIO_MAX}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Write a short introduction about yourself..."
+              className="w-full resize-none rounded-xl border border-[#EFE6DC] bg-[#FAF6F0]/60 px-3.5 py-3 text-xs font-medium leading-relaxed outline-none transition focus:border-[#FF5E13] focus:bg-white"
+            />
+
             <button
               type="button"
-              onClick={handleSendOtp}
-              disabled={isSendingOtp || otpCooldown > 0}
-              className={`${buttonVariants({ variant: "outline" })} shrink-0 px-4 py-2 text-sm font-bold disabled:opacity-50`}
+              onClick={() => setBio(bio.trim().replace(/\s+/g, " "))}
+              className="mt-2 flex items-center gap-1.5 rounded-lg border border-[#FFD2BE] bg-[#FFF0E8] px-3 py-1.5 text-[10px] font-bold text-[#FF5E13] transition hover:bg-[#FFE5D8]"
             >
-              {isSendingOtp
-                ? "Sending..."
-                : otpCooldown > 0
-                  ? `Resend in ${otpCooldown}s`
-                  : otpSent
-                    ? "Resend code"
-                    : "Send code"}
+              <Sparkles size={12} />
+              Clean Up Bio
             </button>
           </div>
-          <p className="text-[11px] text-gray-400 mt-1">
-            We email a code to the address registered on your account.
-          </p>
-        </EditRow>
 
-        {passwordError && (
-          <div className="p-3 mt-2 bg-red-50 text-red-600 text-xs rounded-xl text-center border border-red-100">
-            {passwordError}
-          </div>
-        )}
-        {passwordSuccess && (
-          <div className="p-3 mt-2 bg-emerald-50 text-emerald-600 text-xs rounded-xl text-center border border-emerald-100">
-            {passwordSuccess}
-          </div>
-        )}
+          {/* Contact + location */}
+          <div className="border-t border-[#EFE6DC] pt-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <label htmlFor="location" className={labelClass}>
+                  Location
+                </label>
+                <div className="relative">
+                  <MapPin
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A59990]"
+                  />
+                  <input
+                    id="location"
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    maxLength={LOCATION_MAX}
+                    placeholder="City, State, Country"
+                    className={`${fieldClass} pl-9`}
+                  />
+                </div>
+              </div>
 
-        <div className="flex justify-end mt-4">
-          <button
-            type="button"
-            onClick={handleChangePassword}
-            disabled={isChangingPassword}
-            className={`${buttonVariants({ variant: "default" })} flex items-center gap-1.5 px-5 py-2 text-sm font-bold disabled:opacity-50`}
-          >
-            {isChangingPassword && <Loader2 size={14} className="animate-spin" />}
-            {isChangingPassword ? "Updating..." : "Update Password"}
-          </button>
+              <div>
+                <label htmlFor="email" className={labelClass}>
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A59990]"
+                  />
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className={`${fieldClass} pl-9`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="mobileNo" className={labelClass}>
+                  Phone number
+                </label>
+                <div className="relative">
+                  <Phone
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A59990]"
+                  />
+                  <input
+                    id="mobileNo"
+                    type="tel"
+                    value={mobileNo}
+                    onChange={(e) => setMobileNo(e.target.value)}
+                    placeholder="+91 98765 43210"
+                    className={`${fieldClass} pl-9`}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Change password (own endpoint + state) */}
+          <div className="border-t border-[#EFE6DC] pt-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="flex items-center gap-1.5 text-xs font-bold text-[#766960]">
+                <KeyRound size={14} className="text-[#FF5E13]" />
+                Change Password
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowPasswords((v) => !v)}
+                className="flex items-center gap-1 text-[11px] font-bold text-[#FF5E13] hover:underline"
+              >
+                {showPasswords ? <EyeOff size={13} /> : <Eye size={13} />}
+                {showPasswords ? "Hide" : "Show"}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <label htmlFor="oldPassword" className={labelClass}>
+                  Current password
+                </label>
+                <input
+                  id="oldPassword"
+                  type={showPasswords ? "text" : "password"}
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                  autoComplete="current-password"
+                  className={fieldClass}
+                />
+              </div>
+              <div>
+                <label htmlFor="newPassword" className={labelClass}>
+                  New password
+                </label>
+                <input
+                  id="newPassword"
+                  type={showPasswords ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  className={fieldClass}
+                />
+              </div>
+              <div>
+                <label htmlFor="confirmPassword" className={labelClass}>
+                  Confirm password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type={showPasswords ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
+                  className={fieldClass}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label htmlFor="otp" className={labelClass}>
+                  Email code
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="otp"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    placeholder="6-digit code"
+                    disabled={!otpSent}
+                    className={`${fieldClass} tracking-[0.3em]`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={isSendingOtp || otpCooldown > 0}
+                    className="shrink-0 rounded-xl border border-[#E5D9CD] bg-white px-4 py-2 text-xs font-bold text-[#766960] transition hover:bg-[#F3EBE3] disabled:opacity-50"
+                  >
+                    {isSendingOtp
+                      ? "Sending..."
+                      : otpCooldown > 0
+                        ? `Resend in ${otpCooldown}s`
+                        : otpSent
+                          ? "Resend code"
+                          : "Send code"}
+                  </button>
+                </div>
+                <p className="mt-1 text-[10px] text-[#A59990]">
+                  We email a code to the address registered on your account.
+                </p>
+              </div>
+            </div>
+
+            {passwordError && (
+              <div
+                role="alert"
+                className="mt-3 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700"
+              >
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{passwordError}</span>
+              </div>
+            )}
+            {passwordSuccess && (
+              <div
+                role="status"
+                className="mt-3 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-700"
+              >
+                <CheckCircle2 size={16} />
+                {passwordSuccess}
+              </div>
+            )}
+
+            <div className="mt-3 flex justify-end">
+              <button
+                type="button"
+                onClick={handleChangePassword}
+                disabled={isChangingPassword}
+                className="flex items-center gap-1.5 rounded-full bg-[#FF5E13] px-5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#E94E0D] active:scale-[0.98] disabled:opacity-50"
+              >
+                {isChangingPassword && (
+                  <Loader2 size={14} className="animate-spin" />
+                )}
+                {isChangingPassword ? "Updating..." : "Update Password"}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+
+        {/* Footer */}
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#EFE6DC] bg-[#FAF6F0] px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-2">
+            {hasUnsavedChanges ? (
+              <>
+                <span className="h-2 w-2 rounded-full bg-[#FF5E13]" />
+                <span className="text-[13px] font-semibold text-[#766960]">
+                  Unsaved changes
+                </span>
+              </>
+            ) : (
+              <span className="text-[13px] text-[#A59990]">
+                Your profile settings
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={goBackToProfile}
+              disabled={isSaving}
+              className="rounded-full border border-[#E5D9CD] bg-white px-4 py-2 text-sm font-bold text-[#766960] transition hover:bg-[#F3EBE3] disabled:opacity-50"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="flex items-center gap-1.5 rounded-full bg-[#FF5E13] px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#E94E0D] active:scale-[0.98] disabled:opacity-50"
+            >
+              {isSaving ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Save size={14} />
+              )}
+              {isSaving ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </footer>
+      </section>
 
       {pendingAvatar && (
         <AvatarEditor
