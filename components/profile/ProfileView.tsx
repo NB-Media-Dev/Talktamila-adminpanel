@@ -161,6 +161,9 @@ export default function ProfileView() {
         </div>
       </div>
 
+      {/* "Discover people" — follow suggestions */}
+      <DiscoverPeople onFollowChange={refreshProfile} />
+
       {/* Posts grid, like Instagram: sits right under the profile header */}
       <div className="bg-white rounded-3xl shadow-sm border border-orange-100 overflow-hidden">
         <div className="flex border-b border-orange-100">
@@ -177,9 +180,6 @@ export default function ProfileView() {
         />
       </div>
 
-      {/* "Discover people" — follow suggestions */}
-      <DiscoverPeople onFollowChange={refreshProfile} />
-
       {listModalTab && (
         <FollowListModal
           userId={profile.user_id}
@@ -189,5 +189,6 @@ export default function ProfileView() {
         />
       )}
     </div>
+    
   );
 }
