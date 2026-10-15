@@ -9,6 +9,9 @@ const avatar1 = "/Images/avatar1.png";
 import { FacebookPostPreview } from "./FacebookPostPreview";
 import { notifyPostsChanged, postService } from "@/services/post.service";
 import { POST_LIMITS, type PostType } from "@/types/Posts";
+import { canCreatePosts } from "@/lib/postPermissions";
+import { useAuthuser } from "@/hooks/useAuthuser";
+import { useAuthRole } from "@/hooks/useAuthRole";
 import {
   errorMessage,
   localInputToIso,
@@ -40,6 +43,18 @@ function fileProblem(file: File): string | null {
 }
 
 export function CreatenewPost() {
+  const { user } = useAuthuser();
+  const { isAdmin, isInfluencer, isFreelancer, userRole } = useAuthRole();
+  const authUser = user as any;
+  const me = authUser?.user || authUser || null;
+  const canPost = canCreatePosts(me?.role);
+
+  const isAdminUser = Boolean(
+    isAdmin ||
+    userRole.includes("admin") ||
+    (me?.role && String(me.role).toLowerCase().includes("admin"))
+  );
+
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(["Talk Tamila"]);
   const router = useRouter();
 
@@ -61,11 +76,14 @@ export function CreatenewPost() {
   const [busy, setBusy] = useState<"schedule" | "publish" | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const isVideoFile = !!file && file.type.startsWith("video/");
+  const isVideoFile = !!file && (
+    file.type.startsWith("video/") ||
+    ["mp4", "webm", "mov", "m4v", "mkv", "avi"].includes(file.name.split(".").pop()?.toLowerCase() || "")
+  );
 
-  // Show the chosen image in the preview, and free the memory when it changes.
+  // Show the chosen image or video in the preview, and free the memory when it changes.
   useEffect(() => {
-    if (!file || !file.type.startsWith("image/")) {
+    if (!file) {
       setPreviewUrl(null);
       return;
     }
@@ -99,12 +117,23 @@ export function CreatenewPost() {
   const submit = async (mode: "schedule" | "publish") => {
     setError(null);
 
+    if (!canPost) {
+      setError("Posting is temporarily restricted to administrators only.");
+      return;
+    }
+
     const text = [title.trim(), caption.trim()].filter(Boolean).join("\n\n");
+
+    const scheduleContentPath = isInfluencer
+      ? "/influencer/content"
+      : isFreelancer
+      ? "/freelancer/content"
+      : "/admin/content";
 
     // If Schedule is clicked with no content at all → go straight to the schedule page
     if (mode === "schedule" && !text && !file) {
       setHandlestate(false);
-      router.push("/admin/content");
+      router.push(scheduleContentPath);
       return;
     }
 
@@ -124,7 +153,7 @@ export function CreatenewPost() {
       scheduledAt = localInputToIso(scheduleAt);
     }
 
-    const postType: PostType = file ? (file.type.startsWith("video/") ? "video" : "image") : "text";
+    const postType: PostType = file ? (isVideoFile ? "video" : "image") : "text";
 
     setBusy(mode);
     try {
@@ -136,7 +165,7 @@ export function CreatenewPost() {
       });
       notifyPostsChanged();
       setHandlestate(false);
-      if (mode === "schedule") router.push("/admin/content");
+      if (mode === "schedule") router.push(scheduleContentPath);
     } catch (e) {
       setError(errorMessage(e));
       setBusy(null);
@@ -302,39 +331,47 @@ export function CreatenewPost() {
               />
             )}
 
-            <div className="flex flex-col gap-1.5 mt-2">
-              <label htmlFor="scheduleAt" className="text-[12px] font-bold text-gray-600">
-                Schedule for (leave empty to publish now)
-              </label>
-              <input
-                id="scheduleAt"
-                type="datetime-local"
-                value={scheduleAt}
-                min={minLocalInput()}
-                max={maxLocalInput()}
-                onChange={(e) => setScheduleAt(e.target.value)}
-                className="w-full h-9 px-3 rounded-xl bg-white border border-transparent outline-none text-xs shadow-sm focus:border-[#ef8b54] text-gray-800"
-              />
-              <p className="text-[10px] text-gray-500">Dates and times that have already passed can&apos;t be chosen.</p>
-            </div>
+            {!isAdminUser && (
+              <div className="flex flex-col gap-1.5 mt-2">
+                <label htmlFor="scheduleAt" className="text-[12px] font-bold text-gray-600">
+                  Schedule for (leave empty to publish now)
+                </label>
+                <input
+                  id="scheduleAt"
+                  type="datetime-local"
+                  value={scheduleAt}
+                  min={minLocalInput()}
+                  max={maxLocalInput()}
+                  onChange={(e) => setScheduleAt(e.target.value)}
+                  className="w-full h-9 px-3 rounded-xl bg-white border border-transparent outline-none text-xs shadow-sm focus:border-[#ef8b54] text-gray-800"
+                />
+                <p className="text-[10px] text-gray-500">Dates and times that have already passed can&apos;t be chosen.</p>
+              </div>
+            )}
 
             {error && <p className="text-xs font-semibold text-red-600">{error}</p>}
 
             <div className="flex flex-col items-center gap-2 mt-2">
               <div className="flex items-center gap-2.5 w-full justify-center">
-                <button
-                  type="button"
-                  disabled={busy !== null}
-                  onClick={() => submit("schedule")}
-                  className={`${buttonVariants({ variant: 'outline' })} px-4 py-1.5 min-[3840px]:px-5 min-[3840px]:py-2 text-[11px] min-[3840px]:text-xs font-bold min-w-[90px] shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed`}
-                >
-                  {busy === "schedule" ? "Scheduling…" : "Schedule"}
-                </button>
+                {!isAdminUser && (
+                  <button
+                    type="button"
+                    disabled={busy !== null}
+                    onClick={() => submit("schedule")}
+                    className={`${buttonVariants({ variant: 'outline' })} px-4 py-1.5 min-[3840px]:px-5 min-[3840px]:py-2 text-[11px] min-[3840px]:text-xs font-bold min-w-[90px] shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed`}
+                  >
+                    {busy === "schedule" ? "Scheduling…" : "Schedule"}
+                  </button>
+                )}
                 <button
                   type="button"
                   disabled={busy !== null}
                   onClick={() => submit("publish")}
-                  className={`${buttonVariants({ variant: 'default' })} px-6 py-1.5 min-[3840px]:px-7 min-[3840px]:py-2 text-white text-[11px] min-[3840px]:text-xs font-bold shadow-md transition-colors min-w-[100px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed`}
+                  className={`${buttonVariants({ variant: 'default' })} ${
+                    isAdminUser
+                      ? "px-8 py-2 min-w-[140px] text-xs"
+                      : "px-6 py-1.5 min-[3840px]:px-7 min-[3840px]:py-2 text-[11px] min-[3840px]:text-xs min-w-[100px]"
+                  } text-white font-bold shadow-md transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed`}
                 >
                   {busy === "publish" ? "Publishing…" : "Publish"}
                 </button>

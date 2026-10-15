@@ -478,28 +478,44 @@ export default function Addstories({
                       {isSearchingMentions && <Loader2 size={11} className="animate-spin text-orange-500" />}
                     </div>
                     {mentionResults.length > 0 ? (
-                      mentionResults.map((u) => (
-                        <button
-                          key={u.user_id}
-                          type="button"
-                          onClick={() => selectMentionUser(u)}
-                          className="w-full px-3 py-2 flex items-center gap-2.5 hover:bg-orange-50/80 transition-colors text-left cursor-pointer"
-                        >
-                          <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-[11px] font-bold text-orange-700 overflow-hidden shrink-0">
-                            {u.avatar_url ? (
-                              <img src={u.avatar_url} alt={u.username} className="w-full h-full object-cover" />
-                            ) : (
-                              u.username.slice(0, 1).toUpperCase()
+                      mentionResults.map((u) => {
+                        const isAlreadyMentionedInCaption = new RegExp(`@${u.username}\\b`, 'i').test(caption);
+                        const isMentionDisabled = u.is_already_mentioned || isAlreadyMentionedInCaption;
+                        return (
+                          <button
+                            key={u.user_id}
+                            type="button"
+                            disabled={isMentionDisabled}
+                            onClick={() => {
+                              if (!isMentionDisabled) selectMentionUser(u);
+                            }}
+                            className={`w-full px-3 py-2 flex items-center gap-2.5 transition-colors text-left ${
+                              isMentionDisabled
+                                ? "opacity-50 cursor-not-allowed bg-orange-50/30"
+                                : "hover:bg-orange-50/80 cursor-pointer"
+                            }`}
+                          >
+                            <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-[11px] font-bold text-orange-700 overflow-hidden shrink-0">
+                              {u.avatar_url ? (
+                                <img src={u.avatar_url} alt={u.username} className="w-full h-full object-cover" />
+                              ) : (
+                                u.username.slice(0, 1).toUpperCase()
+                              )}
+                            </div>
+                            <div className="flex flex-col min-w-0 flex-1">
+                              <span className="text-xs font-bold text-gray-800 truncate">@{u.username}</span>
+                              {u.full_name && (
+                                <span className="text-[10px] text-gray-400 truncate">{u.full_name}</span>
+                              )}
+                            </div>
+                            {isMentionDisabled && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold shrink-0">
+                                Already Mentioned
+                              </span>
                             )}
-                          </div>
-                          <div className="flex flex-col min-w-0 flex-1">
-                            <span className="text-xs font-bold text-gray-800 truncate">@{u.username}</span>
-                            {u.full_name && (
-                              <span className="text-[10px] text-gray-400 truncate">{u.full_name}</span>
-                            )}
-                          </div>
-                        </button>
-                      ))
+                          </button>
+                        );
+                      })
                     ) : (
                       <div className="px-3 py-2 text-xs text-gray-400 text-center">
                         {isSearchingMentions ? "Searching..." : "No users found"}

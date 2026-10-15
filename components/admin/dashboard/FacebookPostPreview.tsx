@@ -54,14 +54,25 @@ export function FacebookPostPreview({
           {caption}
         </p>
 
-        <div className="w-full aspect-[4/3] bg-slate-950 relative group border border-gray-100 rounded-md overflow-hidden">
-          <Image
-            src={image}
-            fill
-            sizes="(max-width: 768px) 100vw, 250px"
-            alt="Ad Preview"
-            className="w-full h-full object-cover opacity-95"
-          />
+        <div className="w-full aspect-[4/3] bg-slate-950 relative group border border-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+          {isVideo && typeof image === "string" && (image.startsWith("blob:") || image.startsWith("data:") || /\.(mp4|webm|mov|m4v)/i.test(image)) ? (
+            <video
+              src={image}
+              className="w-full h-full object-cover opacity-95"
+              muted
+              autoPlay
+              loop
+              playsInline
+            />
+          ) : (
+            <Image
+              src={image}
+              fill
+              sizes="(max-width: 768px) 100vw, 250px"
+              alt="Ad Preview"
+              className="w-full h-full object-cover opacity-95"
+            />
+          )}
 
           {isVideo && (
             <>

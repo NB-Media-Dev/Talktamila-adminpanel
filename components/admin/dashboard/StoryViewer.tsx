@@ -182,6 +182,7 @@ export function StoryViewer({
 
   const canReshareThisSlide = useMemo(() => {
     if (!currentSlide || user.is_my_story) return false;
+    if (currentSlide.already_reshared === true || currentSlide.can_reshare === false) return false;
     if (currentSlide.can_reshare === true) return true;
     if (currentSlide.mentions && Array.isArray(currentSlide.mentions) && currentSlide.mentions.length > 0) {
       if (currentSlide.mentions.some((m) => 
@@ -479,6 +480,20 @@ export function StoryViewer({
       await storyService.reshareStory(storyIdToReshare);
       setReshareToast(true);
       setTimeout(() => setReshareToast(false), 2500);
+
+      // Immediately hide re-mention button on this slide
+      setSlides((prev) =>
+        prev.map((s, idx) => {
+          if (idx === slideIndex || (s.story_id || s.id) === storyIdToReshare) {
+            return {
+              ...s,
+              can_reshare: false,
+              already_reshared: true,
+            };
+          }
+          return s;
+        })
+      );
     } catch (err: any) {
       console.error("Reshare story failed:", err);
       alert(err.message || "Failed to add story to your story.");
@@ -610,7 +625,8 @@ export function StoryViewer({
     }
     setIsMentionSearching(true);
     try {
-      const results = await storyService.searchMentionUsers(q, 15);
+      const storyId = Number(currentSlide?.story_id || currentSlide?.id);
+      const results = await storyService.searchMentionUsers(q, 15, storyId || undefined);
       setMentionResults(results);
     } catch {
       setMentionResults([]);
@@ -620,6 +636,7 @@ export function StoryViewer({
   };
 
   const handleToggleMentionUser = (u: import("@/types/Stories").MentionUserSearchItem) => {
+    if (u.is_already_mentioned) return;
     setSelectedMentions((prev) => {
       const exists = prev.some((m) => m.user_id === u.user_id);
       if (exists) return prev.filter((m) => m.user_id !== u.user_id);
@@ -756,30 +773,7 @@ export function StoryViewer({
       </div>
     )}
 
-    {/* Story Mentions Overlay */}
-    {currentSlide.mentions && currentSlide.mentions.length > 0 && (
-      <div className="absolute inset-0 pointer-events-none z-20">
-        {currentSlide.mentions.map((m) => (
-          <div
-            key={m.id || m.username}
-            style={{
-              position: "absolute",
-              left: `${m.x != null ? m.x * 100 : 50}%`,
-              top: `${m.y != null ? m.y * 100 : 75}%`,
-              transform: "translate(-50%, -50%)",
-            }}
-            className="pointer-events-auto cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white font-bold text-xs border border-white/25 shadow-lg hover:scale-105 transition-all"
-            onClick={(e) => {
-              e.stopPropagation();
-              alert(`Mentioned @${m.username}`);
-            }}
-          >
-            <AtSign size={11} className="text-orange-400" />
-            <span>{m.username}</span>
-          </div>
-        ))}
-      </div>
-    )}
+
 
     {/* Top section */}
     <div className="relative z-30 flex flex-col gap-2 pointer-events-auto">
@@ -1306,15 +1300,23 @@ export function StoryViewer({
                 )}
                 {mentionResults.map((u) => {
                   const isSelected = selectedMentions.some((m) => m.user_id === u.user_id);
+                  const isAlreadyMentioned = Boolean(u.is_already_mentioned);
                   return (
                     <button
                       key={u.user_id}
                       type="button"
-                      onClick={() => handleToggleMentionUser(u)}
+                      disabled={isAlreadyMentioned}
+                      onClick={() => {
+                        if (!isAlreadyMentioned) {
+                          handleToggleMentionUser(u);
+                        }
+                      }}
                       className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all text-left ${
-                        isSelected
-                          ? "bg-blue-600/25 border border-blue-400/40"
-                          : "hover:bg-white/8 border border-transparent"
+                        isAlreadyMentioned
+                          ? "opacity-50 cursor-not-allowed bg-white/5 border border-white/5"
+                          : isSelected
+                          ? "bg-blue-600/25 border border-blue-400/40 cursor-pointer"
+                          : "hover:bg-white/8 border border-transparent cursor-pointer"
                       }`}
                     >
                       {/* Avatar */}
@@ -1326,7 +1328,7 @@ export function StoryViewer({
                             {u.username?.[0]?.toUpperCase()}
                           </div>
                         )}
-                        {isSelected && (
+                        {isSelected && !isAlreadyMentioned && (
                           <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-blue-500 border border-[#111114] flex items-center justify-center">
                             <CheckCircle2 size={9} className="text-white" />
                           </div>
@@ -1337,10 +1339,16 @@ export function StoryViewer({
                         <p className="text-xs font-bold text-white truncate">@{u.username}</p>
                         {u.full_name && <p className="text-[10px] text-white/50 truncate">{u.full_name}</p>}
                       </div>
-                      {/* Following badge */}
-                      {u.is_following && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium shrink-0">Following</span>
-                      )}
+                      {/* Badges */}
+                      {isAlreadyMentioned ? (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold shrink-0">
+                          Already Mentioned
+                        </span>
+                      ) : u.is_following ? (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium shrink-0">
+                          Following
+                        </span>
+                      ) : null}
                     </button>
                   );
                 })}

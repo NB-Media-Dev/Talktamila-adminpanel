@@ -1,21 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { Image as ImageIcon, Loader2, MessageSquare, Trash2, Video } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Check, Copy, Eye, EyeOff, Flag, Image as ImageIcon, Loader2, MessageCircle, MessageSquare, MoreVertical, Pencil, Trash2, Video } from "lucide-react";
 import { postService } from "@/services/post.service";
 import { getInitials, initialsAvatar } from "@/lib/avatar";
-import type { Poll, Post, PostAuthor } from "@/types/Posts";
+import { InstagramIcon, YoutubeIcon } from "@/public/Svgicons/svgicons";
+import { FeedCardfooter } from "./FeedCardfooter";
+import PostEditModal from "@/components/post/PostEditModal";
+import type { Poll, Post, PostAuthor, PostComment } from "@/types/Posts";
 
 interface PostCardProps {
   post: Post;
   author?: PostAuthor;
   onDeleted: (postId: number) => void;
-  onPollUpdated: (postId: number, poll: Poll) => void;
+  onPollUpdated?: (postId: number, poll: Poll) => void;
 }
 
-function timeAgo(iso: string): string {
+function timeAgo(iso?: string): string {
+  if (!iso) return "just now";
   const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return "";
+  if (Number.isNaN(then)) return "just now";
   const s = Math.max(0, Math.floor((Date.now() - then) / 1000));
   if (s < 45) return "just now";
   const m = Math.floor(s / 60);
@@ -33,7 +37,7 @@ function RichText({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         i % 2 === 1 ? (
-          <span key={i} className="text-[#FF6B35] font-semibold">
+          <span key={i} className="text-[#FF6B35] font-semibold hover:underline cursor-pointer">
             {part}
           </span>
         ) : (
@@ -44,50 +48,177 @@ function RichText({ text }: { text: string }) {
   );
 }
 
-function TypeBadge({ type }: { type: Post["post_type"] }) {
-  const base = "p-2 rounded-full transition-colors";
-  switch (type) {
-    case "image":
-      return (
-        <div className={`${base} text-[#E1306C] bg-pink-50`}>
-          <ImageIcon className="w-5 h-5" />
-        </div>
-      );
-    case "video":
-      return (
-        <div className={`${base} text-[#FF0000] bg-red-50`}>
-          <Video className="w-5 h-5" />
-        </div>
-      );
-    case "poll":
-      return (
-        <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[0.5625rem] font-bold tracking-wider uppercase">
-          Poll
-        </span>
-      );
-    case "gif":
-      return (
-        <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[0.5625rem] font-bold tracking-wider uppercase">
-          GIF
-        </span>
-      );
-    default:
-      return (
-        <div className={`${base} text-[#E05D24] bg-orange-50`}>
-          <MessageSquare className="w-5 h-5 fill-current" />
-        </div>
-      );
+function isVideoMedia(post: Post): boolean {
+  if (post.post_type === "video" || post.media_type === "video") return true;
+  const url = (post.media_url || "").toLowerCase();
+  if (url.startsWith("data:video/")) return true;
+  return /\.(mp4|webm|mov|m4v|mkv|avi)(\?.*)?$/i.test(url);
+}
+
+function isImageMedia(post: Post): boolean {
+  if (isVideoMedia(post)) return false;
+  if (post.post_type === "image" || post.media_type === "image") return true;
+  const url = (post.media_url || "").toLowerCase();
+  if (url.startsWith("data:image/") || url.startsWith("blob:") || url.startsWith("/Images/")) return true;
+  return !!post.media_url;
+}
+
+function TypeBadge({ post }: { post: Post }) {
+  const isVid = isVideoMedia(post);
+  if (post.platform === "youtube" || isVid) {
+    return (
+      <div className="text-[#FF0000] p-2 bg-red-50 rounded-full hover:bg-red-100 transition-colors shadow-xs">
+        <YoutubeIcon className="w-5 h-5" />
+      </div>
+    );
   }
+  if (post.platform === "instagram" || isImageMedia(post)) {
+    return (
+      <div className="text-[#E1306C] p-2 bg-pink-50 rounded-full hover:bg-pink-100 transition-colors shadow-xs">
+        <InstagramIcon className="w-5 h-5" />
+      </div>
+    );
+  }
+  if (post.post_type === "poll") {
+    return (
+      <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[0.5625rem] font-bold tracking-wider uppercase">
+        Poll
+      </span>
+    );
+  }
+  if (post.post_type === "gif") {
+    return (
+      <span className="bg-[#FFF6ED] text-[#E05D24] border border-[#FFEFE0] rounded-full px-2.5 py-0.5 text-[0.5625rem] font-bold tracking-wider uppercase">
+        GIF
+      </span>
+    );
+  }
+  return (
+    <div className="text-[#E05D24] p-2 bg-orange-50 rounded-full hover:bg-orange-100 transition-colors">
+      <MessageSquare className="w-5 h-5 fill-current" />
+    </div>
+  );
 }
 
 export default function PostCard({ post, author, onDeleted, onPollUpdated }: PostCardProps) {
   const [deleting, setDeleting] = useState(false);
   const [voting, setVoting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [comments, setComments] = useState<PostComment[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [reported, setReported] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const name = author?.name || author?.username || "Unknown";
+  const [content, setContent] = useState(post.content || "");
+  const [commentsDisabled, setCommentsDisabled] = useState(Boolean(post.comments_disabled));
+  const [hideLikeCount, setHideLikeCount] = useState(Boolean(post.hide_like_count));
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  useEffect(() => {
+    setContent(post.content || "");
+    setCommentsDisabled(Boolean(post.comments_disabled));
+    setHideLikeCount(Boolean(post.hide_like_count));
+  }, [post.content, post.comments_disabled, post.hide_like_count]);
+
+  const isOwnPost = post.is_owner !== undefined ? post.is_owner : Boolean(post.can_delete);
+
+  const handleEditClick = () => {
+    setMenuOpen(false);
+    setEditModalOpen(true);
+  };
+
+  const handleToggleHideLikeCount = async () => {
+    setMenuOpen(false);
+    const nextVal = !hideLikeCount;
+    setHideLikeCount(nextVal);
+    try {
+      await postService.edit(post.post_id, { hideLikeCount: nextVal });
+    } catch {
+      setHideLikeCount(!nextVal);
+    }
+  };
+
+  const handleToggleComments = async () => {
+    setMenuOpen(false);
+    const nextVal = !commentsDisabled;
+    setCommentsDisabled(nextVal);
+    try {
+      await postService.edit(post.post_id, { commentsDisabled: nextVal });
+    } catch {
+      setCommentsDisabled(!nextVal);
+    }
+  };
+
+  const name = author?.name || author?.username || "Admin Tamil";
   const avatar =
-    author?.avatar_url || initialsAvatar(getInitials({ name: author?.name, username: author?.username }));
+    author?.avatar_url ||
+    initialsAvatar(getInitials({ name: author?.name || "Admin Tamil", username: author?.username || "admin" }));
+  const location = post.location || "Chennai, India";
+
+  // Close menu on click outside or Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onDown(e: MouseEvent | TouchEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  const handleCopyLink = () => {
+    if (typeof window !== "undefined") {
+      const url = `${window.location.origin}/post/${post.post_id}`;
+      navigator.clipboard?.writeText(url).then(() => {
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+          setMenuOpen(false);
+        }, 1200);
+      }).catch(() => {
+        setMenuOpen(false);
+      });
+    }
+  };
+
+  const handleReport = () => {
+    setReported(true);
+    setTimeout(() => {
+      setReported(false);
+      setMenuOpen(false);
+    }, 1500);
+  };
+
+  // Fetch comments on mount
+  useEffect(() => {
+    let active = true;
+    postService
+      .getComments(post.post_id)
+      .then((res) => {
+        if (active && res && Array.isArray(res)) {
+          setComments(res);
+        } else if (active) {
+          setComments([]);
+        }
+      })
+      .catch(() => {
+        if (active) setComments([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [post.post_id]);
 
   const handleDelete = async () => {
     if (deleting || !window.confirm("Delete this post? This cannot be undone.")) return;
@@ -108,7 +239,7 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
     setMessage(null);
     try {
       const poll = await postService.vote(post.post_id, optionId);
-      onPollUpdated(post.post_id, poll);
+      onPollUpdated?.(post.post_id, poll);
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Could not record your vote.");
     } finally {
@@ -119,9 +250,20 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
   const poll = post.poll;
   const hasVoted = poll ? poll.my_vote_option_id !== null : false;
 
+  const footerDetails = {
+    isViews: post.views_count || "1.2M",
+    isRevenue: post.revenue || "18,250",
+    isAIScore: post.ai_score || "96/100",
+    isNextTime: post.next_time || "8:32PM",
+    isLike: (post.like_count ?? post.likes_count) !== undefined ? `${post.like_count ?? post.likes_count}` : "0",
+    isMessage: (post.comment_count ?? post.comments_count) !== undefined ? `${post.comment_count ?? post.comments_count}` : "0",
+    isSend: (post.share_count ?? post.shares_count) !== undefined ? `${post.share_count ?? post.shares_count}` : "0",
+    isSaved: (post.save_count ?? post.saves_count) !== undefined ? `${post.save_count ?? post.saves_count}` : "0",
+  };
+
   return (
-    <article className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3.5 sm:gap-4">
-      {/* header */}
+    <article className="w-full bg-white rounded-[24px] sm:rounded-[32px] p-3.5 xs:p-4 sm:p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-[#FFEFE0] flex flex-col gap-3.5 sm:gap-4 select-none">
+      {/* Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-11 h-11 rounded-full overflow-hidden relative border border-[#FFEFE0] bg-gray-50 shrink-0">
@@ -135,72 +277,183 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
                 <span className="text-[#8E8E93] text-xs font-normal truncate">@{author.username}</span>
               )}
             </div>
-            <span className="text-[0.6875rem] text-[#8E8E93] mt-0.5">{timeAgo(post.created_at)}</span>
+            <span className="text-[0.6875rem] text-[#8E8E93] mt-0.5">
+              {location} • {timeAgo(post.created_at)}
+            </span>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          <TypeBadge type={post.post_type} />
-          {post.can_delete && (
+          <TypeBadge post={post} />
+          <div ref={menuRef} className="relative">
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => setMenuOpen((prev) => !prev)}
               disabled={deleting}
-              title="Delete post"
-              aria-label="Delete post"
-              className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+              title="More options"
+              aria-label="More options"
+              aria-expanded={menuOpen}
+              className="p-2 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50"
             >
-              {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              {deleting ? (
+                <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
+              ) : (
+                <MoreVertical className="w-4 h-4" />
+              )}
             </button>
-          )}
+
+            {menuOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-full mt-1.5 z-30 w-52 overflow-hidden rounded-2xl border border-[#FFEFE0] bg-white py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.08)] ring-1 ring-black/5 animate-in fade-in duration-100"
+              >
+                {isOwnPost && (
+                  <>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleEditClick}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
+                    >
+                      <Pencil className="w-4 h-4 text-[#FF6B35]" />
+                      <span>Edit</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleToggleHideLikeCount}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
+                    >
+                      {hideLikeCount ? (
+                        <>
+                          <Eye className="w-4 h-4 text-[#FF6B35]" />
+                          <span>Show like count</span>
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="w-4 h-4 text-[#FF6B35]" />
+                          <span>Hide like count</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleToggleComments}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
+                    >
+                      <MessageCircle className="w-4 h-4 text-[#FF6B35]" />
+                      <span>{commentsDisabled ? "Turn on commenting" : "Turn off commenting"}</span>
+                    </button>
+
+                    <div className="my-1 h-px bg-[#FFEFE0]" />
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={handleCopyLink}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-medium text-gray-700 hover:bg-[#FFF6ED] hover:text-[#FF6B35] transition-colors text-left cursor-pointer"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                  <span>{copied ? "Link copied!" : "Copy link"}</span>
+                </button>
+
+                {post.can_delete && (
+                  <>
+                    <div className="my-1 h-px bg-[#FFEFE0]" />
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        handleDelete();
+                      }}
+                      disabled={deleting}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                      <span>Delete post</span>
+                    </button>
+                  </>
+                )}
+
+                {!post.can_delete && (
+                  <>
+                    <div className="my-1 h-px bg-[#FFEFE0]" />
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleReport}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors text-left cursor-pointer"
+                    >
+                      <Flag className="w-4 h-4 text-gray-400" />
+                      <span>{reported ? "Reported" : "Report post"}</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* text / caption / poll question */}
-      {post.content &&
+      {/* Text / Caption */}
+      {content &&
         (post.post_type === "text" ? (
           <div className="bg-[#FFFDFB] rounded-[20px] p-4 border border-[#FFEFE0] text-[0.84375rem] text-gray-800 leading-relaxed whitespace-pre-wrap break-words">
-            <RichText text={post.content} />
+            <RichText text={content} />
           </div>
         ) : (
           <div className="text-[0.8125rem] text-gray-800 leading-relaxed whitespace-pre-wrap break-words">
-            <RichText text={post.content} />
+            <RichText text={content} />
           </div>
         ))}
 
-      {/* media */}
-      {post.post_type === "image" && post.media_url && (
-        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5 flex items-center justify-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={postService.mediaSrc(post.media_url)}
-            alt="Post image"
-            loading="lazy"
-            className="w-full h-auto max-h-[550px] object-contain"
-          />
-        </div>
-      )}
-
-      {post.post_type === "video" && post.media_url && (
-        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-black">
+      {/* Media: Video */}
+      {isVideoMedia(post) && post.media_url && (
+        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-black flex items-center justify-center max-h-[500px] relative">
           <video
             src={postService.mediaSrc(post.media_url)}
             controls
             playsInline
             preload="metadata"
-            className="w-full max-h-[480px]"
+            className="w-full max-h-[480px] object-contain rounded-[24px]"
           />
         </div>
       )}
 
-      {post.post_type === "gif" && post.gif_url && (
-        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5 flex items-center justify-center">
+      {/* Media: Image */}
+      {isImageMedia(post) && post.media_url && (
+        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5 flex items-center justify-center min-h-[200px] max-h-[550px] relative">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.gif_url} alt="GIF" loading="lazy" className="w-full h-auto max-h-[480px] object-contain" />
+          <img
+            src={postService.mediaSrc(post.media_url)}
+            alt={post.content ? post.content.slice(0, 50) : "Post image"}
+            loading="lazy"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.includes("/Images/avatar1.png")) {
+                target.src = "/Images/avatar1.png";
+              }
+            }}
+            className="w-full h-auto max-h-[550px] object-contain rounded-[24px]"
+          />
         </div>
       )}
 
-      {/* poll */}
+      {/* Media: GIF */}
+      {post.post_type === "gif" && post.gif_url && (
+        <div className="w-full rounded-[24px] overflow-hidden border border-[#FFEFE0] bg-gray-900/5 flex items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={post.gif_url} alt="GIF" loading="lazy" className="w-full h-auto max-h-[480px] object-contain rounded-[24px]" />
+        </div>
+      )}
+
+      {/* Poll */}
       {poll && (
         <div className="flex flex-col gap-2.5 my-1">
           {poll.options.map((opt) => {
@@ -249,6 +502,38 @@ export default function PostCard({ post, author, onDeleted, onPollUpdated }: Pos
         <p role="alert" className="text-[12px] text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
           {message}
         </p>
+      )}
+
+      {/* 4 Pill Stats & Footer Actions & Comments */}
+      <FeedCardfooter
+        PostAnalysis={footerDetails}
+        postId={post.post_id}
+        postOwnerId={post.author_id}
+        initialComments={comments}
+        isLikedInitial={Boolean(post.liked_by_me ?? post.is_liked)}
+        isSavedInitial={Boolean(post.saved_by_me ?? post.is_saved)}
+        isSharedInitial={Boolean(post.shared_by_me ?? post.is_shared)}
+        commentsDisabled={commentsDisabled}
+        hideLikeCount={hideLikeCount}
+        onLikeToggle={(currentlyLiked?: boolean) => postService.toggleLike(post.post_id, currentlyLiked).catch(() => {})}
+        onSaveToggle={(currentlySaved?: boolean) => postService.toggleSave(post.post_id, currentlySaved).catch(() => {})}
+        onShare={() => postService.recordShare(post.post_id)}
+      />
+
+      {/* Edit Post Modal */}
+      {editModalOpen && (
+        <PostEditModal
+          post={post}
+          currentContent={content}
+          currentHideLikeCount={hideLikeCount}
+          currentCommentsDisabled={commentsDisabled}
+          onClose={() => setEditModalOpen(false)}
+          onSaved={(newContent, newHideLikes, newCommentsOff) => {
+            setContent(newContent);
+            setHideLikeCount(newHideLikes);
+            setCommentsDisabled(newCommentsOff);
+          }}
+        />
       )}
     </article>
   );

@@ -49,15 +49,19 @@ export default function ShareThoughtCard() {
   const [composer, setComposer] = useState<{ mode: ComposerMode; openEmoji?: boolean } | null>(null);
   const [isPosting, setIsPosting] = useState(false);
 
+  if (!canPost) {
+    return null;
+  }
+
   const open = (mode: ComposerMode, openEmoji = false) => {
-    if (!canPost) {
-      alert("Posting is currently limited to administrators.");
-      return;
-    }
     setComposer({ mode, openEmoji });
   };
 
   const handleThoughtSubmit = async (input: ThoughtInput) => {
+    if (!canPost) {
+      alert("Posting is temporarily restricted to administrators only.");
+      return;
+    }
     setIsPosting(true);
     try {
       await postService.create({

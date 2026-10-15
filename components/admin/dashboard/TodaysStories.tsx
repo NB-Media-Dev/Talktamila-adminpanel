@@ -175,39 +175,54 @@ export default function TodayStories() {
     fetchStories();
   }, [fetchStories]);
 
-  // ── Auto-open story from notification deep-link (?open_story={story_id}) ──
+  // ── Auto-open story from notification deep-link (?open_story={story_id}) or event ──
+  const openStoryById = useCallback(
+    (targetId: number) => {
+      if (!targetId || allStoryUsers.length === 0) return;
+
+      const userIndex = allStoryUsers.findIndex(
+        (u) =>
+          u.story_id === targetId ||
+          u.id === targetId ||
+          (u.slides || []).some((s) => s.story_id === targetId || s.id === targetId)
+      );
+
+      if (userIndex >= 0) {
+        setSelectedUserIndex(userIndex);
+        setTargetStoryId(targetId);
+        setIsPreviewOpen(true);
+      } else {
+        setSelectedUserIndex(0);
+        setTargetStoryId(targetId);
+        setIsPreviewOpen(true);
+      }
+    },
+    [allStoryUsers]
+  );
+
   useEffect(() => {
     if (typeof window === "undefined" || allStoryUsers.length === 0) return;
     const searchParams = new URLSearchParams(window.location.search);
     const openStoryId = searchParams.get("open_story");
-    if (!openStoryId) return;
-
-    const targetId = Number(openStoryId);
-
-    // Find the StoryUser whose slides contain a slide with this story_id
-    const userIndex = allStoryUsers.findIndex((u) =>
-      u.story_id === targetId ||
-      u.id === targetId ||
-      (u.slides || []).some((s) => s.story_id === targetId || s.id === targetId)
-    );
-
-    if (userIndex >= 0) {
-      setSelectedUserIndex(userIndex);
-      setTargetStoryId(targetId);
-      setIsPreviewOpen(true);
-    } else {
-      // story_id not found in feed — open first user as fallback
-      setSelectedUserIndex(0);
-      setTargetStoryId(targetId);
-      setIsPreviewOpen(true);
+    if (openStoryId) {
+      openStoryById(Number(openStoryId));
+      searchParams.delete("open_story");
+      const cleanQuery = searchParams.toString();
+      const cleanUrl = cleanQuery ? `${window.location.pathname}?${cleanQuery}` : window.location.pathname;
+      window.history.replaceState({}, "", cleanUrl);
     }
+  }, [allStoryUsers, openStoryById]);
 
-    // Clear the param from URL so refreshing doesn't re-open it
-    searchParams.delete("open_story");
-    const cleanQuery = searchParams.toString();
-    const cleanUrl = cleanQuery ? `${window.location.pathname}?${cleanQuery}` : window.location.pathname;
-    window.history.replaceState({}, "", cleanUrl);
-  }, [allStoryUsers]);
+  useEffect(() => {
+    const handleOpenStoryEvent = (e: Event) => {
+      const ce = e as CustomEvent<{ storyId: number }>;
+      if (ce.detail?.storyId) {
+        openStoryById(Number(ce.detail.storyId));
+      }
+    };
+    window.addEventListener("open_story_slide", handleOpenStoryEvent);
+    return () => window.removeEventListener("open_story_slide", handleOpenStoryEvent);
+  }, [openStoryById]);
 
   const feedUsers = useMemo(() => {
     const filtered = allStoryUsers.filter((u) => !u.is_my_story);

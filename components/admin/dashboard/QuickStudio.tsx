@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import { useContenthook } from "@/hooks/useContent";
+import { useAuthRole } from "@/hooks/useAuthRole";
 import { LivePreviewloading } from "@/components/ui/Skeletonloading";
 
 import { StaticImageData } from "next/image";
@@ -34,6 +35,7 @@ interface FormatOption {
 
 export function QuickStudio() {
   const context = useContext(useContenthook);
+  const { isAdmin } = useAuthRole();
   const [selectedFormat, setSelectedFormat] = useState<string>("Poster");
   const [prompt, setPrompt] = useState<string>(
     "A cinematic Chennai skyline sunset poster with 'சென்னை மெட்ரோ 2025' bold text and orange gradient overlay."
@@ -283,12 +285,14 @@ export function QuickStudio() {
 
    
         <div className="flex items-center gap-2 w-full xs:justify-center sm:justify-end sm:-ml-15 pt-2 border-t border-orange-100/60">
-          <button
-            type="button"
-            className="px-3.5 py-1 min-[3840px]:px-4.5 min-[3840px]:py-1.5 bg-white border border-orange-200 text-[#FF6B35] text-[9.5px] md:text-[10.5px] min-[3840px]:text-xs font-bold rounded-full hover:bg-orange-50/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs min-w-[80px] cursor-pointer"
-          >
-            Schedule
-          </button>
+          {!isAdmin && (
+            <button
+              type="button"
+              className="px-3.5 py-1 min-[3840px]:px-4.5 min-[3840px]:py-1.5 bg-white border border-orange-200 text-[#FF6B35] text-[9.5px] md:text-[10.5px] min-[3840px]:text-xs font-bold rounded-full hover:bg-orange-50/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs min-w-[80px] cursor-pointer"
+            >
+              Schedule
+            </button>
+          )}
           <button
             type="button"
             className="px-5 py-1 min-[3840px]:px-6 min-[3840px]:py-1.5 bg-[#FF6B35] hover:bg-[#F27D42] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-white text-[9.5px] md:text-[10.5px] min-[3840px]:text-xs font-bold rounded-full shadow-xs transition-all min-w-[90px] cursor-pointer"

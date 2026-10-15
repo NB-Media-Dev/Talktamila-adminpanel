@@ -19,7 +19,7 @@ export default function BottomNavigation() {
   const context = useContext(useContenthook);
   const router = useRouter();
   const pathname = usePathname();
-  const { isMounted: mounted, isInfluencer, isFreelancer } = useAuthRole();
+  const { isMounted: mounted, isInfluencer, isFreelancer, isAdmin } = useAuthRole();
 
 
 
@@ -55,7 +55,7 @@ export default function BottomNavigation() {
       }
       setAnalyticsState(false);
     }
-  }
+  };
   return (
     <>
       <div className="fixed bottom-2 left-2 right-2 sm:bottom-3 sm:left-4 sm:right-4 md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 xs:z-50 sm:z-40 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] md:max-w-xl lg:w-[calc(50%-3rem)] 2xl:w-[calc(50%-3rem)] min-[2560px]:w-[calc(50%-3.5rem)] min-[3840px]:w-[calc(50%-3.5rem)] select-none transform-gpu pb-[env(safe-area-inset-bottom,0px)] mx-auto">

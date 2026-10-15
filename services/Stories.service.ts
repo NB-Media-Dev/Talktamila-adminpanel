@@ -46,8 +46,15 @@ export const storyService = {
     });
   },
 
-  searchMentionUsers: async (query: string = '', limit: number = 10): Promise<MentionUserSearchItem[]> => {
-    return apiClient<MentionUserSearchItem[]>(`/api/v1/stories/mentions/search?q=${encodeURIComponent(query)}&limit=${limit}`, {
+  searchMentionUsers: async (query: string = '', limit: number = 10, storyId?: number | string): Promise<MentionUserSearchItem[]> => {
+    const params = new URLSearchParams({
+      q: query,
+      limit: String(limit),
+    });
+    if (storyId) {
+      params.append('story_id', String(storyId));
+    }
+    return apiClient<MentionUserSearchItem[]>(`/api/v1/stories/mentions/search?${params.toString()}`, {
       method: 'GET',
     });
   },
@@ -169,6 +176,45 @@ export const storyService = {
       method: 'POST',
     });
   },
+
+  adminUnbanUser: async (userId: number | string): Promise<{ success: boolean; message: string }> => {
+    return apiClient<{ success: boolean; message: string }>(`/api/v1/admin/users/${userId}/unban`, {
+      method: 'POST',
+    });
+  },
+
+  adminWarnStoryCreator: async (
+    storyId: number | string,
+    message: string,
+    targetUserId?: number,
+    warningType: string = "warning"
+  ): Promise<{ success: boolean; message: string; dm_id?: number }> => {
+    return apiClient<{ success: boolean; message: string; dm_id?: number }>(`/api/v1/admin/stories/${storyId}/warn`, {
+      method: 'POST',
+      body: JSON.stringify({
+        message,
+        warning_type: warningType,
+        target_user_id: targetUserId,
+      }),
+    });
+  },
+
+  adminWarnUser: async (
+    userId: number | string,
+    message: string,
+    storyId?: number,
+    warningType: string = "warning"
+  ): Promise<{ success: boolean; message: string; dm_id?: number }> => {
+    return apiClient<{ success: boolean; message: string; dm_id?: number }>(`/api/v1/admin/users/${userId}/warn`, {
+      method: 'POST',
+      body: JSON.stringify({
+        message,
+        warning_type: warningType,
+        story_id: storyId,
+      }),
+    });
+  },
+
 
   // Music
   getTrendingMusic: async (limit: number = 15): Promise<BackendMusicTrack[]> => {

@@ -48,11 +48,15 @@ export interface StoryMentionItem {
 }
 
 export interface MentionUserSearchItem {
+  id?: number;
   user_id: number;
   username: string;
   full_name?: string | null;
   avatar_url?: string | null;
+  role?: string;
   is_following?: boolean;
+  is_blocked?: boolean;
+  is_already_mentioned?: boolean;
 }
 
 export interface StoryReshareRequest {
@@ -99,6 +103,7 @@ export interface StorySlide {
   original_avatar_url?: string | null;
   is_reshare?: boolean;
   can_reshare?: boolean;
+  already_reshared?: boolean;
   mentions?: StoryMentionItem[];
 }
 
@@ -148,6 +153,7 @@ export interface BackendSlide {
   original_avatar_url?: string | null;
   is_reshare?: boolean;
   can_reshare?: boolean;
+  already_reshared?: boolean;
   mentions?: StoryMentionItem[];
 }
 
@@ -260,6 +266,7 @@ export interface AdminReportStoryItem {
     full_name?: string;
     role?: string;
     verified?: boolean;
+    is_active?: boolean;
   };
 }
 
@@ -273,6 +280,23 @@ export interface AdminReportItem {
   created_at: string;
   story?: AdminReportStoryItem | null;
 }
+
+export interface AdminWarnPayload {
+  message: string;
+  warning_type?: string;
+  target_user_id?: number;
+  story_id?: number;
+}
+
+export interface AdminWarnResponse {
+  success: boolean;
+  message: string;
+  story_id?: number;
+  user_id?: number;
+  dm_id?: number;
+  warning_type?: string;
+}
+
 
 export interface PreviewStoriesProps {
   stories: StoryUser[];

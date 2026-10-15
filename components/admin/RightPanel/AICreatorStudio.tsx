@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { useAuthRole } from "@/hooks/useAuthRole";
 
 export default function AICreatorStudio() {
-  const { isInfluencer , isFreelancer ,userRole } = useAuthRole();
+  const { isInfluencer, isFreelancer, userRole, isAdmin } = useAuthRole();
   const router = useRouter();
   const formats = [
     "Poster",
@@ -156,14 +156,16 @@ switch (userRole) {
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => router.push(targetHref)}
-              className="py-2.5 px-4 bg-[#FFEFE5] active:scale-[0.98] text-gray-700 text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-            >
-              <Calendar className="w-3.5 h-3.5 text-[#FF5A26]" />
-              <span>Schedule</span>
-            </button>
+          <div className={`grid ${isAdmin ? "grid-cols-1" : "grid-cols-2"} gap-2`}>
+            {!isAdmin && (
+              <button
+                onClick={() => router.push(targetHref)}
+                className="py-2.5 px-4 bg-[#FFEFE5] active:scale-[0.98] text-gray-700 text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Calendar className="w-3.5 h-3.5 text-[#FF5A26]" />
+                <span>Schedule</span>
+              </button>
+            )}
             <button
               className="py-2.5 px-4 bg-[#FFEFE5] active:scale-[0.98] text-gray-700 text-xs font-bold rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >

@@ -18,6 +18,7 @@ import {
   CheckCheck,
   Star,
   ExternalLink,
+  AlertTriangle,
 } from "lucide-react";
 import { notificationService, NotificationItem } from "@/services/notification.service";
 import { useAuthRole } from "@/hooks/useAuthRole";
@@ -35,6 +36,7 @@ interface TypeConfig {
 }
 
 const TYPE_MAP: Record<string, TypeConfig> = {
+  // ── Reactions: Story likes, Post likes, Comment likes, Reactions ──
   story_like: {
     icon: <Heart className="w-3 h-3 fill-current" />,
     label: "liked your story",
@@ -48,6 +50,64 @@ const TYPE_MAP: Record<string, TypeConfig> = {
     tab: "reactions",
     color: "text-rose-500",
     bg: "bg-rose-50",
+  },
+  post_like: {
+    icon: <Heart className="w-3 h-3 fill-current" />,
+    label: "liked your post",
+    tab: "reactions",
+    color: "text-rose-500",
+    bg: "bg-rose-50",
+  },
+  comment_like: {
+    icon: <Heart className="w-3 h-3 fill-current" />,
+    label: "liked your comment",
+    tab: "reactions",
+    color: "text-rose-500",
+    bg: "bg-rose-50",
+  },
+  story_react: {
+    icon: <Smile className="w-3 h-3" />,
+    label: "reacted to your story",
+    tab: "reactions",
+    color: "text-amber-500",
+    bg: "bg-amber-50",
+  },
+  message_react: {
+    icon: <Smile className="w-3 h-3" />,
+    label: "reacted to your message",
+    tab: "reactions",
+    color: "text-sky-500",
+    bg: "bg-sky-50",
+  },
+
+  // ── Mentions: Story mentions, Comment mentions, Replies, Warnings ──
+  story_mention: {
+    icon: <AtSign className="w-3 h-3" />,
+    label: "mentioned you in their story",
+    tab: "mentions",
+    color: "text-purple-500",
+    bg: "bg-purple-50",
+  },
+  STORY_MENTION: {
+    icon: <AtSign className="w-3 h-3" />,
+    label: "mentioned you in their story",
+    tab: "mentions",
+    color: "text-purple-500",
+    bg: "bg-purple-50",
+  },
+  post_mention: {
+    icon: <AtSign className="w-3 h-3" />,
+    label: "mentioned you in a post",
+    tab: "mentions",
+    color: "text-purple-500",
+    bg: "bg-purple-50",
+  },
+  POST_MENTION: {
+    icon: <AtSign className="w-3 h-3" />,
+    label: "mentioned you in a post",
+    tab: "mentions",
+    color: "text-purple-500",
+    bg: "bg-purple-50",
   },
   story_reply: {
     icon: <MessageSquare className="w-3 h-3" />,
@@ -63,34 +123,85 @@ const TYPE_MAP: Record<string, TypeConfig> = {
     color: "text-orange-500",
     bg: "bg-orange-50",
   },
-  new_message: {
-    icon: <MessageCircle className="w-3 h-3 fill-current" />,
-    label: "sent you a message",
+  post_comment: {
+    icon: <MessageSquare className="w-3 h-3" />,
+    label: "commented on your post",
     tab: "mentions",
-    color: "text-sky-500",
-    bg: "bg-sky-50",
+    color: "text-orange-500",
+    bg: "bg-orange-50",
   },
-  message_react: {
-    icon: <Smile className="w-3 h-3" />,
-    label: "reacted to your message",
-    tab: "reactions",
-    color: "text-sky-500",
-    bg: "bg-sky-50",
+  post_comment_reply: {
+    icon: <MessageSquare className="w-3 h-3" />,
+    label: "replied to your comment",
+    tab: "mentions",
+    color: "text-orange-500",
+    bg: "bg-orange-50",
   },
   story_share: {
     icon: <Share2 className="w-3 h-3" />,
     label: "shared a story with you",
-    tab: "all",
+    tab: "mentions",
     color: "text-blue-500",
     bg: "bg-blue-50",
   },
-  story_react: {
-    icon: <Smile className="w-3 h-3" />,
-    label: "reacted to your story",
-    tab: "reactions",
-    color: "text-amber-500",
+  post_share: {
+    icon: <Share2 className="w-3 h-3" />,
+    label: "shared your post",
+    tab: "mentions",
+    color: "text-blue-500",
+    bg: "bg-blue-50",
+  },
+  story_shared: {
+    icon: <Share2 className="w-3 h-3" />,
+    label: "shared your story",
+    tab: "mentions",
+    color: "text-emerald-500",
+    bg: "bg-emerald-50",
+  },
+  STORY_SHARED: {
+    icon: <Share2 className="w-3 h-3" />,
+    label: "shared your story",
+    tab: "mentions",
+    color: "text-emerald-500",
+    bg: "bg-emerald-50",
+  },
+  story_warning: {
+    icon: <AlertTriangle className="w-3 h-3 fill-amber-100" />,
+    label: "issued an official warning",
+    tab: "mentions",
+    color: "text-amber-600",
     bg: "bg-amber-50",
   },
+  admin_warning: {
+    icon: <AlertTriangle className="w-3 h-3 fill-amber-100" />,
+    label: "issued an official warning",
+    tab: "mentions",
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+  },
+  warning: {
+    icon: <AlertTriangle className="w-3 h-3 fill-amber-100" />,
+    label: "issued an official warning",
+    tab: "mentions",
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+  },
+  STORY_WARNING: {
+    icon: <AlertTriangle className="w-3 h-3 fill-amber-100" />,
+    label: "issued an official warning",
+    tab: "mentions",
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+  },
+  ADMIN_WARNING: {
+    icon: <AlertTriangle className="w-3 h-3 fill-amber-100" />,
+    label: "issued an official warning",
+    tab: "mentions",
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+  },
+
+  // ── Requests: Follow requests, Message requests ──
   follow: {
     icon: <UserPlus className="w-3 h-3" />,
     label: "started following you",
@@ -98,40 +209,54 @@ const TYPE_MAP: Record<string, TypeConfig> = {
     color: "text-indigo-500",
     bg: "bg-indigo-50",
   },
+  follow_request: {
+    icon: <UserPlus className="w-3 h-3" />,
+    label: "requested to follow you",
+    tab: "requests",
+    color: "text-indigo-500",
+    bg: "bg-indigo-50",
+  },
+  request: {
+    icon: <UserPlus className="w-3 h-3" />,
+    label: "sent you a request",
+    tab: "requests",
+    color: "text-indigo-500",
+    bg: "bg-indigo-50",
+  },
+  new_message: {
+    icon: <MessageCircle className="w-3 h-3 fill-current" />,
+    label: "sent you a message",
+    tab: "requests",
+    color: "text-sky-500",
+    bg: "bg-sky-50",
+  },
+  message: {
+    icon: <MessageCircle className="w-3 h-3 fill-current" />,
+    label: "sent you a message",
+    tab: "requests",
+    color: "text-sky-500",
+    bg: "bg-sky-50",
+  },
+  message_request: {
+    icon: <MessageCircle className="w-3 h-3 fill-current" />,
+    label: "sent you a message request",
+    tab: "requests",
+    color: "text-sky-500",
+    bg: "bg-sky-50",
+  },
   story: {
     icon: <Tv className="w-3 h-3" />,
     label: "shared a new story",
-    tab: "all",
+    tab: "mentions",
     color: "text-amber-500",
     bg: "bg-amber-50",
   },
-  STORY_MENTION: {
-    icon: <AtSign className="w-3 h-3" />,
-    label: "mentioned you in their story",
+  post: {
+    icon: <Tv className="w-3 h-3" />,
+    label: "published a new post",
     tab: "mentions",
-    color: "text-purple-500",
-    bg: "bg-purple-50",
-  },
-  story_mention: {
-    icon: <AtSign className="w-3 h-3" />,
-    label: "mentioned you in their story",
-    tab: "mentions",
-    color: "text-purple-500",
-    bg: "bg-purple-50",
-  },
-  STORY_SHARED: {
-    icon: <Share2 className="w-3 h-3" />,
-    label: "shared your story",
-    tab: "all",
-    color: "text-emerald-500",
-    bg: "bg-emerald-50",
-  },
-  story_shared: {
-    icon: <Share2 className="w-3 h-3" />,
-    label: "shared your story",
-    tab: "all",
-    color: "text-emerald-500",
-    bg: "bg-emerald-50",
+    color: "text-blue-500",
+    bg: "bg-blue-50",
   },
 };
 
@@ -147,67 +272,159 @@ function getConfig(type: string): TypeConfig {
   return TYPE_MAP[type] ?? FALLBACK_CONFIG;
 }
 
+function getNotificationTab(notif: NotificationItem): Tab {
+  const type = (notif.type || "").toLowerCase().trim();
+  const msg = (notif.message || "").toLowerCase();
+
+  // 1. Reactions tab: story likes, post likes, comment likes, emoji reacts
+  if (
+    type === "story_like" ||
+    type === "post_like" ||
+    type === "like" ||
+    type === "comment_like" ||
+    type === "story_react" ||
+    type === "message_react" ||
+    type.includes("like") ||
+    type.includes("react") ||
+    msg.includes("liked your") ||
+    msg.includes("reacted to")
+  ) {
+    return "reactions";
+  }
+
+  // 2. Requests tab: follow requests, message requests / direct messages
+  if (
+    type === "follow" ||
+    type === "follow_request" ||
+    type === "request" ||
+    type === "new_message" ||
+    type === "message" ||
+    type === "message_request" ||
+    type.includes("follow") ||
+    type.includes("request") ||
+    type === "new_message" ||
+    msg.includes("following you") ||
+    msg.includes("sent you a message") ||
+    msg.includes("message request")
+  ) {
+    return "requests";
+  }
+
+  // 3. Mentions tab: story mentions, comment mentions, comments, replies, warnings
+  if (
+    type.includes("mention") ||
+    type.includes("comment") ||
+    type.includes("reply") ||
+    type.includes("share") ||
+    type.includes("warning") ||
+    msg.includes("mentioned") ||
+    msg.includes("comment") ||
+    msg.includes("replied") ||
+    msg.includes("warning")
+  ) {
+    return "mentions";
+  }
+
+  const mappedTab = getConfig(notif.type).tab;
+  return mappedTab === "all" ? "mentions" : mappedTab;
+}
 
 // ─── Navigation URL resolver ──────────────────────────────────────────────────
 /**
  * Returns the URL to navigate to when a notification row is clicked.
  * Routing pattern (role-aware):
+ *   story_warning / admin_warning / warning               → /{role}/messages?user={actor_id} (Admin Chat)
  *   story_reply / story_react / story_like / story_share  → /{role}?open_story={story_id}
  *   new_message / message_react                           → /{role}/messages?user={actor_id}
  *   follow                                                → /{role}/u/{actor_username}
+ *   post_like / post_comment / post_share                 → /{role}?open_post={post_id}
  */
 function resolveNavUrl(
   notif: NotificationItem,
   base: string  // '/influencer' | '/freelancer' | '/admin'
 ): string | null {
   const { type, actor_id, actor_username, reference_id } = notif;
+  const normalizedType = (type || "").toLowerCase().trim();
 
-  switch (type) {
+  switch (normalizedType) {
+    // ── Admin Warnings → Open Admin Message Chat ──────────────────────────────
+    case "story_warning":
+    case "admin_warning":
+    case "warning":
+    case "story-warning":
+    case "admin-warning":
+      if (actor_id) return `${base}/messages?user=${actor_id}`;
+      if (reference_id) return `${base}/messages?user=${reference_id}`;
+      if (actor_username) return `${base}/messages?username=${encodeURIComponent(actor_username)}`;
+      return `${base}/messages`;
+
     // ── Direct messages ──────────────────────────────────────────────────────
     case "new_message":
     case "message_react":
+    case "message":
       if (actor_id) return `${base}/messages?user=${actor_id}`;
-      break;
+      if (reference_id) return `${base}/messages?user=${reference_id}`;
+      if (actor_username) return `${base}/messages?username=${encodeURIComponent(actor_username)}`;
+      return `${base}/messages`;
 
     // ── Story reply → open the exact story that was replied to ───────────────
     case "story_reply":
-      if (reference_id) return `${base}?open_story=${reference_id}`;
-      if (actor_id) return `${base}/messages?user=${actor_id}`;
-      break;
-
-    // ── Story reactions / likes / shares / mentions → open the story ───────────────────
     case "story_react":
     case "story_like":
     case "story_share":
-    case "STORY_SHARED":
     case "story_shared":
-    case "STORY_MENTION":
     case "story_mention":
+    case "story":
       if (reference_id) return `${base}?open_story=${reference_id}`;
-      if (actor_id) return `${base}/messages?user=${actor_id}`;
+      if (actor_username) return `${base}/u/${encodeURIComponent(actor_username)}`;
       break;
 
-    // ── Comment / mention ────────────────────────────────────────────────────
+    // ── Posts / comments / likes / shares ───────────────────────────────────
+    case "post_like":
+    case "post_comment":
+    case "post_comment_reply":
+    case "post_share":
+    case "comment_like":
+    case "post_mention":
     case "comment":
-    case "mention":
+    case "like":
+    case "post":
+      if (reference_id) return `${base}?open_post=${reference_id}`;
       if (actor_username) return `${base}/u/${encodeURIComponent(actor_username)}`;
-      if (actor_id) return `${base}/messages?user=${actor_id}`;
+      break;
+
+    // ── Reports (Admin review) ───────────────────────────────────────────────
+    case "story_report":
+    case "post_report":
+    case "report":
+      if (base === "/admin") {
+        if (reference_id && normalizedType.includes("story")) return `/admin?open_story=${reference_id}`;
+        if (reference_id && normalizedType.includes("post")) return `/admin?open_post=${reference_id}`;
+        return `/admin?tab=reports`;
+      }
       break;
 
     // ── Follow → open their profile ──────────────────────────────────────────
     case "follow":
     case "request":
       if (actor_username) return `${base}/u/${encodeURIComponent(actor_username)}`;
-      break;
-
-    // ── Generic story / like ─────────────────────────────────────────────────
-    case "like":
-    case "story":
-      if (reference_id) return `${base}?open_story=${reference_id}`;
-      if (actor_username) return `${base}/u/${encodeURIComponent(actor_username)}`;
+      if (actor_id) return `${base}/messages?user=${actor_id}`;
       break;
 
     default:
+      if (
+        normalizedType.includes("warning") ||
+        (notif.message && notif.message.toLowerCase().includes("warning"))
+      ) {
+        if (actor_id) return `${base}/messages?user=${actor_id}`;
+        if (reference_id) return `${base}/messages?user=${reference_id}`;
+        if (actor_username) return `${base}/messages?username=${encodeURIComponent(actor_username)}`;
+        return `${base}/messages`;
+      }
+      if (reference_id) {
+        if (normalizedType.includes("story")) return `${base}?open_story=${reference_id}`;
+        if (normalizedType.includes("post")) return `${base}?open_post=${reference_id}`;
+      }
       if (actor_username) return `${base}/u/${encodeURIComponent(actor_username)}`;
       if (actor_id) return `${base}/messages?user=${actor_id}`;
   }
@@ -410,7 +627,7 @@ export default function TalkTamilaNotifications({
   // ── derived ────────────────────────────────────────────────────────────────
   const filtered = notifications.filter((n) => {
     if (activeTab === "all") return true;
-    return getConfig(n.type).tab === activeTab;
+    return getNotificationTab(n) === activeTab;
   });
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
@@ -423,9 +640,9 @@ export default function TalkTamilaNotifications({
   // Tab badge counts
   const tabCounts: Record<Tab, number> = {
     all:       notifications.filter((n) => !n.is_read).length,
-    mentions:  notifications.filter((n) => !n.is_read && getConfig(n.type).tab === "mentions").length,
-    reactions: notifications.filter((n) => !n.is_read && getConfig(n.type).tab === "reactions").length,
-    requests:  notifications.filter((n) => !n.is_read && getConfig(n.type).tab === "requests").length,
+    mentions:  notifications.filter((n) => !n.is_read && getNotificationTab(n) === "mentions").length,
+    reactions: notifications.filter((n) => !n.is_read && getNotificationTab(n) === "reactions").length,
+    requests:  notifications.filter((n) => !n.is_read && getNotificationTab(n) === "requests").length,
   };
 
   // ── actions ────────────────────────────────────────────────────────────────
@@ -461,6 +678,20 @@ export default function TalkTamilaNotifications({
     const url = resolveNavUrl(notif, roleBase);
     if (!url) return;            // no deep-link available yet
     onClose();                   // close the panel
+
+    const notifType = (notif.type || "").toLowerCase();
+    const isWarning =
+      notifType.includes("warning") ||
+      (notif.message && notif.message.toLowerCase().includes("warning"));
+
+    if (!isWarning && notifType.includes("story") && notif.reference_id && typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("open_story_slide", {
+          detail: { storyId: Number(notif.reference_id) },
+        })
+      );
+    }
+
     router.push(url);
   }, [roleBase, router, onClose]);
 
