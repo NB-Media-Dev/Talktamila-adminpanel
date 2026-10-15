@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Landmark } from "lucide-react";
 import { buttonVariants } from "../ui/Button";
@@ -15,7 +16,6 @@ export interface EarningWalletProps {
   bankName?: string;
   bankAccountLast4?: string;
   isLoading?: boolean;
-  onWithdraw?: () => void;
   onViewDetails?: () => void;
   onChangeBank?: () => void;
   className?: string;
@@ -30,7 +30,6 @@ export default function Earningwallet({
   bankName = "Bank Transfer",
   bankAccountLast4 = "4567",
   isLoading: propIsLoading,
-  onWithdraw,
   onViewDetails,
   onChangeBank,
   className = "",
@@ -101,13 +100,12 @@ export default function Earningwallet({
       </div>
 
 
-      <button
-        type="button"
-        onClick={onWithdraw}
+      <Link
+        href="/freelancer/withdraw"
         className={`w-full py-3 px-3  ${buttonVariants({ variant: 'default' })} text-xs sm:text-sm font-bold shadow-[0_6px_20px_rgba(255,107,53,0.3)] flex items-center justify-center`}
       >
         Withdraw Funds
-      </button>
+      </Link>
 
       <div className="border border-gray-200/70 rounded-full px-3.5 sm:px-4 py-2.5 flex items-center justify-between gap-2 bg-white">
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useContext } from "react";
+import { useRouter } from "next/navigation";
 import {
   Sparkles,
   Languages,
@@ -35,8 +36,16 @@ interface FormatOption {
 
 export function QuickStudio() {
   const context = useContext(useContenthook);
-  const { isAdmin } = useAuthRole();
+  const { isAdmin, isInfluencer, isFreelancer } = useAuthRole();
+  const router = useRouter();
   const [selectedFormat, setSelectedFormat] = useState<string>("Poster");
+
+  const openPollStudio = () => {
+    if (isAdmin) router.push("/admin/creatorstudiopoll");
+    else if (isInfluencer) router.push("/influencer/creatorstudiopoll");
+    else if (isFreelancer) router.push("/freelancer/creatorstudiopoll");
+    else router.push("/login");
+  };
   const [prompt, setPrompt] = useState<string>(
     "A cinematic Chennai skyline sunset poster with 'சென்னை மெட்ரோ 2025' bold text and orange gradient overlay."
   );
@@ -162,7 +171,7 @@ export function QuickStudio() {
                   return (
                     <button
                       key={fmt.id}
-                      onClick={() => setSelectedFormat(fmt.id)}
+                      onClick={() => (fmt.id === "Poll" ? openPollStudio() : setSelectedFormat(fmt.id))}
                       className={`flex items-center justify-start py-1 px-1.5 min-[3840px]:py-1.5 min-[3840px]:px-2 rounded-lg border transition-all duration-200 cursor-pointer select-none gap-1.5 active:scale-95 ${
                         isActive
                           ? "border-[#FF6B35] bg-white text-[#FF6B35] font-bold shadow-xs shadow-orange-500/5"

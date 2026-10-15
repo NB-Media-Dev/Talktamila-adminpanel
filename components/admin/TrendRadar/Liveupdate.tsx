@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { ContentSkeleton } from "@/components/ui/Skeletonloading";
 import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Train, ArrowRight, TrendingUp } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 interface LiveupdateProps {
@@ -98,10 +99,13 @@ export default function Liveupdate({ hideMobileHeader = false }: LiveupdateProps
         </div>
 
         <div>
-          <button className={`inline-flex items-center ${buttonVariants({variant:'default'})} gap-2 font-bold py-3 sm:py-3.5 px-6 sm:px-8  text-xs sm:text-base  shadow-md hover:shadow-lg cursor-pointer select-none group/btn`}>
+          <Link
+            href="/admin/conversation"
+            className={`inline-flex items-center ${buttonVariants({variant:'default'})} gap-2 font-bold py-3 sm:py-3.5 px-6 sm:px-8  text-xs sm:text-base  shadow-md hover:shadow-lg cursor-pointer select-none group/btn`}
+          >
             <span>Join Conversation</span>
             <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-          </button>
+          </Link>
         </div>
 
       </div>

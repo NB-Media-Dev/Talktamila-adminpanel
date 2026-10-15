@@ -7,6 +7,7 @@ import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
 import Insights from "@/components/influencer/Insights";
 import Notifications from "@/components/freelancer/Notifications";
 import Earningwallet from "@/components/freelancer/Earningwallet";
+import BreakingNews from "@/components/admin/dashboard/BreakingNews";
 import Repostanalysis from "@/components/freelancer/Repostanalysis";
 import Toprepostors from "@/components/freelancer/Toprepostors";
 
@@ -34,12 +35,14 @@ export default function FreelancerPage() {
             <TodaysEvents />
             <Toprepostors />
             <Notifications />
+            <BreakingNews />
           </div>
           
           {/* Desktop Left view */}
           <div className="hidden lg:flex flex-col gap-4 sm:gap-5">
             <Toprepostors />
             <Notifications />
+            <BreakingNews />
           </div>
         </div>
 

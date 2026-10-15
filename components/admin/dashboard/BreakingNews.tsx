@@ -5,6 +5,7 @@ import { UsetimeoutLoader } from "@/hooks/Usetimeoutloader";
 import { Zap } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useAuthRole } from "@/hooks/useAuthRole";
 
 interface NewsItem {
   id: number;
@@ -13,6 +14,12 @@ interface NewsItem {
 }
 
 export default function BreakingNews() {
+  const { isInfluencer, isFreelancer } = useAuthRole();
+  const newsHubPath = isFreelancer
+    ? "/freelancer/breakingnewshub"
+    : isInfluencer
+      ? "/influencer/breakingnewshub"
+      : "/admin/breakingnewshub";
   const [isLoading, setIsLoading] = useState(true);
 
   UsetimeoutLoader(setIsLoading);
@@ -47,7 +54,7 @@ export default function BreakingNews() {
           </h2>
         </div>
         <Link
-          href="/admin"
+          href={newsHubPath}
           className="text-xs sm:text-sm text-[#FF6B35] hover:text-[#D9652B] transition-colors duration-200"
         >
           All news

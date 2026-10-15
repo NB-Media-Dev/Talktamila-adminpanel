@@ -51,9 +51,12 @@ export default function CreatorWallet() {
             </div>
           </div>
 
-          <button className="bg-[#FF6B35] hover:bg-[#FF5A26] active:scale-95 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-1.5 rounded-full transition-all shadow-sm cursor-pointer whitespace-nowrap">
+          <Link
+            href="/influencer/withdraw"
+            className="bg-[#FF6B35] hover:bg-[#FF5A26] active:scale-95 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-1.5 rounded-full transition-all shadow-sm cursor-pointer whitespace-nowrap"
+          >
             Withdraw
-          </button>
+          </Link>
         </div>
 
       
@@ -145,11 +148,12 @@ export default function CreatorWallet() {
      
 
       <div className="z-10 mt-5 sm:mt-6 flex items-end">
-        <button
+        <Link
+          href="/admin/withdraw"
           className="bg-white hover:bg-white/95 active:scale-[0.98] text-[#FF5B3E] font-extrabold text-xs sm:text-sm px-5 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all duration-200 shadow-[0_4px_12px_rgba(0,0,0,0.1)] cursor-pointer"
         >
           Withdraw
-        </button>
+        </Link>
       </div>
 
       <WalterIcons/>

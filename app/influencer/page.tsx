@@ -18,6 +18,7 @@ import UpcomingSchedule from "@/components/admin/RightPanel/UpcomingSchedule";
 import ShareThoughtCard from "@/components/admin/dashboard/ShareThoughtCard";
 import CreatorReputationScore from "@/components/influencer/Creatorreputationscore";
 import Insights from "@/components/influencer/Insights";
+import BreakingNews from "@/components/admin/dashboard/BreakingNews";
 
 
 export default function InfluencerPage() {
@@ -71,6 +72,7 @@ export default function InfluencerPage() {
             <CreatorWallet />
             <CreatorReputationScore />
             <UpcomingSchedule />
+            <BreakingNews />
           </div>
         </div>
       </div>
